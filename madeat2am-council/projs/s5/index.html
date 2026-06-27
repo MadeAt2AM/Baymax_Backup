@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Inter'; font-weight: 900;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-900-normal.woff2') format('woff2');
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #FDFBF7; }
+    body { font-family: 'Inter', 'Arial', sans-serif; color: #111111; }
+
+    #blueprint {
+      position: fixed; inset: 0; width: 1080px; height: 1920px; pointer-events: none; z-index: 1;
+      background-image:
+        linear-gradient(rgba(17,17,17,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,17,17,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    #glow-mesh {
+      position: fixed; inset: 0; width: 1080px; height: 1920px; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    #glow-mesh::before {
+      content: ''; position: absolute; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,193,7,0.18) 0%, transparent 70%);
+      top: -100px; right: -150px;
+      animation: driftA 8s ease-in-out infinite alternate;
+    }
+    #glow-mesh::after {
+      content: ''; position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(211,47,47,0.12) 0%, transparent 70%);
+      bottom: 200px; left: -100px;
+      animation: driftB 10s ease-in-out infinite alternate;
+    }
+    @keyframes driftA { from: transform: translate(0,0); to: transform: translate(-60px, 40px); }
+    @keyframes driftB { from: transform: translate(0,0); to: transform: translate(50px, -30px); }
+
+    .bracket { position: fixed; width: 48px; height: 48px; z-index: 200; pointer-events: none; }
+    .bracket::before, .bracket::after { content: ''; position: absolute; background: #111111; }
+    .bracket-tl { top: 28px; left: 28px; }
+    .bracket-tl::before { width: 2px; height: 48px; top: 0; left: 0; }
+    .bracket-tl::after  { width: 48px; height: 2px; top: 0; left: 0; }
+    .bracket-tr { top: 28px; right: 28px; }
+    .bracket-tr::before { width: 2px; height: 48px; top: 0; right: 0; }
+    .bracket-tr::after  { width: 48px; height: 2px; top: 0; right: 0; }
+    .bracket-bl { bottom: 28px; left: 28px; }
+    .bracket-bl::before { width: 2px; height: 48px; bottom: 0; left: 0; }
+    .bracket-bl::after  { width: 48px; height: 2px; bottom: 0; left: 0; }
+    .bracket-br { bottom: 28px; right: 28px; }
+    .bracket-br::before { width: 2px; height: 48px; bottom: 0; right: 0; }
+    .bracket-br::after  { width: 48px; height: 2px; bottom: 0; right: 0; }
+
+    #scene5 {
+      position: fixed; top: 0; left: 0; width: 1080px; height: 1920px;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding-top: 200px; padding-left: 64px; padding-right: 64px; box-sizing: border-box;
+      z-index: 50; background: transparent; text-align: center; gap: 0;
+    }
+    .scene5-text {
+      font-size: 62px; font-weight: 900; color: #111111; line-height: 1.1;
+      max-width: 900px; margin-bottom: 60px;
+      opacity: 0; y: 20;
+    }
+    .scene5-text em { font-style: normal; color: #D32F2F; }
+
+    .verdict-doc {
+      width: 700px; background: rgba(17,17,17,0.06); border: 2px solid #111111;
+      border-radius: 20px; padding: 48px 56px; text-align: left;
+      opacity: 0; scale: 0.92;
+    }
+    .verdict-label {
+      font-size: 18px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #111111; opacity: 0.4; margin-bottom: 24px;
+      border-bottom: 1px solid rgba(17,17,17,0.15); padding-bottom: 12px;
+    }
+    .verdict-output {
+      font-size: 32px; font-weight: 600; color: #111111; line-height: 1.4; min-height: 80px;
+    }
+    .verdict-cursor {
+      display: inline-block; width: 3px; height: 32px;
+      background: #111111; vertical-align: middle; margin-left: 2px;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body
+  data-composition-id="main"
+  data-width="1080"
+  data-height="1920"
+  data-start="0"
+  data-duration="3"
+>
+  <div id="blueprint"></div>
+  <div id="glow-mesh"></div>
+  <div class="bracket bracket-tl"></div>
+  <div class="bracket bracket-tr"></div>
+  <div class="bracket bracket-bl"></div>
+  <div class="bracket bracket-br"></div>
+
+  <div id="scene5">
+    <div class="scene5-text">
+      The Chairman doesn't give an answer.<br>
+      It delivers a <em>VERDICT.</em>
+    </div>
+
+    <div class="verdict-doc">
+      <div class="verdict-label">CHAIRMAN OUTPUT</div>
+      <div class="verdict-output">
+        <span id="verdict-text"></span><span class="verdict-cursor"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    window.__timelines['main'] = gsap.timeline({ paused: false });
+    const tl = window.__timelines['main'];
+    tl.to('.scene5-text', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.1);
+    tl.to('.verdict-doc', { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, 0.35);
+
+    // Typewriter effect for verdict text
+    const verdictStr = "Recommend: MULTI-AGENT SYNTHESIS with Contrarian override and Executor handoff.";
+    const verdictEl = document.getElementById('verdict-text');
+    let delay = 0.8;
+    for (let i = 0; i <= verdictStr.length; i++) {
+      tl.call(
+        ((ci) => () => { verdictEl.textContent = verdictStr.slice(0, ci); })(i),
+        [],
+        delay + i * 0.048
+      );
+    }
+  </script>
+</body>
+</html>

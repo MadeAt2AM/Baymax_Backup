@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0a0a0f; }
+    body { background: #0a0a0f; }
+    .clip { position: fixed; inset: 0; z-index: 1; }
+    .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 60px; box-sizing: border-box; }
+    /* Typography helpers */
+    .bold-num { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .accent { color: #FF6B35; }
+    .skill-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 100px; padding: 10px 20px; font-size: 18px; font-weight: 600; color: #FF6B35; letter-spacing: 1px; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+    .card-orange { background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 16px; }
+    .body-text { font-size: 32px; font-weight: 400; color: rgba(255,255,255,0.75); text-align: center; }
+    /* Dot grid background */
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.4); border-radius: 3px; }
+  </style>
+</head>
+<body data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="8">
+<div id="scene8" class="scene"
+       >
+
+    <div id="s8badge">
+      <div class="skill-pill">SKILL #5</div>
+    </div>
+
+    <div id="s8title" style="font-size:68px;font-weight:800;color:#fff;text-align:center;letter-spacing:-2px;line-height:1.05;">
+      <span class="accent">Deep</span><br/>Research
+    </div>
+
+    <div id="s8web" style="width:100%;height:420px;">
+      <!-- Center node -->
+      <div style="top:50%;left:50%;transform:translate(-50%,-50%);width:160px;height:160px;background:rgba(255,107,53,0.15);border:2px solid rgba(255,107,53,0.4);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:2;">
+        <div style="font-size:40px;">🔬</div>
+        <div style="font-size:16px;font-weight:700;color:#FF6B35;">Claude</div>
+      </div>
+      <!-- Satellite nodes -->
+      <div style="top:12%;left:15%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">📄 Papers</div>
+      <div style="top:12%;right:15%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">🌐 Web</div>
+      <div style="bottom:18%;left:10%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">📊 Data</div>
+      <div style="bottom:18%;right:10%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">💬 Sources</div>
+      <div style="top:50%;left:4%;transform:translateY(-50%);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">📚 Docs</div>
+      <div style="top:50%;right:4%;transform:translateY(-50%);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 18px;font-size:16px;color:rgba(255,255,255,0.7);">🧠 Knowledge</div>
+    </div>
+
+    <div id="s8headline" style="font-size:36px;font-weight:700;color:#FF6B35;text-align:center;">
+      Built into Claude. No installation needed.
+    </div>
+  </div>
+<script>
+  window.__timelines = window.__timelines || {};
+  gsap.set('.clip', { opacity: 1 });
+  gsap.set('.scene', { opacity: 1 });
+  var tl = gsap.timeline({ paused: false });
+  tl.to({}, { duration: 8 });
+  window.__timelines['main'] = tl;
+</script>
+</body>
+</html>

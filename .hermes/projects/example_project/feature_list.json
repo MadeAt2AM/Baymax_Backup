@@ -1,0 +1,156 @@
+{
+  "project": "Example Project",
+  "version": "1.0.0",
+  "features": [
+    {
+      "id": "F1",
+      "sprint": 1,
+      "name": "",
+      "description": "",
+      "status": "",
+      "priority": 1,
+      "verification": "",
+      "evidence": "",
+      "evaluator_rubric": {
+        "criteria": [
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "e",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          }
+        ],
+        "total_score": "12/12",
+        "verdict": "ACCEPT",	 
+      "notes": ""
+    },
+    {
+      "id": "F2",
+      "sprint": 1,
+      "name": "",
+      "description": "",
+      "status": "",
+      "priority": 1,
+      "verification": "",
+      "evidence": "",
+      "evaluator_rubric": {
+        "criteria": [
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "e",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          }
+        ],
+        "total_score": "12/12",
+        "verdict": "ACCEPT",	  
+      "notes": ""
+    },
+    {
+      "id": "F3",
+      "sprint": 2,
+      "name": "",
+      "description": "",
+      "status": "",
+      "priority": 2,
+      "verification": "",
+      "evidence": "",
+      "evaluator_rubric": {
+        "criteria": [
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          },
+          {
+            "item": "e",
+            "pass": true
+          },
+          {
+            "item": "",
+            "pass": true
+          }
+        ],
+        "total_score": "12/12",
+        "verdict": "ACCEPT",	 
+      "notes": ""
+    } 
+  ],
+  "sprint_summary": {
+    "1": {
+      "features": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "status": "pending",
+      "goal": ""
+    },
+    "2": {
+      "features": [
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11"
+      ],
+      "status": "pending",
+      "goal": ""
+    },
+    "3": {
+      "features": [
+        "F12",
+        "F13"
+      ],
+      "status": "pending",
+      "goal": ""
+    },
+    "4": {
+      "features": [
+        "F14",
+        "F15",
+        "F16"
+      ],
+      "status": "pending",
+      "goal": ""
+    }
+  }
+}

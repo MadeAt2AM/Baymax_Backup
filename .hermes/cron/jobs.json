@@ -1,0 +1,184 @@
+{
+  "jobs": [
+    {
+      "id": "6e32c4bc5ea6",
+      "name": "bi-daily-hermes-update",
+      "prompt": "Run `hermes update` to update Hermes Agent to the latest version. After the update completes, restart the dashboard and verify all services are working. Then send a Telegram message summarizing the update status.\n\nIMPORTANT \u2014 follow this exact sequence:\n1. `systemctl stop hermes-dashboard` \u2014 stop dashboard cleanly BEFORE the update so no stale process holds port 9119\n2. `hermes update` \u2014 run the full update\n3. `systemctl start hermes-dashboard` \u2014 restart the dashboard after update\n4. Verify: `curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:9119/` must return 200\n5. Verify: `systemctl status hermes-gateway --no-pager` \u2014 gateway must be active (running)\n6. Verify: nginx is routing correctly \u2014 `curl -s -o /dev/null -w \"%{http_code}\" https://dashboard.terrybot.top/` must return 401 (Basic Auth challenge = nginx proxy working)\n\nSend the final status report to Telegram including:\n- Whether update succeeded or failed\n- Dashboard HTTP status (200 = good)\n- Gateway status (active/running or not)\n- Nginx proxy status (401 = good, anything else = problem)",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 */2 * *",
+        "display": "0 16 */2 * *"
+      },
+      "schedule_display": "0 16 */2 * *",
+      "repeat": {
+        "times": null,
+        "completed": 2
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-01T19:28:37.310031+08:00",
+      "next_run_at": "2026-06-29T16:00:00+08:00",
+      "last_run_at": "2026-06-23T16:02:12.391541+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram",
+      "origin": null,
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "workdir": null,
+      "profile": null,
+      "fire_claim": null
+    },
+    {
+      "id": "5d79aefd3746",
+      "name": "daily-email-briefing",
+      "prompt": "Run the daily email briefing script and send the digest to Telegram.\n\nSteps:\n1. Execute: python3 /root/.hermes/scripts/email_briefing.py\n2. If the script exits non-zero, log the error but do not re-send.\n3. If successful, the script handles Telegram delivery automatically \u2014 no additional action needed.\n\nThe script reads recent Gmail (last ~24h), builds a structured digest with priority classification (urgent, needs reply, financial, events, security), and sends it directly to the configured Telegram channel.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "minimax",
+      "model_snapshot": "MiniMax-M2.7",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "display": "0 3 * * *"
+      },
+      "schedule_display": "0 3 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-27T11:29:12.154210+08:00",
+      "next_run_at": "2026-06-28T03:00:00+08:00",
+      "last_run_at": "2026-06-27T22:02:52.417557+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": "no delivery target resolved for deliver=none",
+      "deliver": "none",
+      "origin": null,
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "workdir": null,
+      "fire_claim": null
+    },
+    {
+      "id": "fab47f7704ba",
+      "name": "Dreaming Sequence",
+      "prompt": "You are running the Dreaming Sequence \u2014 a deep morning context analysis that prepares Chris's day.\n\n## Your Task\n\nRun a comprehensive context analysis and save the output to `~/.hermes/cron/output/dreaming_sequence.json`.\n\n### Step 1 \u2014 Session History (last 7 days)\nCall: `session_search(query=\"\", limit=10, sort=\"newest\")`\nLook for: unfinished tasks, project kick-offs, recent decisions, follow-up items, active work.\n\n### Step 2 \u2014 Honcho Context\nCall: `honcho_context(peer=\"user\")`\nCall: `honcho_profile(peer=\"user\")`\nPull: goals, current projects, priorities, communication preferences.\n\n### Step 3 \u2014 Today's Calendar (Google Workspace)\n```bash\nGAPI=\"python ${HERMES_HOME:-$HOME/.hermes}/skills/productivity/google-workspace/scripts/google_api.py\"\n$GAPI calendar list --start \"$(date -u +%Y-%m-%dT00:00:00Z)\" --end \"$(date -u +%Y-%m-%dT23:59:59Z)\"\n```\n\n### Step 4 \u2014 Project Files Scan\nCall: `search_files(pattern=\"*\", target=\"files\", path=\"/root/.hermes/projects\")`\nRead brief/README files from active project folders.\n\n### Step 5 \u2014 Generate Analysis Output\n\nBased on ALL gathered data, produce a JSON object and save it:\n\n```bash\nmkdir -p ~/.hermes/cron/output\ncat > ~/.hermes/cron/output/dreaming_sequence.json << 'EOF'\n{\n  \"date\": \"$(date +%Y-%m-%d)\",\n  \"analysis\": {\n    \"active_projects\": [\"...\"],\n    \"upcoming_deadlines\": [\"...\"],\n    \"outstanding_items\": [\"...\"],\n    \"recent_context\": \"2-3 sentence summary of what's been happening\"\n  },\n  \"recommendations\": [\n    {\n      \"priority\": 1,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    },\n    {\n      \"priority\": 2,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    },\n    {\n      \"priority\": 3,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    }\n  ],\n  \"non_negotiable\": {\n    \"title\": \"...\",\n    \"reason\": \"...\",\n    \"action\": \"...\"\n  },\n  \"mood_check\": \"Brief note on energy/tone based on recent context\"\n}\nEOF\n```\n\n### Key Guidelines\n- Always be honest and direct in recommendations \u2014 no generic advice\n- Recommendations must tie to SPECIFIC ongoing projects or goals mentioned in the context\n- The non-negotiable should be ONE thing that if skipped, meaningfully delays progress\n- `recent_context` should synthesise what you found across session history + honcho + files\n- Date must be today's date in YYYY-MM-DD format (use `date +%Y-%m-%d`)\n\n### Save and Exit\nSave the complete JSON to `~/.hermes/cron/output/dreaming_sequence.json` then end the session silently (no message to any channel \u2014 deliver is local).",
+      "skills": [
+        "dreaming-sequence"
+      ],
+      "skill": "dreaming-sequence",
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "minimax",
+      "model_snapshot": "MiniMax-M2.7",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 22 * * *",
+        "display": "0 22 * * *"
+      },
+      "schedule_display": "0 22 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 2
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-27T20:48:32.455935+08:00",
+      "next_run_at": "2026-06-28T22:00:00+08:00",
+      "last_run_at": "2026-06-27T22:02:48.833273+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1283992553",
+        "chat_name": "Chris Kal",
+        "thread_id": "55422",
+        "user_id": "1283992553"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "fire_claim": null
+    },
+    {
+      "id": "afb02a1433cf",
+      "name": "Morning Brief",
+      "prompt": "You are delivering the Daily Morning Brief to Chris via Telegram channel -1004490060634.\n\n## Your Task\n\nRead the dreaming sequence output, fetch weather and calendar, then compile and send the brief to Telegram.\n\n### Step 1 \u2014 Read Dreaming Sequence Output\nRun: `cat ~/.hermes/cron/output/dreaming_sequence.json 2>/dev/null || echo '{}'`\nParse the JSON. If the file doesn't exist or is empty, use fallbacks.\n\n### Step 2 \u2014 Fetch Singapore Weather\nRun: `curl -s \"wttr.in/Singapore?format=%c%t+%C&lang=en\" 2>/dev/null`\nParse: emoji, temperature, condition. Fallback: \"\ud83c\udf24\ufe0f 31\u00b0C \u2014 Singapore\"\n\n### Step 3 \u2014 Motivational Quote\nUse day-of-week index (0=Sunday):\n```\n0: \"The best time to plant a tree was 20 years ago. The second best time is now. \u2014 Lao Tzu\"\n1: \"Innovation distinguishes between a leader and a follower. \u2014 Steve Jobs\"\n2: \"Stay hungry, stay foolish. \u2014 Steve Jobs\"\n3: \"The only way to do great work is to love what you do. \u2014 Steve Jobs\"\n4: \"I think it's very important to have a feedback loop, where you're constantly thinking about what you've done and how you could be doing it better. \u2014 Elon Musk\"\n5: \"When something is important enough, you do it even if the odds are not in your favor. \u2014 Elon Musk\"\n6: \"The biggest risk is not taking any risk. In a world that is changing quickly, the only strategy that is guaranteed to fail is not taking risks. \u2014 Mark Zuckerberg\"\n```\n\n### Step 4 \u2014 Fetch Today's Calendar\nRun:\n```\nGAPI=\"python ${HERMES_HOME:-$HOME/.hermes}/skills/productivity/google-workspace/scripts/google_api.py\"\n$GAPI calendar list --start \"$(date -u +%Y-%m-%dT00:00:00Z)\" --end \"$(date -u +%Y-%m-%dT23:59:59Z)\"\n```\nConvert times to SGT (UTC+8). Format: \"\ud83d\udccc [HH:MM SGT] \u2014 [Event Title]\" + location if present.\nIf no events: \"\ud83d\udced No events scheduled for today \u2014 make it count!\"\n\n### Step 5 \u2014 Compile the Brief\n\nUse this EXACT Telegram Markdown format:\n\n```\n\ud83c\udf05 *Good Morning, Chris* \u2014 [DAY, DD MONTH YYYY]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u2601\ufe0f *TODAY'S WEATHER \u2014 SINGAPORE*\n[weather result]\n\n\ud83d\udcac *MOTIVATIONAL QUOTE*\n_\"[selected quote]\"_\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcc5 *TODAY'S SCHEDULE*\n[events list]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83c\udfaf *TOP 3 RECOMMENDATIONS*\n1\ufe0f\u20e3 [rec 1 \u2014 one line explanation]\n2\ufe0f\u20e3 [rec 2 \u2014 one line explanation]\n3\ufe0f\u20e3 [rec 3 \u2014 one line explanation]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u26a1 *NON-NEGOTIABLE TODAY*\n*[title]*\n[reason]\n\ud83d\udc49 [specific action]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n_\ud83e\udde0 Dreaming Sequence ran at 6 AM \u00b7 Compiled at 8 AM_\n```\n\n### Step 6 \u2014 Send to Telegram\n\nThe cron deliver is set to `telegram:-1004490060634`. Your final response will be automatically delivered there.\n\nJust output the formatted brief as your final response. Do not say anything else before or after \u2014 the brief itself is the message.",
+      "skills": [
+        "morning-brief"
+      ],
+      "skill": "morning-brief",
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "minimax",
+      "model_snapshot": "MiniMax-M2.7",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * *",
+        "display": "0 0 * * *"
+      },
+      "schedule_display": "0 0 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-27T20:49:04.626974+08:00",
+      "next_run_at": "2026-06-28T00:00:00+08:00",
+      "last_run_at": "2026-06-27T21:14:22.492434+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1004490060634",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1283992553",
+        "chat_name": "Chris Kal",
+        "thread_id": "55422",
+        "user_id": "1283992553"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "fire_claim": null
+    }
+  ],
+  "updated_at": "2026-06-27T22:02:52.417927+08:00"
+}

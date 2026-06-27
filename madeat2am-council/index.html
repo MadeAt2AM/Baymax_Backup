@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+      /* Inter from jsdelivr — pinned version for reproducibility */
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 400;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-400-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 500;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-500-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 600;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-600-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 700;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-700-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 800;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-800-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-weight: 900;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-900-normal.woff2') format('woff2');
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #FDFBF7;
+    }
+
+    body {
+      font-family: 'Inter', 'Arial', sans-serif;
+      color: #111111;
+      position: relative;
+    }
+
+    /* ── Blueprint grid overlay ── */
+    #blueprint {
+      position: fixed;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      background-image:
+        linear-gradient(rgba(17,17,17,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,17,17,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Ambient glow mesh (deep background) ── */
+    #glow-mesh {
+      position: fixed;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    #glow-mesh::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,193,7,0.18) 0%, transparent 70%);
+      top: -100px; right: -150px;
+      animation: driftA 8s ease-in-out infinite alternate;
+    }
+    #glow-mesh::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(211,47,47,0.12) 0%, transparent 70%);
+      bottom: 200px; left: -100px;
+      animation: driftB 10s ease-in-out infinite alternate;
+    }
+    @keyframes driftA { from: transform: translate(0,0); to: transform: translate(-60px, 40px); }
+    @keyframes driftB { from: transform: translate(0,0); to: transform: translate(50px, -30px); }
+
+    /* ── Corner brackets ── */
+    .bracket {
+      position: fixed;
+      width: 48px; height: 48px;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .bracket::before, .bracket::after {
+      content: '';
+      position: absolute;
+      background: #111111;
+    }
+    .bracket-tl { top: 28px; left: 28px; }
+    .bracket-tl::before { width: 2px; height: 48px; top: 0; left: 0; }
+    .bracket-tl::after  { width: 48px; height: 2px; top: 0; left: 0; }
+
+    .bracket-tr { top: 28px; right: 28px; }
+    .bracket-tr::before { width: 2px; height: 48px; top: 0; right: 0; }
+    .bracket-tr::after  { width: 48px; height: 2px; top: 0; right: 0; }
+
+    .bracket-bl { bottom: 28px; left: 28px; }
+    .bracket-bl::before { width: 2px; height: 48px; bottom: 0; left: 0; }
+    .bracket-bl::after  { width: 48px; height: 2px; bottom: 0; left: 0; }
+
+    .bracket-br { bottom: 28px; right: 28px; }
+    .bracket-br::before { width: 2px; height: 48px; bottom: 0; right: 0; }
+    .bracket-br::after  { width: 48px; height: 2px; bottom: 0; right: 0; }
+
+    /* ── Scenes ── */
+    .scene {
+      position: fixed;
+      top: 0; left: 0;
+      width: 1080px;
+      height: 1920px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 64px;
+      box-sizing: border-box;
+    }
+
+    /* ── Scene 1 ── */
+    #scene1 {
+      z-index: 10;
+      background: transparent;
+      text-align: center;
+      gap: 0;
+    }
+    .scene1-line {
+      font-size: 84px;
+      font-weight: 900;
+      line-height: 1.05;
+      color: #111111;
+      max-width: 900px;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .scene1-yes-man {
+      display: inline-block;
+      background: #111111;
+      color: #FFC107;
+      font-size: 84px;
+      font-weight: 900;
+      padding: 0 18px;
+      border-radius: 6px;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+    .scene1-dots {
+      color: #111111;
+      font-size: 64px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      margin: 8px 0;
+    }
+
+    /* ── Scene 2 ── */
+    #scene2 {
+      z-index: 20;
+      background: transparent;
+      text-align: center;
+      justify-content: flex-start;
+      padding-top: 160px;
+      gap: 0;
+    }
+    .madeat2am-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: #111111;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 48px;
+      opacity: 0.7;
+    }
+    .madeat2am-badge .sparkle {
+      color: #FFC107;
+      font-size: 26px;
+    }
+    .scene2-main {
+      font-size: 96px;
+      font-weight: 900;
+      color: #111111;
+      line-height: 1.0;
+      margin-bottom: 16px;
+      max-width: 900px;
+    }
+    .scene2-sub {
+      font-size: 72px;
+      font-weight: 800;
+      color: #111111;
+      line-height: 1.0;
+      max-width: 900px;
+    }
+    /* council card */
+    .council-card {
+      width: 520px;
+      height: 520px;
+      border: 3px solid #111111;
+      border-radius: 28px;
+      background: rgba(17,17,17,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: 60px;
+    }
+    .council-center-node {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #111111;
+      position: relative;
+      z-index: 2;
+    }
+    .node-ring {
+      position: absolute;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      border: 2px solid rgba(17,17,17,0.2);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .satellite-node {
+      position: absolute;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #111111;
+      opacity: 0;
+    }
+    /* 5 satellite positions */
+    .satellite-node:nth-child(3) { top: 20px;  left: 50%; transform: translateX(-50%); }
+    .satellite-node:nth-child(4) { top: 50%; right: 20px;  transform: translateY(-50%); }
+    .satellite-node:nth-child(5) { bottom: 20px; left: 50%; transform: translateX(-50%); }
+    .satellite-node:nth-child(6) { top: 50%; left: 20px;   transform: translateY(-50%); }
+    .satellite-node:nth-child(7) { top: 100px; right: 80px; }
+
+    /* ── Scene 3 — Agent Stack ── */
+    #scene3 {
+      z-index: 30;
+      background: transparent;
+      justify-content: flex-start;
+      padding-top: 120px;
+      padding-bottom: 120px;
+      gap: 0;
+    }
+    .agent-card {
+      width: 100%;
+      max-width: 900px;
+      border: 2.5px solid #111111;
+      border-radius: 20px;
+      padding: 28px 36px;
+      background: rgba(17,17,17,0.03);
+      margin-bottom: 20px;
+      opacity: 0;
+    }
+    .agent-header {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .agent-num { color: #111111; }
+    .agent-name { color: #111111; }
+    .agent-card[data-color="red"] .agent-num,
+    .agent-card[data-color="red"] .agent-name { color: #D32F2F; }
+    .agent-body {
+      font-size: 28px;
+      font-weight: 500;
+      color: #111111;
+      opacity: 0.75;
+      line-height: 1.3;
+    }
+
+    /* ── Scene 4 — Synthesis ── */
+    #scene4 {
+      z-index: 40;
+      background: transparent;
+      text-align: center;
+      justify-content: flex-start;
+      padding-top: 180px;
+      gap: 0;
+    }
+    .scene4-text {
+      font-size: 60px;
+      font-weight: 800;
+      color: #111111;
+      line-height: 1.1;
+      max-width: 900px;
+      margin-bottom: 60px;
+    }
+    .scene4-text em {
+      font-style: normal;
+      color: #D32F2F;
+    }
+    .synthesis-ring {
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      border: 3px solid #111111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto;
+    }
+    .synthesis-core {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #111111;
+    }
+    /* 5 converge lines */
+    .converge-line {
+      position: absolute;
+      width: 2px; height: 80px;
+      background: rgba(17,17,17,0.3);
+      top: -80px; left: 50%;
+      transform-origin: bottom center;
+      opacity: 0;
+    }
+    .converge-line:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
+    .converge-line:nth-child(2) { transform: translateX(-50%) rotate(72deg); height: 60px; top: -60px; }
+    .converge-line:nth-child(3) { transform: translateX(-50%) rotate(144deg); height: 70px; top: -70px; }
+    .converge-line:nth-child(4) { transform: translateX(-50%) rotate(216deg); height: 55px; top: -55px; }
+    .converge-line:nth-child(5) { transform: translateX(-50%) rotate(288deg); height: 65px; top: -65px; }
+    /* progress bar */
+    .progress-track {
+      width: 600px; height: 8px;
+      background: rgba(17,17,17,0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 60px auto 0;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #111111 0%, #D32F2F 100%);
+      border-radius: 4px;
+    }
+
+    /* ── Scene 5 — Verdict ── */
+    #scene5 {
+      z-index: 50;
+      background: transparent;
+      text-align: center;
+      justify-content: flex-start;
+      padding-top: 200px;
+      gap: 0;
+    }
+    .scene5-text {
+      font-size: 62px;
+      font-weight: 900;
+      color: #111111;
+      line-height: 1.1;
+      max-width: 900px;
+      margin-bottom: 60px;
+    }
+    .verdict-doc {
+      width: 700px;
+      background: rgba(17,17,17,0.06);
+      border: 2px solid #111111;
+      border-radius: 20px;
+      padding: 48px 56px;
+      text-align: left;
+    }
+    .verdict-label {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #111111;
+      opacity: 0.4;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(17,17,17,0.15);
+      padding-bottom: 12px;
+    }
+    .verdict-output {
+      font-size: 32px;
+      font-weight: 600;
+      color: #111111;
+      line-height: 1.4;
+      min-height: 80px;
+    }
+    .verdict-cursor {
+      display: inline-block;
+      width: 3px; height: 32px;
+      background: #111111;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── Scene 6 — CTA ── */
+    #scene6 {
+      z-index: 60;
+      background: transparent;
+      text-align: center;
+      justify-content: flex-start;
+      padding-top: 120px;
+      gap: 0;
+    }
+    .cta-brand {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #111111;
+      margin-bottom: 80px;
+    }
+    .cta-brand .sparkle { color: #FFC107; }
+    .cta-main {
+      font-size: 56px;
+      font-weight: 800;
+      color: #111111;
+      line-height: 1.15;
+      max-width: 860px;
+      margin-bottom: 60px;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #D32F2F;
+      color: #FDFBF7;
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 28px 72px;
+      border-radius: 60px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .cta-btn::before {
+      content: '';
+      position: absolute;
+      width: 200%; height: 100%;
+      background: rgba(255,255,255,0.25);
+      top: 0; left: -100%;
+      transform: skewX(-20deg);
+      animation: spotlight 2.5s ease-in-out infinite;
+    }
+    @keyframes spotlight {
+      0%   { left: -100%; }
+      60%  { left: -100%; }
+      80%  { left: 60%; }
+      100% { left: 120%; }
+    }
+    .cta-sub {
+      font-size: 32px;
+      font-weight: 500;
+      color: #111111;
+      opacity: 0.55;
+      margin-top: 8px;
+    }
+
+    /* ── Transition overlays ── */
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      background: #FDFBF7;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── Clip visibility helpers ── */
+    .clip { display: block; }
+  </style>
+</head>
+<body
+  data-composition-id="main"
+>
+  <!-- Background -->
+  <div id="blueprint"></div>
+  <div id="glow-mesh"></div>
+
+  <!-- Corner brackets -->
+  <div class="bracket bracket-tl"></div>
+  <div class="bracket bracket-tr"></div>
+  <div class="bracket bracket-bl"></div>
+  <div class="bracket bracket-br"></div>
+
+  <!-- Flash transition overlay -->
+  <div class="flash-overlay" id="flash"></div>
+
+  <!-- Root composition wrapper -->
+  <div id="stage"
+       data-composition-id="main"
+       data-width="1080"
+       data-height="1920"
+       data-start="0"
+       data-duration="27"
+  >
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 1 — THE HOOK  (0:00 – 0:03)
+  ═══════════════════════════════════════════ -->
+  <div id="scene1" class="scene clip"
+       data-start="0"
+       data-duration="3"
+       data-track-index="1">
+
+    <span class="scene1-line">Everyone treats Claude like</span>
+    <span class="scene1-yes-man" id="yesman">YES MAN</span>
+    <span class="scene1-dots">...</span>
+    <span class="scene1-line" style="margin-top:4px">But the top 10% do this instead.</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 2 — THE CORE CONCEPT  (0:03 – 0:06)
+  ═══════════════════════════════════════════ -->
+  <div id="scene2" class="scene clip"
+       data-start="3"
+       data-duration="3"
+       data-track-index="2">
+
+    <span class="madeat2am-badge">
+      <span class="sparkle">✨</span> MADEAT2AM PROTOCOL <span class="sparkle">✨</span>
+    </span>
+
+    <span class="scene2-main">Instead of asking Claude,</span>
+    <span class="scene2-sub">you ask <strong>THE COUNCIL.</strong></span>
+
+    <div class="council-card" id="council-card">
+      <div class="council-center-node"></div>
+      <div class="node-ring"></div>
+      <div class="satellite-node"></div>
+      <div class="satellite-node"></div>
+      <div class="satellite-node"></div>
+      <div class="satellite-node"></div>
+      <div class="satellite-node"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 3 — THE 5 AGENTS  (0:06 – 0:15)
+  ═══════════════════════════════════════════ -->
+  <div id="scene3" class="scene clip"
+       data-start="6"
+       data-duration="9"
+       data-track-index="3">
+
+    <div class="agent-card" data-color="red" id="agent1">
+      <div class="agent-header">
+        <span class="agent-num">01 //</span>
+        <span class="agent-name">THE CONTRARIAN</span>
+      </div>
+      <div class="agent-body">Looks only for how your scenario will fail.</div>
+    </div>
+
+    <div class="agent-card" id="agent2">
+      <div class="agent-header">
+        <span class="agent-num">02 //</span>
+        <span class="agent-name">FIRST PRINCIPLES THINKER</span>
+      </div>
+      <div class="agent-body">Strips everything and rebuilds from scratch.</div>
+    </div>
+
+    <div class="agent-card" id="agent3">
+      <div class="agent-header">
+        <span class="agent-num">03 //</span>
+        <span class="agent-name">THE EXPANSIONIST</span>
+      </div>
+      <div class="agent-body">Finds the massive hidden upside you missed.</div>
+    </div>
+
+    <div class="agent-card" id="agent4">
+      <div class="agent-header">
+        <span class="agent-num">04 //</span>
+        <span class="agent-name">THE OUTSIDER</span>
+      </div>
+      <div class="agent-body">Trashes your context. Evaluates raw data.</div>
+    </div>
+
+    <div class="agent-card" id="agent5">
+      <div class="agent-header">
+        <span class="agent-num">05 //</span>
+        <span class="agent-name">THE EXECUTOR</span>
+      </div>
+      <div class="agent-body">Focuses purely on the immediate next action.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 4 — THE SYNTHESIS  (0:15 – 0:18)
+  ═══════════════════════════════════════════ -->
+  <div id="scene4" class="scene clip"
+       data-start="15"
+       data-duration="3"
+       data-track-index="4">
+
+    <div class="scene4-text">
+      Claude runs the debate through them...<br>
+      then hands it to <em>THE CHAIRMAN.</em>
+    </div>
+
+    <div class="synthesis-ring" id="synth-ring">
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="synthesis-core" id="synth-core"></div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 5 — THE VERDICT  (0:18 – 0:21)
+  ═══════════════════════════════════════════ -->
+  <div id="scene5" class="scene clip"
+       data-start="18"
+       data-duration="3"
+       data-track-index="5">
+
+    <div class="scene5-text">
+      The Chairman doesn't give an answer.<br>
+      It delivers a <strong style="color:#D32F2F">VERDICT.</strong>
+    </div>
+
+    <div class="verdict-doc">
+      <div class="verdict-label">CHAIRMAN OUTPUT</div>
+      <div class="verdict-output">
+        <span id="verdict-text"></span><span class="verdict-cursor"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCENE 6 — OUTRO / CTA  (0:21 – 0:27)
+  ═══════════════════════════════════════════ -->
+  <div id="scene6" class="scene clip"
+       data-start="21"
+       data-duration="6"
+       data-track-index="6">
+    <div id="scene6-content">
+    <div class="cta-brand">
+      <span class="sparkle">✨</span> MADEAT2AM <span class="sparkle">✨</span>
+    </div>
+
+    <div class="cta-main">
+      Comment <span style="color:#FFC107;background:#111111;padding:0 10px;border-radius:6px">COUNCIL</span> and I'll send you the exact guide.
+    </div>
+
+    <div class="cta-btn">[ COUNCIL ]</div>
+
+    <div class="cta-sub">See you in the next one.</div>
+    </div>
+  </div>
+  </div><!-- /#stage -->
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const root = gsap.timeline({ paused: true });
+
+    /* ── SCENE 1 ── */
+    // Gaussian-blur-in + position-upward fade for main text
+    root.from('#scene1 .scene1-line', {
+      filter: 'blur(12px)', opacity: 0, y: 40, duration: 0.9, ease: 'power3.out'
+    }, 0.1);
+    // YES MAN box — snappy elastic pop with yellow
+    root.from('#yesman', {
+      scale: 0.4, opacity: 0, duration: 0.6, ease: 'back.out(1.7)'
+    }, 0.5);
+    // dots stagger
+    root.from('.scene1-dots', {
+      opacity: 0, duration: 0.4, ease: 'power2.out'
+    }, 0.9);
+    // second line of scene 1
+    root.from('#scene1 .scene1-line:last-child', {
+      filter: 'blur(12px)', opacity: 0, y: 30, duration: 0.9, ease: 'power3.out'
+    }, 1.1);
+
+    /* ── FLASH between S1 and S2 ── */
+    root.set('#flash', { opacity: 0 }, 2.85);
+    root.to('#flash', { opacity: 1, duration: 0.08, ease: 'power4.in' }, 2.85);
+    root.set('#flash', { opacity: 0 }, 2.93);
+    root.to('#flash', { opacity: 0, duration: 0.06, ease: 'power2.out' }, 2.93);
+    root.set('#flash', { opacity: 0 }, 3.00); // hard kill — prevents stale state
+
+    /* ── SCENE 2 ── */
+    // Badge fade in
+    root.from('#scene2 .madeat2am-badge', {
+      opacity: 0, y: -20, duration: 0.5, ease: 'power2.out'
+    }, 3.1);
+    // Main text — gaussian blur + upward
+    root.from('.scene2-main', {
+      filter: 'blur(10px)', opacity: 0, y: 50, duration: 0.8, ease: 'expo.out'
+    }, 3.2);
+    root.from('.scene2-sub', {
+      filter: 'blur(8px)', opacity: 0, y: 30, duration: 0.8, ease: 'expo.out'
+    }, 3.45);
+    // Council card pops with elastic
+    root.from('#council-card', {
+      scale: 0.5, opacity: 0, duration: 0.7, ease: 'back.out(1.7)'
+    }, 3.6);
+    // Satellite nodes grow outward one by one
+    root.from('#council-card .satellite-node', {
+      scale: 0, opacity: 0, duration: 0.4, ease: 'back.out(1.7)'
+    }, 3.9, 0.12);
+
+    /* ── SCENE 3 — 5 agents cascade ── */
+    // Agent cards stagger in with elastic scale
+    root.from('#agent1', {
+      opacity: 0, y: -80, scale: 0.85, duration: 0.6, ease: 'back.out(1.7)'
+    }, 6.1);
+    root.from('#agent2', {
+      opacity: 0, y: -80, scale: 0.85, duration: 0.6, ease: 'back.out(1.7)'
+    }, 6.75);
+    root.from('#agent3', {
+      opacity: 0, y: -80, scale: 0.85, duration: 0.6, ease: 'back.out(1.7)'
+    }, 7.4);
+    root.from('#agent4', {
+      opacity: 0, y: -80, scale: 0.85, duration: 0.6, ease: 'back.out(1.7)'
+    }, 8.05);
+    root.from('#agent5', {
+      opacity: 0, y: -80, scale: 0.85, duration: 0.6, ease: 'back.out(1.7)'
+    }, 8.7);
+
+    // Collapse/fade previous agents as new one enters
+    root.to('#agent1', { opacity: 0, y: -60, scale: 0.9, duration: 0.3, ease: 'power2.in' }, 6.7);
+    root.to('#agent2', { opacity: 0, y: -60, scale: 0.9, duration: 0.3, ease: 'power2.in' }, 7.35);
+    root.to('#agent3', { opacity: 0, y: -60, scale: 0.9, duration: 0.3, ease: 'power2.in' }, 8.0);
+    root.to('#agent4', { opacity: 0, y: -60, scale: 0.9, duration: 0.3, ease: 'power2.in' }, 8.65);
+    // Last agent stays visible until scene end
+    root.to('#agent5', { opacity: 0, duration: 0.5, ease: 'power2.in' }, 14.85);
+
+    /* ── SCENE 4 — Synthesis ── */
+    // Text reveals
+    root.from('#scene4 .scene4-text', {
+      opacity: 0, y: 30, duration: 0.7, ease: 'power3.out'
+    }, 15.1);
+    // Converge lines appear
+    root.from('[data-composition-id="main"] .converge-line', {
+      scaleY: 0, opacity: 1, duration: 0.35, ease: 'power2.out'
+    }, 15.4, 0.08);
+    // Synthesis ring elastic pop
+    root.from('#synth-ring', {
+      scale: 0.3, opacity: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)'
+    }, 15.5);
+    // Progress bar fill (masked slide-in via width)
+    root.from('#prog-fill', {
+      width: '0%', duration: 1.2, ease: 'power3.inOut'
+    }, 15.6);
+
+    /* ── SCENE 5 — Verdict ── */
+    root.from('#scene5 .scene5-text', {
+      opacity: 0, y: 20, duration: 0.6, ease: 'power3.out'
+    }, 18.1);
+    root.from('.verdict-doc', {
+      opacity: 0, scale: 0.92, duration: 0.6, ease: 'back.out(1.7)'
+    }, 18.35);
+    // Typewriter — set characters via JS calls
+    const verdictStr = "Recommend: MULTI-AGENT SYNTHESIS with Contrarian override and Executor handoff.";
+    const verdictEl = document.getElementById('verdict-text');
+    for (let i = 0; i <= verdictStr.length; i++) {
+      root.call(
+        ((ci) => () => { verdictEl.textContent = verdictStr.slice(0, ci); })(i),
+        [],
+        18.8 + i * 0.048
+      );
+    }
+    // Flash overlay at verdict reveal
+    root.set('#flash', { opacity: 0 }, 18.05);
+    root.to('#flash', { opacity: 0.7, duration: 0.06, ease: 'power4.in' }, 18.05);
+    root.set('#flash', { opacity: 0 }, 18.11);
+
+    /* ── SCENE 6 — CTA ── */
+    // Brand fades in
+    root.from('#scene6 .cta-brand', {
+      opacity: 0, y: -20, duration: 0.5, ease: 'power2.out'
+    }, 21.1);
+    // Main CTA text
+    root.from('#scene6 .cta-main', {
+      opacity: 0, y: 30, duration: 0.7, ease: 'power3.out'
+    }, 21.3);
+    // Button snaps in with elastic
+    root.from('#scene6 .cta-btn', {
+      scale: 0.6, opacity: 0, duration: 0.7, ease: 'back.out(2.0)'
+    }, 21.6);
+    // Sub text
+    root.from('#scene6 .cta-sub', {
+      opacity: 0, duration: 0.8, ease: 'power2.out'
+    }, 22.2);
+
+    // Final scene fade out (only exit animation allowed — targets inner content div)
+    root.to('#scene6-content', { opacity: 0, duration: 1.2, ease: 'power2.in' }, 25.8);
+    root.set('#scene6', { visibility: 'hidden' }, 27.0); // hard kill — prevents stale state
+
+    window.__timelines['main'] = root;
+  </script>
+</body>
+</html>

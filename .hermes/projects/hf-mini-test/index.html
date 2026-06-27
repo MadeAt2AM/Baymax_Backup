@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0a0a0f;
+      font-family: sans-serif;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .clip {
+      position: fixed;
+      top: 0; left: 0;
+      width: 1080px;
+      height: 1920px;
+      pointer-events: none;
+    }
+    .scene {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .skill-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: rgba(255,107,53,0.12);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 100px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #FF6B35;
+    }
+    .tr-flash {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      pointer-events: none;
+      z-index: 990;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="12">
+  <div id="scene1" class="clip scene" data-start="0" data-duration="4" data-track-index="1">
+    <div class="skill-pill">HERMES SKILLS</div>
+    <h1 style="font-size:88px;font-weight:800;color:#fff;text-align:center;">100+ Skills</h1>
+    <p style="font-size:38px;font-weight:500;color:rgba(255,255,255,0.55);">install cheyyan...</p>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <div style="width:80px;height:6px;background:#FF6B35;border-radius:3px;"></div>
+      <div style="width:8px;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;"></div>
+    </div>
+  </div>
+  <div id="scene2" class="clip scene" data-start="4" data-duration="4" data-track-index="1" style="opacity:0;">
+    <div style="font-size:32px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:3px;">THE REALITY</div>
+    <h1 style="font-size:64px;font-weight:800;color:#fff;text-align:center;margin-top:16px;">Too Many Tools?</h1>
+    <p style="font-size:32px;font-weight:500;color:rgba(255,255,255,0.45);margin-top:12px;">one platform instead</p>
+  </div>
+  <div id="scene3" class="clip scene" data-start="8" data-duration="4" data-track-index="1" style="opacity:0;">
+    <h1 style="font-size:64px;font-weight:800;color:#fff;">The Framework</h1>
+    <p style="font-size:28px;color:rgba(255,255,255,0.6);margin-top:12px;">Hermes Agent</p>
+  </div>
+  <div id="tr-flash-1" class="tr-flash"></div>
+  <div id="tr-flash-2" class="tr-flash"></div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    // Scene 1
+    tl.set('#scene1', { opacity: 1 }, 0);
+    tl.from('#scene1 .skill-pill', { scale: 0.8, opacity: 0, duration: 0.4 }, 0.3);
+    tl.from('#scene1 h1', { scale: 0.85, opacity: 0, duration: 0.6 }, 0.6);
+    tl.from('#scene1 p', { y: 20, opacity: 0, duration: 0.5 }, 1.1);
+
+    // Scene 1 → 2
+    tl.set('#scene2', { opacity: 1 }, 4);
+    tl.to('#tr-flash-1', { opacity: 1, duration: 0.05 }, 4.0);
+    tl.to('#tr-flash-1', { opacity: 0, duration: 0.15 }, 4.05);
+    tl.to('#scene1', { opacity: 0, duration: 0.2 }, 4.0);
+
+    // Scene 2
+    tl.from('#scene2 div:first-child', { y: -20, opacity: 0, duration: 0.4 }, 4.2);
+    tl.from('#scene2 h1', { y: 30, opacity: 0, duration: 0.6 }, 4.5);
+    tl.from('#scene2 p', { opacity: 0, duration: 0.4 }, 5.1);
+
+    // Scene 2 → 3
+    tl.set('#scene3', { opacity: 1 }, 8);
+    tl.to('#tr-flash-2', { opacity: 1, duration: 0.05 }, 8.0);
+    tl.to('#tr-flash-2', { opacity: 0, duration: 0.15 }, 8.05);
+    tl.to('#scene2', { opacity: 0, duration: 0.2 }, 8.0);
+
+    // Scene 3
+    tl.from('#scene3 h1', { scale: 0.9, opacity: 0, duration: 0.6 }, 8.2);
+    tl.from('#scene3 p', { opacity: 0, duration: 0.4 }, 8.8);
+
+    window.__timelines['main'] = tl;
+  </script>
+</body>
+</html>

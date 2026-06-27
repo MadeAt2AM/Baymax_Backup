@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0a0a0f; }
+    body { background: #0a0a0f; }
+    .clip { position: fixed; inset: 0; z-index: 1; }
+    .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 60px; box-sizing: border-box; }
+    /* Typography helpers */
+    .bold-num { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .accent { color: #FF6B35; }
+    .skill-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 100px; padding: 10px 20px; font-size: 18px; font-weight: 600; color: #FF6B35; letter-spacing: 1px; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+    .card-orange { background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 16px; }
+    .body-text { font-size: 32px; font-weight: 400; color: rgba(255,255,255,0.75); text-align: center; }
+    /* Dot grid background */
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.4); border-radius: 3px; }
+  </style>
+</head>
+<body data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="8">
+<div id="scene7" class="scene"
+       >
+
+    <div id="s7badge">
+      <div class="skill-pill">SKILL #4</div>
+    </div>
+
+    <div id="s7title" style="font-size:64px;font-weight:800;color:#fff;text-align:center;letter-spacing:-1px;line-height:1.05;">
+      <span class="accent">Frontend</span><br/>Design
+    </div>
+
+    <div id="s7split" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;">
+      <div class="split-before">
+        <div class="split-label">BEFORE</div>
+        <div style="font-size:20px;color:rgba(255,255,255,0.4);text-align:center;">Generic AI output</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;height:60px;"></div>
+        </div>
+      </div>
+      <div class="split-after">
+        <div class="split-label">AFTER</div>
+        <div style="font-size:20px;color:#FF6B35;text-align:center;">Premium SaaS design</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+          <div style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.3);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.3);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.3);border-radius:8px;height:60px;"></div>
+          <div style="background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.3);border-radius:8px;height:60px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s7headline" style="font-size:36px;font-weight:700;color:#fff;text-align:center;">
+      Make AI-generated websites<br/>look <span style="color:#FF6B35;">unique.</span>
+    </div>
+  </div>
+<script>
+  window.__timelines = window.__timelines || {};
+  gsap.set('.clip', { opacity: 1 });
+  gsap.set('.scene', { opacity: 1 });
+  var tl = gsap.timeline({ paused: false });
+  tl.to({}, { duration: 8 });
+  window.__timelines['main'] = tl;
+</script>
+</body>
+</html>

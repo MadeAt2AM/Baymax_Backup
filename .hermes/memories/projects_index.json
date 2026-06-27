@@ -1,0 +1,10 @@
+[
+  {
+    "name": "test-project",
+    "path": "/root/.hermes/projects/test-project",
+    "type": "automation",
+    "description": "Test project to verify the template-based initialization works correctly",
+    "created": "2026-05-21T17:59:34+08:00",
+    "git_initialized": true
+  }
+]

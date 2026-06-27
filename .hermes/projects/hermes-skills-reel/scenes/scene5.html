@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0a0a0f; }
+    body { background: #0a0a0f; }
+    .clip { position: fixed; inset: 0; z-index: 1; }
+    .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 60px; box-sizing: border-box; }
+    /* Typography helpers */
+    .bold-num { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .accent { color: #FF6B35; }
+    .skill-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 100px; padding: 10px 20px; font-size: 18px; font-weight: 600; color: #FF6B35; letter-spacing: 1px; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+    .card-orange { background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.3); border-radius: 16px; }
+    .body-text { font-size: 32px; font-weight: 400; color: rgba(255,255,255,0.75); text-align: center; }
+    /* Dot grid background */
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.4); border-radius: 3px; }
+  </style>
+</head>
+<body data-composition-id="main" data-width="1080" data-height="1920" data-start="0" data-duration="7">
+<div id="scene5" class="scene"
+       >
+
+    <div id="s5badge">
+      <div class="skill-pill">SKILL #2</div>
+    </div>
+
+    <div id="s5title" style="font-size:72px;font-weight:800;color:#fff;text-align:center;letter-spacing:-2px;line-height:1.0;">
+      <span class="accent">Web Assets</span><br/>Generator
+    </div>
+
+    <div id="s5gallery" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;">
+      <div class="asset-thumb">🏷️<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Logo</span></div>
+      <div class="asset-thumb">🔲<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Icons</span></div>
+      <div class="asset-thumb">📐<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Banners</span></div>
+      <div class="asset-thumb">🎭<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Brand Kit</span></div>
+      <div class="asset-thumb">📱<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Social</span></div>
+      <div class="asset-thumb">🖼️<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Graphics</span></div>
+      <div class="asset-thumb">📄<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">Docs</span></div>
+      <div class="asset-thumb">✨<br/><span style="font-size:14px;color:rgba(255,255,255,0.5);">More</span></div>
+    </div>
+
+    <div id="s5headline" style="font-size:44px;font-weight:700;color:#FF6B35;text-align:center;">
+      Build assets in seconds
+    </div>
+
+    <div id="s5sub" style="font-size:28px;font-weight:500;color:rgba(255,255,255,0.5);text-align:center;">
+      Logos · Icons · Banners · Brand Kits · Social Graphics
+    </div>
+  </div>
+<script>
+  window.__timelines = window.__timelines || {};
+  gsap.set('.clip', { opacity: 1 });
+  gsap.set('.scene', { opacity: 1 });
+  var tl = gsap.timeline({ paused: false });
+  tl.to({}, { duration: 7 });
+  window.__timelines['main'] = tl;
+</script>
+</body>
+</html>

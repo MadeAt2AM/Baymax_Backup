@@ -1,0 +1,18 @@
+{
+  "hosts": {
+    "hermes": {
+      "peerName": "Chris",
+      "aiPeer": "Baymax",
+      "workspace": "baymax-core",
+      "observationMode": "directional",
+      "writeFrequency": "async",
+      "recallMode": "hybrid",
+      "dialecticCadence": 2,
+      "dialecticReasoningLevel": "max",
+      "sessionStrategy": "per-directory",
+      "enabled": true,
+      "saveMessages": true
+    }
+  },
+  "baseUrl": "https://honcho.madeat2am.in"
+}

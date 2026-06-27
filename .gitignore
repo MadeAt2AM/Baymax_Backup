@@ -1,0 +1,137 @@
+# ============================================================
+# Baymax Backup — .gitignore
+# Excludes cache-heavy, machine-specific, and regenerable data
+# ============================================================
+
+# ── Hermes Caches (HUGE — never commit) ──────────────────────
+.hermes/cache/**
+.hermes/audio_cache/**
+.hermes/image_cache/**
+.hermes/images/**
+.hermes/sessions/**
+.hermes/sandboxes/**
+.hermes/state-snapshots/**
+.hermes/lsp/**
+.hermes/.venv/**
+.hermes/node/**
+.hermes/pastes/**
+
+# ── Global Node / NPM ────────────────────────────────────────
+.npm/_cacache/**
+.npm/_logs/**
+.npm/_npx/**
+.npm/_prebuilds/**
+node_modules/**
+
+# ── Python Caches ────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyc
+.pip-cache/
+.pip/
+.eggs/
+*.egg-info/
+
+# ── Browser / Camoufox Profiles ──────────────────────────────
+.camofox/**
+.camoufox/**
+.cloakbrowser/**
+.cache/**
+
+# ── Docker (images are massive — rebuild on restore) ─────────
+.docker/buildx/**
+.docker/buildkit/**
+
+# ── HyperFrames Render Cache ────────────────────────────────
+.hyperframes/**
+
+# ── Local UV / Pip caches ───────────────────────────────────
+.local/share/uv/**
+.local/state/**
+
+# ── System temp files ────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.fuse_hidden*
+.Trash-*
+
+# ── Hermes lock/state files (regenerated) ───────────────────
+.hermes/gateway.lock
+.hermes/gateway.pid
+.hermes/interrupt_debug.log
+.hermes/verification_evidence.db
+.hermes/kanban.db.dispatch.lock
+.hermes/kanban.db.init.lock
+.hermes/processes.json
+.hermes/gateway_state.json
+.hermes/models_dev_cache.json
+.hermes/ollama_cloud_models_cache.json
+.hermes/provider_models_cache.json
+.hermes/tmp-nginx-dashboard/**
+
+# ── Logs (keep dir structure, not content) ───────────────────
+*.log
+logs/
+
+# ── Secret / private key files (keep redacted copies) ────────
+# .env and auth.json are INCLUDED (backed up with real tokens)
+# but never push .ssh/ private keys
+.ssh/*.pem
+.ssh/id_rsa
+.ssh/id_ed25519
+.ssh/id_dsa
+.ssh/*.key
+
+# ── Downloaded debs (package manager artifacts) ──────────────
+Downloads/*.deb
+Downloads/*.rpm
+Downloads/*.zip
+Downloads/*.tar.gz
+
+# ── Git metadata for sub-repos ───────────────────────────────
+# (Obsidian Vault has its own .git — exclude it from outer repo)
+Obsidian-Vaults/.git/
+browser-search/.git/
+
+# ── Large media files ────────────────────────────────────────
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.zip > 10MB
+*.tar.gz > 10MB
+*.img > 10MB
+
+# ── IDE / Editor files ───────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.sublime-*
+
+# ── Honcho memory DB (keep directory, not DB files) ─────────
+.honcho/memory.db
+.honcho/*.db
+
+# ── Restore note ─────────────────────────────────────────────
+# Everything excluded here is either:
+#   A) Regenerated automatically by Hermes on startup
+#   B) Too large/machine-specific to back up
+#   C) Machine-specific runtime state
+#
+# What IS included:
+#   ✅ /root/.hermes/.env           (secrets — RESTORE FIRST)
+#   ✅ /root/.hermes/config.yaml    (full configuration)
+#   ✅ /root/.hermes/auth.json      (credentials pool)
+#   ✅ /root/.hermes/kanban.db      (task state)
+#   ✅ /root/.hermes/skills/        (all skill definitions)
+#   ✅ /root/.hermes/memories/      (persistent memory)
+#   ✅ /root/.hermes/projects/      (all projects)
+#   ✅ /root/.hermes/plugins/       (plugin configs)
+#   ✅ /root/.hermes/scripts/       (custom scripts)
+#   ✅ /root/browser-search/        (SearXNG config)
+#   ✅ /root/Obsidian-Vaults/       (LLM Wiki)
+#   ✅ Root-level project folders
+#   ✅ Systemd service files
+#   ✅ Nginx + Docker compose configs

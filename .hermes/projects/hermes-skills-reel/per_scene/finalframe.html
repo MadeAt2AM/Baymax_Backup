@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/files/space-grotesk-latin-700-normal.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.1.0/files/space-grotesk-latin-800-normal.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/files/space-grotesk-latin-500-normal.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/files/space-grotesk-latin-400-normal.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.0/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.0/files/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        font-family: 'Space Grotesk', sans-serif;
+      }
+
+      /* Dot grid background */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Orange glow orb */
+      .glow-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .clip {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Scene content wrappers */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 60px;
+        box-sizing: border-box;
+      }
+
+      /* Typography helpers */
+      .bold-num {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Card base */
+      .card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      .card-orange {
+        border-color: rgba(255,107,53,0.3);
+        box-shadow: 0 0 30px rgba(255,107,53,0.15);
+      }
+
+      /* Skill pill */
+      .skill-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        background: rgba(255,107,53,0.12);
+        border: 1px solid rgba(255,107,53,0.3);
+        border-radius: 100px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #FF6B35;
+        letter-spacing: 0.5px;
+      }
+
+      /* Scene title big */
+      .scene-title {
+        font-size: 96px;
+        font-weight: 800;
+        line-height: 1.0;
+        letter-spacing: -3px;
+        color: #fff;
+        text-align: center;
+      }
+
+      .scene-title .accent {
+        color: #FF6B35;
+      }
+
+      /* Body text */
+      .body-text {
+        font-size: 38px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.7);
+        text-align: center;
+        line-height: 1.4;
+        max-width: 900px;
+      }
+
+      /* Subtext */
+      .sub-text {
+        font-size: 28px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.45);
+        text-align: center;
+        letter-spacing: 1px;
+      }
+
+      /* Big CTA */
+      .cta-text {
+        font-size: 110px;
+        font-weight: 800;
+        color: #fff;
+        text-align: center;
+        letter-spacing: -2px;
+      }
+
+      .cta-accent {
+        color: #FF6B35;
+      }
+
+      /* Transition overlay */
+      #tr-overlay-flash {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 999;
+      }
+
+      /* Transition wipe */
+      #tr-overlay-wipe {
+        position: fixed;
+        inset: 0;
+        background: #0a0a0f;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 998;
+      }
+
+      /* Highlighted words */
+      .hl {
+        color: #FF6B35;
+        font-weight: 700;
+      }
+
+      /* Skill card grid */
+      .skill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 100%;
+      }
+
+      .sg-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .sg-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(255,107,53,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .sg-label {
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      /* Marketing skill details */
+      .mkt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        width: 100%;
+      }
+
+      .mkt-item {
+        background: rgba(255,107,53,0.08);
+        border: 1px solid rgba(255,107,53,0.2);
+        border-radius: 14px;
+        padding: 18px 22px;
+        text-align: center;
+      }
+
+      .mkt-label {
+        font-size: 24px;
+        font-weight: 700;
+        color: #FF6B35;
+        display: block;
+      }
+
+      .mkt-sub {
+        font-size: 16px;
+        color: rgba(255,255,255,0.5);
+        display: block;
+        margin-top: 4px;
+      }
+
+      /* Asset gallery */
+      .asset-gallery {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        width: 100%;
+      }
+
+      .asset-thumb {
+        aspect-ratio: 1;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+      }
+
+      /* JTBD board */
+      .jtbd-board {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 28px;
+        width: 100%;
+      }
+
+      .jtbd-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .jtbd-problem {
+        flex: 1;
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.25);
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 22px;
+        font-weight: 500;
+        color: #f87171;
+        text-align: center;
+      }
+
+      .jtbd-arrow {
+        font-size: 28px;
+        color: rgba(255,255,255,0.3);
+      }
+
+      .jtbd-solution {
+        flex: 1;
+        background: rgba(34,197,94,0.1);
+        border: 1px solid rgba(34,197,94,0.25);
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 22px;
+        font-weight: 500;
+        color: #4ade80;
+        text-align: center;
+      }
+
+      /* Split transform */
+      .split-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 100%;
+        height: 400px;
+      }
+
+      .split-before, .split-after {
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .split-before {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 20px;
+      }
+
+      .split-after {
+        background: rgba(255,107,53,0.08);
+        border: 1px solid rgba(255,107,53,0.25);
+        padding: 20px;
+        box-shadow: 0 0 40px rgba(255,107,53,0.1);
+      }
+
+      .split-label {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .split-before .split-label { color: rgba(255,255,255,0.4); }
+      .split-after .split-label { color: #FF6B35; }
+
+      /* Research web */
+      .research-web {
+        position: relative;
+        width: 100%;
+        height: 500px;
+      }
+
+      .research-node {
+        position: absolute;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-size: 18px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      /* Orbit ring */
+      .orbit-container {
+        position: relative;
+        width: 700px;
+        height: 700px;
+      }
+
+      .orbit-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 180px;
+        height: 180px;
+        background: rgba(255,107,53,0.15);
+        border: 2px solid rgba(255,107,53,0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+      }
+
+      .orbit-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .orbit-skill {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      /* Final card */
+      .final-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        width: 100%;
+      }
+
+      .final-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .final-card-icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+      }
+
+      .final-card-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      /* Arrow down */
+      .arrow-down {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .arrow-line {
+        width: 3px;
+        height: 60px;
+        background: linear-gradient(to bottom, #FF6B35, transparent);
+        border-radius: 2px;
+      }
+
+      /* Particle container */
+      .particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #FF6B35;
+        border-radius: 50%;
+        opacity: 0.4;
+      }
+    
+  </style>
+</head>
+<body
+  data-composition-id="main"
+  data-width="1080"
+  data-height="1920"
+  data-start="0"
+  data-duration="3"
+>
+  <div class="glow-orb" id="orb1" style="width:600px;height:600px;background:rgba(255,107,53,0.08);top:-200px;right:-200px;"></div>
+  <div class="glow-orb" id="orb2" style="width:400px;height:400px;background:rgba(255,107,53,0.06);bottom:200px;left:-100px;"></div>
+<div class="particles" id="particles"></div>
+
+<div id="finalframe" class="clip scene" data-start="65" data-duration="3" data-track-index="1"
+       >
+
+    <div id="fftitle" style="font-size:64px;font-weight:800;color:#fff;text-align:center;letter-spacing:-1px;">
+      Everything you need<br/>is <span class="accent">inside.</span>
+    </div>
+
+<script>
+
+  (function() {
+    'use strict';
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    // ── Seeded PRNG (mulberry32) — deterministic particles ──
+    function mulberry32(seed) {
+      return function() {
+        seed |= 0;
+        seed = seed + 0x6D2B79F5 | 0;
+        var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    var rng = mulberry32(42);
+
+    // ── Particles ──────────────────────────────────
+    (function() {
+      var container = document.getElementById('particles');
+      for (var i = 0; i < 30; i++) {
+        var p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = (rng() * 1080) + 'px';
+        p.style.top = (rng() * 1920) + 'px';
+        p.style.opacity = 0.1 + rng() * 0.4;
+        var sz = 2 + rng() * 4;
+        p.style.width = p.style.height = sz + 'px';
+        container.appendChild(p);
+      }
+    })();
+
+    // ── Helper: scene in ────────────────────────────
+    // (Elements animate FROM visible state to 0, so clip starts visible)
+    // We use gsap.from() for entrance — FROM vars TO current state
+    // Since clip starts at opacity:0 via CSS, we set opacity:1 via gsap.set inside timeline
+
+    // ══════════════════════════════════════════════
+    //  SCENE 1 — HOOK (0–4s)
+    // ══════════════════════════════════════════════
+    tl.set('#scene1', { opacity: 1 }, 0);
+    // Pill slides down
+    tl.from('#s1pill', { y: -30, opacity: 0, duration: 0.5, ease: 'power3.out' }, 0.3);
+    // Big title pops in with scale
+    tl.from('#s1title', { scale: 0.85, opacity: 0, duration: 0.6, ease: 'back.out(1.7)' }, 0.6);
+    // Sub text
+    tl.from('#s1sub', { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 1.1);
+    // Progress bar fills
+    tl.from('#s1bar', { opacity: 0, duration: 0.3 }, 1.4);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 1→2 — Flash at t=4
+    // ══════════════════════════════════════════════
+    tl.set('#scene2', { opacity: 1 }, 4);
+    tl.to('#tr-flash-1', { opacity: 1, duration: 0.05 }, 4.0);
+    tl.to('#tr-flash-1', { opacity: 0, duration: 0.15 }, 4.05);
+    // Scene 1 fade
+    // scene1 exit (opacity fade — Hyperframes manages clip visibility via data-start/duration)
+    tl.to('#scene1', { opacity: 0, duration: 0.2 }, 4.0);
+    // HyperFrames manages clip visibility via data-start/duration — no manual visibility needed
+
+    // ══════════════════════════════════════════════
+    //  SCENE 2 — OVERWHELM (4–8s)
+    // ══════════════════════════════════════════════
+    tl.from('#s2label', { y: -20, opacity: 0, duration: 0.4, ease: 'power2.out' }, 4.2);
+    tl.from('#s2title', { y: 30, opacity: 0, duration: 0.6, ease: 'power3.out' }, 4.5);
+    tl.from('#s2sub', { opacity: 0, duration: 0.4, ease: 'power2.out' }, 5.1);
+    // Cards stagger in
+    tl.from('#s2cards .card', { scale: 0.7, opacity: 0, stagger: { each: 0.06, from: 'random' }, duration: 0.4, ease: 'back.out(1.7)' }, 5.4);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 2→3 — Flash at t=8
+    // ══════════════════════════════════════════════
+    tl.set('#scene3', { opacity: 1 }, 8);
+    tl.to('#tr-flash-2', { opacity: 1, duration: 0.05 }, 8.0);
+    tl.to('#tr-flash-2', { opacity: 0, duration: 0.15 }, 8.05);
+    tl.to('#scene2', { opacity: 0, duration: 0.2 }, 8.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 3 — THE REVEAL (8–12s)
+    // ══════════════════════════════════════════════
+    tl.from('#s3eyebrow', { y: -15, opacity: 0, duration: 0.4, ease: 'power2.out' }, 8.2);
+    tl.from('#s3title', { scale: 0.9, opacity: 0, duration: 0.7, ease: 'expo.out' }, 8.5);
+    tl.from('#s3cards .card', { y: 40, opacity: 0, stagger: { each: 0.1, from: 'start' }, duration: 0.5, ease: 'back.out(1.7)' }, 9.2);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 3→4 — Flash at t=12
+    // ══════════════════════════════════════════════
+    tl.set('#scene4', { opacity: 1 }, 12);
+    tl.to('#tr-flash-3', { opacity: 1, duration: 0.05 }, 12.0);
+    tl.to('#tr-flash-3', { opacity: 0, duration: 0.15 }, 12.05);
+    tl.to('#scene3', { opacity: 0, duration: 0.2 }, 12.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 4 — MARKETING (12–20s)
+    // ══════════════════════════════════════════════
+    tl.from('#s4badge', { scale: 0.8, opacity: 0, duration: 0.4, ease: 'back.out(1.7)' }, 12.2);
+    tl.from('#s4title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 12.6);
+    tl.from('#s4headline', { opacity: 0, duration: 0.5, ease: 'power2.out' }, 13.2);
+    tl.from('#s4grid .mkt-item', { scale: 0.85, opacity: 0, stagger: { each: 0.1, from: 'start' }, duration: 0.5, ease: 'back.out(1.7)' }, 13.7);
+    tl.from('#s4stat', { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, 14.7);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 4→5 — Flash at t=20
+    // ══════════════════════════════════════════════
+    tl.set('#scene5', { opacity: 1 }, 20);
+    tl.to('#tr-flash-4', { opacity: 1, duration: 0.05 }, 20.0);
+    tl.to('#tr-flash-4', { opacity: 0, duration: 0.15 }, 20.05);
+    tl.to('#scene4', { opacity: 0, duration: 0.2 }, 20.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 5 — WEB ASSETS (20–27s)
+    // ══════════════════════════════════════════════
+    tl.from('#s5badge', { scale: 0.8, opacity: 0, duration: 0.4, ease: 'back.out(1.7)' }, 20.2);
+    tl.from('#s5title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 20.6);
+    tl.from('#s5gallery .asset-thumb', { scale: 0.7, opacity: 0, stagger: { each: 0.07, from: 'random' }, duration: 0.4, ease: 'back.out(1.7)' }, 21.2);
+    tl.from('#s5headline', { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 22.0);
+    tl.from('#s5sub', { opacity: 0, duration: 0.4, ease: 'power2.out' }, 22.7);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 5→6 — Flash at t=27
+    // ══════════════════════════════════════════════
+    tl.set('#scene6', { opacity: 1 }, 27);
+    tl.to('#tr-flash-5', { opacity: 1, duration: 0.05 }, 27.0);
+    tl.to('#tr-flash-5', { opacity: 0, duration: 0.15 }, 27.05);
+    tl.to('#scene5', { opacity: 0, duration: 0.2 }, 27.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 6 — JTBD (27–34s)
+    // ══════════════════════════════════════════════
+    tl.from('#s6badge', { scale: 0.8, opacity: 0, duration: 0.4, ease: 'back.out(1.7)' }, 27.2);
+    tl.from('#s6title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 27.6);
+    tl.from('#s6tagline', { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, 28.2);
+    tl.from('#s6board .jtbd-row', { x: -30, opacity: 0, stagger: { each: 0.2, from: 'start' }, duration: 0.5, ease: 'power3.out' }, 28.8);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 6→7 — Flash at t=34
+    // ══════════════════════════════════════════════
+    tl.set('#scene7', { opacity: 1 }, 34);
+    tl.to('#tr-flash-6', { opacity: 1, duration: 0.05 }, 34.0);
+    tl.to('#tr-flash-6', { opacity: 0, duration: 0.15 }, 34.05);
+    tl.to('#scene6', { opacity: 0, duration: 0.2 }, 34.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 7 — FRONTEND (34–42s)
+    // ══════════════════════════════════════════════
+    tl.from('#s7badge', { scale: 0.8, opacity: 0, duration: 0.4, ease: 'back.out(1.7)' }, 34.2);
+    tl.from('#s7title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 34.6);
+    tl.from('#s7split', { scale: 0.9, opacity: 0, duration: 0.6, ease: 'power3.out' }, 35.2);
+    tl.from('#s7headline', { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 36.2);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 7→8 — Flash at t=42
+    // ══════════════════════════════════════════════
+    tl.set('#scene8', { opacity: 1 }, 42);
+    tl.to('#tr-flash-7', { opacity: 1, duration: 0.05 }, 42.0);
+    tl.to('#tr-flash-7', { opacity: 0, duration: 0.15 }, 42.05);
+    tl.to('#scene7', { opacity: 0, duration: 0.2 }, 42.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 8 — DEEP RESEARCH (42–50s)
+    // ══════════════════════════════════════════════
+    tl.from('#s8badge', { scale: 0.8, opacity: 0, duration: 0.4, ease: 'back.out(1.7)' }, 42.2);
+    tl.from('#s8title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 42.6);
+    tl.from('#s8web', { scale: 0.88, opacity: 0, duration: 0.7, ease: 'power3.out' }, 43.2);
+    // Pulse the research web
+    tl.to('#s8web', { scale: 1.04, duration: 0.8, ease: 'power1.inOut', repeat: 2, yoyo: true }, 44.5);
+    tl.from('#s8headline', { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 45.5);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 8→9 — Flash at t=50
+    // ══════════════════════════════════════════════
+    tl.set('#scene9', { opacity: 1 }, 50);
+    tl.to('#tr-flash-8', { opacity: 1, duration: 0.05 }, 50.0);
+    tl.to('#tr-flash-8', { opacity: 0, duration: 0.15 }, 50.05);
+    tl.to('#scene8', { opacity: 0, duration: 0.2 }, 50.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 9 — ALL 5 SKILLS (50–57s)
+    // ══════════════════════════════════════════════
+    tl.from('#s9title', { y: 40, opacity: 0, duration: 0.6, ease: 'power3.out' }, 50.2);
+    tl.from('#s9grid .final-card', { scale: 0.8, opacity: 0, stagger: { each: 0.12, from: 'start' }, duration: 0.5, ease: 'back.out(1.7)' }, 50.9);
+    // Last card spans full width, animate it separately
+    tl.from('#s9grid + .final-card', { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, 51.7);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION 9→10 — Flash at t=57
+    // ══════════════════════════════════════════════
+    tl.set('#scene10', { opacity: 1 }, 57);
+    tl.to('#tr-flash-9', { opacity: 1, duration: 0.05 }, 57.0);
+    tl.to('#tr-flash-9', { opacity: 0, duration: 0.15 }, 57.05);
+    tl.to('#scene9', { opacity: 0, duration: 0.2 }, 57.0);
+
+
+    // ══════════════════════════════════════════════
+    //  SCENE 10 — CTA (57–65s)
+    // ══════════════════════════════════════════════
+    tl.from('#s10cta', { scale: 0.8, opacity: 0, duration: 0.7, ease: 'back.out(1.7)' }, 57.2);
+    tl.from('#s10sub', { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 57.9);
+    tl.from('#s10arrow', { y: -20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 58.4);
+    // Arrow bounce loop — finite (7s scene / 0.6s cycle ≈ 11 cycles)
+    tl.from('#s10arrow', { y: -10, duration: 0.6, ease: 'power1.inOut', repeat: 10, yoyo: true, overwrite: 'auto' }, 58.4);
+
+    // ══════════════════════════════════════════════
+    //  TRANSITION → FINAL (65s)
+    // ══════════════════════════════════════════════
+    tl.set('#finalframe', { opacity: 1 }, 65);
+    tl.to('#scene10', { opacity: 0, duration: 0.3 }, 65.0);
+
+
+    // ══════════════════════════════════════════════
+    //  FINAL FRAME — fade in (65–68s)
+    // ══════════════════════════════════════════════
+    tl.from('#fftitle', { y: 40, opacity: 0, duration: 0.7, ease: 'power3.out' }, 65.2);
+    tl.from('#ffsub', { opacity: 0, duration: 0.5, ease: 'power2.out' }, 65.9);
+    tl.from('#ffbrand', { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, 66.4);
+
+    // Fade everything out at end
+    tl.to('#finalframe', { opacity: 0, duration: 1.0 }, 67.0);
+
+    window.__timelines['main'] = tl;
+  })();
+  
+
+  (function() {
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: false });
+
+    tl.set('#finalframe', { opacity: 1 }, 0.0);
+    tl.from('#fftitle', { y: 40, opacity: 0, duration: 0.7, ease: 'power3.out' }, 0.20000000000000284);
+    tl.from('#ffsub', { opacity: 0, duration: 0.5, ease: 'power2.out' }, 0.9000000000000057);
+    tl.from('#ffbrand', { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, 1.4000000000000057);
+    tl.to('#finalframe', { opacity: 0, duration: 1.0 }, 2.0);
+
+    window.__timelines['main'] = tl;
+  })();
+</script>
+</body>
+</html>

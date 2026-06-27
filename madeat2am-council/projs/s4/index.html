@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Inter'; font-weight: 900;
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.1/files/inter-latin-900-normal.woff2') format('woff2');
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #FDFBF7; }
+    body { font-family: 'Inter', 'Arial', sans-serif; color: #111111; }
+
+    #blueprint {
+      position: fixed; inset: 0; width: 1080px; height: 1920px; pointer-events: none; z-index: 1;
+      background-image:
+        linear-gradient(rgba(17,17,17,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,17,17,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    #glow-mesh {
+      position: fixed; inset: 0; width: 1080px; height: 1920px; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    #glow-mesh::before {
+      content: ''; position: absolute; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,193,7,0.18) 0%, transparent 70%);
+      top: -100px; right: -150px;
+      animation: driftA 8s ease-in-out infinite alternate;
+    }
+    #glow-mesh::after {
+      content: ''; position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(211,47,47,0.12) 0%, transparent 70%);
+      bottom: 200px; left: -100px;
+      animation: driftB 10s ease-in-out infinite alternate;
+    }
+    @keyframes driftA { from: transform: translate(0,0); to: transform: translate(-60px, 40px); }
+    @keyframes driftB { from: transform: translate(0,0); to: transform: translate(50px, -30px); }
+
+    .bracket { position: fixed; width: 48px; height: 48px; z-index: 200; pointer-events: none; }
+    .bracket::before, .bracket::after { content: ''; position: absolute; background: #111111; }
+    .bracket-tl { top: 28px; left: 28px; }
+    .bracket-tl::before { width: 2px; height: 48px; top: 0; left: 0; }
+    .bracket-tl::after  { width: 48px; height: 2px; top: 0; left: 0; }
+    .bracket-tr { top: 28px; right: 28px; }
+    .bracket-tr::before { width: 2px; height: 48px; top: 0; right: 0; }
+    .bracket-tr::after  { width: 48px; height: 2px; top: 0; right: 0; }
+    .bracket-bl { bottom: 28px; left: 28px; }
+    .bracket-bl::before { width: 2px; height: 48px; bottom: 0; left: 0; }
+    .bracket-bl::after  { width: 48px; height: 2px; bottom: 0; left: 0; }
+    .bracket-br { bottom: 28px; right: 28px; }
+    .bracket-br::before { width: 2px; height: 48px; bottom: 0; right: 0; }
+    .bracket-br::after  { width: 48px; height: 2px; bottom: 0; right: 0; }
+
+    #scene4 {
+      position: fixed; top: 0; left: 0; width: 1080px; height: 1920px;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding-top: 180px; padding-left: 64px; padding-right: 64px; box-sizing: border-box;
+      z-index: 40; background: transparent; text-align: center; gap: 0;
+    }
+    .scene4-text {
+      font-size: 60px; font-weight: 800; color: #111111; line-height: 1.1;
+      max-width: 900px; margin-bottom: 60px;
+      opacity: 0; y: 30;
+    }
+    .scene4-text em { font-style: normal; color: #D32F2F; }
+
+    .synthesis-ring {
+      width: 320px; height: 320px; border-radius: 50%; border: 3px solid #111111;
+      display: flex; align-items: center; justify-content: center; position: relative;
+      margin: 0 auto;
+      scale: 0.3; opacity: 0;
+    }
+    .synthesis-core {
+      width: 80px; height: 80px; border-radius: 50%; background: #111111;
+    }
+    /* 5 converge lines — positioned absolutely, grow from center outward */
+    .converge-line {
+      position: absolute; width: 3px;
+      background: rgba(17,17,17,0.4);
+      bottom: 50%; left: 50%;
+      transform-origin: bottom center;
+      scaleY: 0; opacity: 1;
+    }
+    .converge-line:nth-child(1) { height: 80px;  transform: translateX(-50%) rotate(0deg); }
+    .converge-line:nth-child(2) { height: 60px;  transform: translateX(-50%) rotate(72deg); }
+    .converge-line:nth-child(3) { height: 70px;  transform: translateX(-50%) rotate(144deg); }
+    .converge-line:nth-child(4) { height: 55px;  transform: translateX(-50%) rotate(216deg); }
+    .converge-line:nth-child(5) { height: 65px;  transform: translateX(-50%) rotate(288deg); }
+
+    .progress-track {
+      width: 600px; height: 8px; background: rgba(17,17,17,0.15); border-radius: 4px;
+      overflow: hidden; margin: 60px auto 0;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #111111 0%, #D32F2F 100%);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body
+  data-composition-id="main"
+  data-width="1080"
+  data-height="1920"
+  data-start="0"
+  data-duration="3"
+>
+  <div id="blueprint"></div>
+  <div id="glow-mesh"></div>
+  <div class="bracket bracket-tl"></div>
+  <div class="bracket bracket-tr"></div>
+  <div class="bracket bracket-bl"></div>
+  <div class="bracket bracket-br"></div>
+
+  <div id="scene4">
+    <div class="scene4-text">
+      Claude runs the debate through them...<br>
+      then hands it to <em>THE CHAIRMAN.</em>
+    </div>
+
+    <div class="synthesis-ring" id="synth-ring">
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="converge-line"></div>
+      <div class="synthesis-core" id="synth-core"></div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    window.__timelines['main'] = gsap.timeline({ paused: false });
+    const tl = window.__timelines['main'];
+    tl.to('.scene4-text', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.1);
+    tl.to('.converge-line', { scaleY: 1, duration: 0.35, ease: 'power2.out', stagger: 0.08 }, 0.4);
+    tl.to('#synth-ring', { scale: 1, opacity: 1, duration: 0.7, ease: 'elastic.out(1, 0.4)' }, 0.5);
+    tl.to('#prog-fill', { width: '100%', duration: 1.2, ease: 'power3.inOut' }, 0.6);
+  </script>
+</body>
+</html>

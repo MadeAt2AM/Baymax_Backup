@@ -1,0 +1,65 @@
+{
+  "updated_at": "2026-06-27T22:31:40.219432",
+  "platforms": {
+    "telegram": [
+      {
+        "id": "1283992553",
+        "name": "Chris Kal",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "1283992553:55410",
+        "name": "Chris Kal / topic 55410",
+        "type": "dm",
+        "thread_id": "55410"
+      },
+      {
+        "id": "1283992553:55422",
+        "name": "Chris Kal / topic 55422",
+        "type": "dm",
+        "thread_id": "55422"
+      },
+      {
+        "id": "1283992553:55466",
+        "name": "Chris Kal / topic 55466",
+        "type": "dm",
+        "thread_id": "55466"
+      },
+      {
+        "id": "1283992553:55515",
+        "name": "Chris Kal / topic 55515",
+        "type": "dm",
+        "thread_id": "55515"
+      }
+    ],
+    "discord": [],
+    "whatsapp": [],
+    "whatsapp_cloud": [],
+    "slack": [],
+    "signal": [],
+    "mattermost": [],
+    "matrix": [],
+    "homeassistant": [],
+    "email": [],
+    "sms": [],
+    "dingtalk": [],
+    "msgraph_webhook": [],
+    "feishu": [],
+    "wecom": [],
+    "wecom_callback": [],
+    "weixin": [],
+    "bluebubbles": [],
+    "qqbot": [],
+    "yuanbao": [],
+    "relay": [],
+    "google_chat": [],
+    "irc": [],
+    "line": [],
+    "ntfy": [],
+    "photon": [],
+    "raft": [],
+    "simplex": [],
+    "teams": []
+  }
+}

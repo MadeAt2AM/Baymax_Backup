@@ -1,0 +1,14 @@
+[Unit]
+Description=Hermes Agent Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+ExecStart=/usr/local/lib/hermes-agent/venv/bin/hermes dashboard --port 9119 --host 127.0.0.1 --no-open --tui
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
