@@ -183,11 +183,44 @@ git commit -m "$COMMIT_MSG" 2>/dev/null || {
 }
 
 log "Pushing to https://github.com/$REPO ..."
-if git push "https://github.com/$REPO.git" "$BRANCH"; then
-    log "✅ Backup complete — pushed to https://github.com/$REPO"
-else
-    logerr "Push failed — check git remote and authentication."
-    exit 1
-fi
+
+# Push using Python to embed token (avoids credential helper issues)
+python3 << 'PYEOF'
+import subprocess, re, os
+
+# Read token from .env
+token = None
+with open('/root/.hermes/.env') as f:
+    for line in f:
+        if 'GITHUB_TOKEN=*** in line and not line.strip().startswith('#'):
+            token = line.split('=', 1)[1].strip()
+            break
+
+if not token:
+    print("ERROR: No GITHUB_TOKEN found")
+    exit(1)
+
+remote = 'https://github.com/MadeAt2AM/Baymax_Backup.git'
+token_remote = f'https://chrisvincodes:{token}@github.com/MadeAt2AM/Baymax_Backup.git'
+
+# Set remote with token embedded
+subprocess.run(['git', 'remote', 'set-url', 'origin', token_remote], cwd='/root', check=True)
+
+# Push with explicit HOME so credential helpers don't interfere
+result = subprocess.run(
+    ['git', 'push', 'origin', 'main'],
+    cwd='/root',
+    capture_output=True,
+    text=True,
+    timeout=90,
+    env={**os.environ, 'HOME': '/root', 'GIT_TERMINAL_PROMPT': '0'}
+)
+if result.returncode == 0:
+    print("✅ Push successful")
+else:
+    print("STDOUT:", result.stdout)
+    print("STDERR:", result.stderr[-500:])
+    exit(1)
+PYEOF
 
 log "Daily backup finished successfully."
