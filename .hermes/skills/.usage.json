@@ -133,14 +133,14 @@
     "archived_at": null,
     "created_at": "2026-06-27T14:44:50.615048+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-27T14:44:50.615063+00:00",
-    "last_used_at": "2026-06-27T14:45:31.300847+00:00",
-    "last_viewed_at": "2026-06-27T14:45:31.275047+00:00",
-    "patch_count": 1,
+    "last_patched_at": "2026-06-27T14:53:39.837569+00:00",
+    "last_used_at": "2026-06-27T14:53:01.253943+00:00",
+    "last_viewed_at": "2026-06-27T14:53:01.251023+00:00",
+    "patch_count": 2,
     "pinned": false,
     "state": "active",
-    "use_count": 1,
-    "view_count": 1
+    "use_count": 2,
+    "view_count": 2
   },
   "blogwatcher": {
     "archived_at": null,
