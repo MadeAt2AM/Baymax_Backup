@@ -147,7 +147,7 @@ print('  Skills external_dirs:', sk_dirs if sk_dirs else '[]')
     systemctl list-units --type=service --state=running --no-pager 2>/dev/null | grep hermes || echo "hermes services not running or not found"
 } > "$ANALYSIS_FILE"
 
-# Update RESTORATION_GUIDE.md with fresh analysis
+# Update RESTORATION_GUIDE.md with fresh analysis (append at end, then prepend header)
 python3 << 'PYEOF'
 import re
 
@@ -158,15 +158,23 @@ with open(guide_path) as f:
 with open('/tmp/analysis.tmp') as f:
     analysis = f.read()
 
-# Replace the analysis section between markers
-pattern = r'(## Environment Analysis\n+> [^\n]*\n)(## Step-by-step Restore)'
-if re.search(pattern, guide):
-    new_guide = re.sub(pattern, r'\1' + analysis + r'\n\2', guide, flags=re.DOTALL)
-    with open(guide_path, 'w') as f:
-        f.write(new_guide)
-    print('RESTORATION_GUIDE.md updated.')
-else:
-    print('WARNING: Could not find analysis section marker in guide.')
+# Remove old analysis block (if any — between markers)
+guide = re.sub(
+    r'\n## Environment Analysis — .*?(?=\n## Contact / Support\n)',
+    '',
+    guide,
+    flags=re.DOTALL
+)
+# Remove the closing footer line if it was at the very end
+guide = re.sub(r'\n\*This document is auto-generated.*', '', guide)
+
+# Prepend new analysis at the top of the file
+header = "## Environment Analysis — (auto-updated daily by backup cron)\n\n"
+new_guide = guide.strip() + "\n\n" + header + analysis + "\n\n---\n\n*This document is auto-generated daily by /root/baymax_backup/backup.sh*\n"
+
+with open(guide_path, 'w') as f:
+    f.write(new_guide)
+print('RESTORATION_GUIDE.md updated.')
 PYEOF
 rm -f /tmp/analysis.tmp
 
@@ -186,13 +194,14 @@ log "Pushing to https://github.com/$REPO ..."
 
 # Push using Python to embed token (avoids credential helper issues)
 python3 << 'PYEOF'
-import subprocess, re, os
+import subprocess, os
 
-# Read token from .env
+# Read token from .env — use a prefix search to avoid hardcoding the token value
+TOKEN_PREFIX = 'GITHUB_TOKEN='
 token = None
 with open('/root/.hermes/.env') as f:
     for line in f:
-        if 'GITHUB_TOKEN=*** in line and not line.strip().startswith('#'):
+        if line.startswith(TOKEN_PREFIX) and not line.strip().startswith('#'):
             token = line.split('=', 1)[1].strip()
             break
 
@@ -200,7 +209,6 @@ if not token:
     print("ERROR: No GITHUB_TOKEN found")
     exit(1)
 
-remote = 'https://github.com/MadeAt2AM/Baymax_Backup.git'
 token_remote = f'https://chrisvincodes:{token}@github.com/MadeAt2AM/Baymax_Backup.git'
 
 # Set remote with token embedded
@@ -216,7 +224,7 @@ result = subprocess.run(
     env={**os.environ, 'HOME': '/root', 'GIT_TERMINAL_PROMPT': '0'}
 )
 if result.returncode == 0:
-    print("✅ Push successful")
+    print("Push successful")
 else:
     print("STDOUT:", result.stdout)
     print("STDERR:", result.stderr[-500:])
