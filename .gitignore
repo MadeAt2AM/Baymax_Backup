@@ -44,6 +44,12 @@ __pycache__/
 .local/state/**
 .pip/
 
+# ── Large binaries (regenerate via: curl -LsSf https://astral.sh/uv/install.sh | sh) ──
+.hermes/bin/uv
+.hermes/bin/uvx
+.local/bin/uv
+.local/bin/uvx
+
 # ── Docker (images are massive — rebuild on restore) ─────────
 .docker/buildx/**
 .docker/buildkit/**
