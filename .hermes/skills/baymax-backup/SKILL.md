@@ -8,22 +8,20 @@ category: devops
 
 Backs up the entire `/root` directory to the private GitHub repo `MadeAt2AM/Baymax_Backup`, runs an environment analysis, and updates the `RESTORATION_GUIDE.md` document.
 
-## What it does
+## Architecture
 
-1. **Authenticates** `gh` CLI using `GITHUB_TOKEN` from `/root/.hermes/.env`
-2. **Git add** on all files in `/root/baymax_backup` (which mirrors `/root`)
-3. **Analyses the environment** — packages, ports, Docker, Hermes config, npm/node versions, cron jobs
+- **Git repo location:** `/root` (not a subdirectory)
+- **Git remote:** `https://github.com/MadeAt2AM/Baymax_Backup.git`
+- **.gitignore:** `/root/.gitignore`
+- **Backup scripts:** `/root/baymax_backup/`
+
+## What the backup script does
+
+1. **Reads `GITHUB_TOKEN`** from `/root/.hermes/.env` via Python
+2. **Git adds** all tracked files in `/root`
+3. **Runs environment analysis** — packages, ports, Docker, Hermes config, npm/node versions, cron jobs
 4. **Updates** `RESTORATION_GUIDE.md` with fresh analysis
-5. **Commits and pushes** to `MadeAt2AM/Baymax_Backup` on branch `main`
-
-## Files
-
-| File | Purpose |
-|------|---------|
-| `/root/baymax_backup/backup.sh` | The backup script (also callable directly) |
-| `/root/baymax_backup/.gitignore` | Excludes caches, node_modules, .venv, etc. |
-| `/root/baymax_backup/RESTORATION_GUIDE.md` | Live restoration manual |
-| `/root/baymax_backup/backup_data/` | Copied backup of `.env`, `config.yaml`, `auth.json`, skills, memories, projects |
+5. **Commits and pushes** using Python-embedded token (avoids credential helper issues)
 
 ## Run manually
 
@@ -33,7 +31,7 @@ bash /root/baymax_backup/backup.sh
 
 ## Cron schedule
 
-Daily at **00:00 SGT (UTC-8) / 16:00 UTC previous day**
+Daily at **00:00 SGT (16:00 UTC)** — job ID `cb68230d9072`
 
 Check existing cron:
 ```bash
@@ -42,51 +40,98 @@ cronjob action=list
 
 ## What is backed up (included in GitHub)
 
-- `/root/.hermes/.env` — all API tokens and secrets
-- `/root/.hermes/config.yaml` — full Hermes configuration
-- `/root/.hermes/auth.json` — credential pool
-- `/root/.hermes/kanban.db` — task/kanban state
-- `/root/.hermes/skills/` — all skill definitions
-- `/root/.hermes/memories/` — persistent memory store
-- `/root/.hermes/projects/` — all projects
-- `/root/.hermes/plugins/` — plugin configs
-- `/root/.hermes/scripts/` — custom scripts
-- `/root/browser-search/` — SearXNG config
-- `/root/Obsidian-Vaults/` — LLM Wiki
-- `/root/projects/` — all root-level projects
-- Systemd services, nginx configs, Docker compose files
+| Category | Files |
+|----------|-------|
+| **Hermes secrets** | `.hermes/.env`, `auth.json`, `google_token.json`, `google_client_secret.json` |
+| **Hermes config** | `config.yaml`, `SOUL.md`, `channel_directory.json`, `honcho.json` |
+| **Hermes state** | `kanban.db`, `memories/`, `cron/jobs.json` |
+| **Hermes skills** | `skills/` (all skill definitions, 120+ skills) |
+| **Hermes projects** | `projects/` (all project folders) |
+| **Hermes plugins** | `plugins/` |
+| **Hermes scripts** | `scripts/`, `.hermes/bin/tirith` |
+| **Shell configs** | `.bashrc`, `.profile`, `.zshrc`, `.viminfo` |
+| **Tool configs** | `.config/fish/`, `.config/gh/`, `.config/uv/`, `.config/systemd/` |
+| **User tools** | `.local/bin/` (hermes, node, npm, npx, python3.11 symlinks — NOT uv binary) |
+| **Honcho** | `.honcho/config.json` |
+| **Browser search** | `browser-search/` (SearXNG config) |
+| **LLM Wiki** | `Obsidian-Vaults/` |
+| **Root projects** | `projects/`, `madeat2am-council/`, `hermes-video-serve/`, etc. |
+| **System services** | nginx configs, docker-compose, systemd units |
 
 ## What is NOT backed up (too large / machine-specific)
 
-- `.hermes/cache/`, `.hermes/audio_cache/`, `.hermes/image_cache/`
-- `.hermes/.venv/` (rebuilt via pip/uv on restore)
-- `.hermes/node/` (857 MB — npm packages rebuilt on restore)
-- `.npm/` (1.2 GB — npm cache)
-- `.cache/` (browser profiles, typescript, pip, mesa shaders)
-- `.camofox/`, `.camoufox/`, `.cloakbrowser/`
-- `.docker/buildx/`, `.hyperframes/`
-- `gateway.lock`, `gateway.pid`, `state.db-wal`, `processes.json`
-- `.ssh/` private keys
-
-## Verification
-
-After running, confirm push succeeded:
-```bash
-gh run list --repo MadeAt2AM/Baymax_Backup 2>/dev/null || true
-git -C /root/baymax_backup log -1 --oneline
-```
+| Excluded | Reason |
+|----------|--------|
+| `.hermes/cache/`, `.hermes/audio_cache/`, `.hermes/image_cache/` | Large cache, regenerated |
+| `.hermes/.venv/` | Python venv, rebuilt on restore |
+| `.hermes/node/` (857 MB) | npm packages, rebuilt on restore |
+| `.npm/` (1.2 GB) | npm cache, regenerates |
+| `.cache/`, `.camofox/`, `.camoufox/`, `.cloakbrowser/` | Browser profiles, machine-specific |
+| `.hyperframes/` | Render cache |
+| `.docker/buildx/`, `.docker/buildkit/` | Docker build cache |
+| `.local/share/uv/` | UV pip cache |
+| `uv`, `uvx` binaries | Large (56–58 MB each), reinstall via `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| `.ssh/id_*` private keys | Private keys, never commit |
+| `state.db-wal`, `gateway.lock`, `gateway.pid` | Runtime locks, regenerated |
 
 ## Restore on new VPS
 
-1. Clone repo: `git clone https://github.com/MadeAt2AM/Baymax_Backup.git /root`
-2. Follow `RESTORATION_GUIDE.md` step-by-step
-3. Restore secrets: `cp backup_data/.env.restore /root/.hermes/.env`
-4. Run setup: `bash /root/baymax_backup/first_restore.sh`
+```bash
+# 1. Clone the backup repo into /root
+git clone https://github.com/MadeAt2AM/Baymax_Backup.git /root
+
+# 2. Run the first-restore script (restores configs, hidden folders, services)
+bash /root/baymax_backup/first_restore.sh
+
+# 3. Reinstall uv (too large to store in git)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
+
+# 4. Restore the Python venv
+cd /root/.hermes
+python3 -m venv .venv
+. .venv/bin/activate
+pip install pyyaml python-dotenv
+
+# 5. Restart Hermes services
+systemctl daemon-reload
+systemctl restart hermes-gateway hermes-dashboard
+```
+
+Then follow `RESTORATION_GUIDE.md` for the full step-by-step.
+
+## Verification
+
+```bash
+# Check last push
+git -C /root log -1 --oneline
+
+# Confirm repo on GitHub
+gh api repos/MadeAt2AM/Baymax_Backup --jq '{size: .size, private: .private, commits: .size}'
+
+# Check cron is scheduled
+cronjob action=list
+```
+
+## One Known Issue
+
+The `.hermes/.venv` Python venv is empty on this VPS — `pip list` returns nothing. This means the environment analysis documents zero Python packages. To fix:
+
+```bash
+cd /root/.hermes
+python3 -m venv .venv
+. .venv/bin/activate
+pip install pyyaml python-dotenv
+```
+
+After fixing, tomorrow's cron backup will document the full pip environment.
 
 ## Troubleshooting
 
-**gh not authenticated:** Run `gh auth login --with-token` with a GitHub PAT that has `repo` scope for `MadeAt2AM` org.
+**Push fails with "cat: get: No such file":** The backup script uses Python to embed the token directly — this is the known workaround for the credential helper issue. If it fails, check `gh auth status`.
 
-**Push fails:** Check `gh auth status` and ensure the token has `Contents: Read & Write` on `MadeAt2AM/Baymax_Backup`.
+**gh not authenticated:** The backup script auto-authenticates using the token from `.env`. If needed: `gh auth login --with-token <PAT>` with a token scoped to `MadeAt2AM` org.
 
-**Empty push (no changes):** Normal — no new changes since last backup. Exit code 0, nothing to do.
+**Empty push (nothing to commit):** Normal — no new changes since last backup. Exit code 0, script exits cleanly.
+
+**RESTORATION_GUIDE.md warning:** If you see "Could not find analysis section marker" — this is cosmetic. The guide still gets updated; the Python update logic uses append/prepend instead of marker replacement.
