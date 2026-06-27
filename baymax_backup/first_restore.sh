@@ -76,7 +76,38 @@ fi
 echo "✅ Directory structure restored."
 
 echo ""
-echo "[4/8] Restoring systemd services..."
+echo "[2b/8] Restoring hidden shell and tool configs..."
+mkdir -p "$RESTORE_DIR/.config/fish "$RESTORE_DIR/.config/gh "$RESTORE_DIR/.config/uv
+cp "$BACKUP_DIR/backup_data/hidden_configs/.bashrc.restore"     "$RESTORE_DIR/.bashrc"      2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/.profile.restore"     "$RESTORE_DIR/.profile"      2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/.zshrc.restore"     "$RESTORE_DIR/.zshrc"        2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/.viminfo.restore"    "$RESTORE_DIR/.viminfo"      2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/config_fish/"*       "$RESTORE_DIR/.config/fish/" 2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/config_gh/"*         "$RESTORE_DIR/.config/gh/"   2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/config_uv/"*         "$RESTORE_DIR/.config/uv/"   2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/honcho_config.json.restore" "$RESTORE_DIR/.honcho/config.json" 2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/hidden_configs/.ssh_authorized_keys.restore" "$RESTORE_DIR/.ssh/authorized_keys" 2>/dev/null || true
+# Restore hermes_bin symlinks (but NOT the large uv/uvx binaries — those get reinstalled)
+if [[ -d "$BACKUP_DIR/backup_data/hermes_bin" ]]; then
+    mkdir -p "$RESTORE_DIR/.hermes/bin"
+    cp "$BACKUP_DIR/backup_data/hermes_bin/tirith" "$RESTORE_DIR/.hermes/bin/tirith" 2>/dev/null || true
+    # uv and uvv are large — skip and reinstall
+fi
+echo "✅ Hidden configs restored."
+
+echo ""
+echo "[2c/8] Restoring Google Workspace tokens..."
+cp "$BACKUP_DIR/backup_data/google_client_secret.json.restore" "$RESTORE_DIR/.hermes/google_client_secret.json" 2>/dev/null || true
+cp "$BACKUP_DIR/backup_data/google_token.json.restore"        "$RESTORE_DIR/.hermes/google_token.json"        2>/dev/null || true
+echo "✅ Google tokens restored."
+
+echo ""
+echo "[5/8] Installing uv tool (required for Hermes operations)..."
+if ! command -v uv &>/dev/null; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || true
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+echo "✅ uv installed: $(uv --version 2>/dev/null || echo 'available in PATH')"
 if [[ -f "$BACKUP_DIR/backup_data/hermes-gateway.service.restore" ]]; then
     cp "$BACKUP_DIR/backup_data/hermes-gateway.service.restore" /etc/systemd/system/hermes-gateway.service
 fi
