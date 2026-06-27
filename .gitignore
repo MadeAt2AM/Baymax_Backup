@@ -49,6 +49,15 @@ __pycache__/
 .hermes/bin/uvx
 .local/bin/uv
 .local/bin/uvx
+uv
+uvx
+uvx*
+
+# ── Backup data copies of large binaries ───────────────────
+baymax_backup/backup_data/hermes_bin/uv
+baymax_backup/backup_data/hermes_bin/uvx
+baymax_backup/backup_data/hidden_configs/.local_bin/uv
+baymax_backup/backup_data/hidden_configs/.local_bin/uvx
 
 # ── Docker (images are massive — rebuild on restore) ─────────
 .docker/buildx/**
