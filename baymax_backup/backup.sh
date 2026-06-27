@@ -22,10 +22,17 @@ logerr(){ echo "$LOG_PREFIX ERROR: $1" >&2; }
 log "Starting daily backup..."
 
 if ! gh auth status &>/dev/null; then
-    log "gh not authenticated — reading token from .env..."
-    GH_TOKEN=*** 
-    # Read GITHUB_TOKEN from .env
-    GH_TOKEN=*** '^GITHUB_TOKEN=*** /root/.hermes/.env | cut -d= -f2- | tr -d ' \r\n')
+    log "gh not authenticated — reading token from .env via Python..."
+    GH_TOKEN=***
+    # Extract token cleanly via Python
+    GH_TOKEN=$(python3 -c "
+import re
+with open('/root/.hermes/.env') as f:
+    for line in f:
+        if 'GITHUB_TOKEN=*** in line and not line.strip().startswith('#'):
+            print(line.split('=',1)[1].strip())
+            break
+" 2>/dev/null)
     if [[ -z "$GH_TOKEN" ]]; then
         logerr "No GITHUB_TOKEN found in /root/.hermes/.env — aborting."
         exit 1
@@ -77,7 +84,7 @@ log "Changes detected:\n$CHANGES"
 # ── 3. Environment Analysis ─────────────────────────────────
 log "Running environment analysis..."
 
-ANALYSIS_FILE=$(mktemp)
+ANALYSIS_FILE="/tmp/analysis.tmp"
 {
     echo "## Environment Analysis — $(date '+%Y-%m-%d %H:%M:%S %Z')"
     echo ""
@@ -104,20 +111,24 @@ ANALYSIS_FILE=$(mktemp)
     echo ""
     echo "### Hermes Config Summary"
     python3 -c "
-import yaml
+import re
 with open('/root/.hermes/config.yaml') as f:
-    cfg = yaml.safe_load(f)
-m = cfg.get('model',{})
-print('  Default model:', m.get('default','N/A'))
-print('  Provider:', m.get('provider','N/A'))
-print('  Base URL:', m.get('base_url','N/A'))
-print('  Fallback providers:', len(cfg.get('fallback_providers',[])))
-print('  Toolsets:', cfg.get('toolsets',[]))
-print('  Skills external_dirs:', cfg.get('skills',{}).get('external_dirs',[]))
-print('  Max concurrent sessions:', cfg.get('max_concurrent_sessions','N/A'))
-print('  Max live sessions:', cfg.get('max_live_sessions','N/A'))
-print('  Memory enabled:', cfg.get('memory',{}).get('memory_enabled','N/A'))
-" 2>/dev/null || echo "  (yaml not available)"
+    txt = f.read()
+m = re.search(r'^model:\s*\n\s+default:\s*(\S+)', txt, re.M)
+p = re.search(r'^model:\s*\n\s+provider:\s*(\S+)', txt, re.M)
+b = re.search(r'^model:\s*\s*\n\s+base_url:\s*(\S+)', txt, re.M)
+fb = len(re.findall(r'^  fallback_providers', txt))
+ts = re.findall(r'^\s+-\s*(\S+)', txt)
+ts = [t for t in ts if t not in ['fallback_providers','providers']]
+sk = re.search(r'external_dirs:\s*\n(.*?)(?=\n\s+\w|\n\s+\w|\n\w|\n---)', txt, re.DOTALL)
+print('  Default model:', m.group(1) if m else 'N/A')
+print('  Provider:', p.group(1) if p else 'N/A')
+print('  Base URL:', b.group(1) if b else 'N/A')
+print('  Fallback providers:', fb)
+print('  Toolsets count:', len(ts))
+sk_dirs = [l.strip().strip('-').strip() for l in sk.group(1).split('\n') if l.strip()] if sk else []
+print('  Skills external_dirs:', sk_dirs if sk_dirs else '[]')
+" 2>/dev/null || echo "  (config parse error)"
     echo ""
     echo "### Cron Jobs"
     crontab -l 2>/dev/null || echo "no cron jobs"
@@ -137,35 +148,27 @@ print('  Memory enabled:', cfg.get('memory',{}).get('memory_enabled','N/A'))
 } > "$ANALYSIS_FILE"
 
 # Update RESTORATION_GUIDE.md with fresh analysis
-python3 -c "
+python3 << 'PYEOF'
 import re
 
 guide_path = '/root/baymax_backup/RESTORATION_GUIDE.md'
 with open(guide_path) as f:
     guide = f.read()
 
-with open('$ANALYSIS_FILE') as f:
+with open('/tmp/analysis.tmp') as f:
     analysis = f.read()
 
-# Replace the analysis section
-pattern = r'(## Environment Analysis\n+> .*?\n)(## Step-by-step Restore)'
-replacement = r'\1' + analysis + r'\n\2'
-new_guide = re.sub(pattern, replacement, guide, flags=re.DOTALL)
-
-# Update last-updated header
-new_guide = re.sub(
-    r'^> \*\*Last environment analysis:\*\* .*?(\n|$)',
-    '> **Last environment analysis:** ' + '$(date \"+%Y-%m-%d %H:%M %Z\")' + r'\1',
-    new_guide,
-    count=1,
-    flags=re.MULTILINE
-)
-
-with open(guide_path, 'w') as f:
-    f.write(new_guide)
-print('RESTORATION_GUIDE.md updated.')
-"
-rm -f "$ANALYSIS_FILE"
+# Replace the analysis section between markers
+pattern = r'(## Environment Analysis\n+> [^\n]*\n)(## Step-by-step Restore)'
+if re.search(pattern, guide):
+    new_guide = re.sub(pattern, r'\1' + analysis + r'\n\2', guide, flags=re.DOTALL)
+    with open(guide_path, 'w') as f:
+        f.write(new_guide)
+    print('RESTORATION_GUIDE.md updated.')
+else:
+    print('WARNING: Could not find analysis section marker in guide.')
+PYEOF
+rm -f /tmp/analysis.tmp
 
 # Stage updated guide
 git add baymax_backup/RESTORATION_GUIDE.md

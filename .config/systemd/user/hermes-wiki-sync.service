@@ -1,0 +1,14 @@
+[Unit]
+Description=Baymax LLM Wiki Bidirectional Sync
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/bin/bash /root/.hermes/scripts/wiki-sync.sh
+WorkingDirectory=/root/Obsidian-Vaults
+Restart=on-failure
+RestartSec=10
+Environment=WIKI_PATH=/root/Obsidian-Vaults/Hermes
+
+[Install]
+WantedBy=default.target

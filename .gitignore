@@ -16,12 +16,10 @@
 .hermes/node/**
 .hermes/pastes/**
 
-# ── Global Node / NPM ────────────────────────────────────────
-.npm/_cacache/**
-.npm/_logs/**
-.npm/_npx/**
-.npm/_prebuilds/**
+# ── Global Node / NPM (regenerate with npm install) ─────────
 node_modules/**
+.npm/**
+!.npm/.npmrc
 
 # ── Python Caches ────────────────────────────────────────────
 __pycache__/
@@ -32,15 +30,11 @@ __pycache__/
 .eggs/
 *.egg-info/
 
-# ── Browser / Camoufox Profiles ──────────────────────────────
+# ── Browser Profiles (large + machine-specific) ─────────────
 .camofox/**
 .camoufox/**
 .cloakbrowser/**
 .cache/**
-
-# ── Docker (images are massive — rebuild on restore) ─────────
-.docker/buildx/**
-.docker/buildkit/**
 
 # ── HyperFrames Render Cache ────────────────────────────────
 .hyperframes/**
@@ -48,6 +42,11 @@ __pycache__/
 # ── Local UV / Pip caches ───────────────────────────────────
 .local/share/uv/**
 .local/state/**
+.pip/
+
+# ── Docker (images are massive — rebuild on restore) ─────────
+.docker/buildx/**
+.docker/buildkit/**
 
 # ── System temp files ────────────────────────────────────────
 .DS_Store
@@ -58,7 +57,7 @@ Thumbs.db
 .fuse_hidden*
 .Trash-*
 
-# ── Hermes lock/state files (regenerated) ───────────────────
+# ── Hermes lock/state files (regenerated on startup) ─────────
 .hermes/gateway.lock
 .hermes/gateway.pid
 .hermes/interrupt_debug.log
@@ -70,6 +69,9 @@ Thumbs.db
 .hermes/models_dev_cache.json
 .hermes/ollama_cloud_models_cache.json
 .hermes/provider_models_cache.json
+.hermes/state.db
+.hermes/state.db-shm
+.hermes/state.db-wal
 .hermes/tmp-nginx-dashboard/**
 
 # ── Logs (keep dir structure, not content) ───────────────────
@@ -84,6 +86,7 @@ logs/
 .ssh/id_ed25519
 .ssh/id_dsa
 .ssh/*.key
+_ssh_key*_redacted*
 
 # ── Downloaded debs (package manager artifacts) ──────────────
 Downloads/*.deb
@@ -110,9 +113,9 @@ browser-search/.git/
 .idea/
 *.sublime-*
 
-# ── Honcho memory DB (keep directory, not DB files) ─────────
-.honcho/memory.db
+# ── Honcho memory DB (runtime state — exclude) ──────────────
 .honcho/*.db
+.honcho/*.db-*
 
 # ── Restore note ─────────────────────────────────────────────
 # Everything excluded here is either:
@@ -130,8 +133,23 @@ browser-search/.git/
 #   ✅ /root/.hermes/projects/      (all projects)
 #   ✅ /root/.hermes/plugins/       (plugin configs)
 #   ✅ /root/.hermes/scripts/       (custom scripts)
+#   ✅ /root/.hermes/cron/          (scheduled jobs state)
+#   ✅ /root/.hermes/honcho.json    (Honcho memory config)
+#   ✅ /root/.local/bin/            (hermes CLI, uv, npm symlinks)
+#   ✅ /root/.config/fish/         (fish shell config)
+#   ✅ /root/.config/gh/           (GitHub CLI config)
+#   ✅ /root/.config/uv/           (uv config)
+#   ✅ /root/.bashrc, .profile, .zshrc  (shell configs)
+#   ✅ /root/.viminfo               (vim editor state)
+#   ✅ /root/.honcho/config.json    (Honcho app config)
+#   ✅ /root/.ssh/authorized_keys   (empty on this VPS — add yours)
 #   ✅ /root/browser-search/        (SearXNG config)
 #   ✅ /root/Obsidian-Vaults/       (LLM Wiki)
 #   ✅ Root-level project folders
 #   ✅ Systemd service files
 #   ✅ Nginx + Docker compose configs
+#
+# Browser profiles excluded (too large, machine-specific):
+#   🚫 /root/.camofox/  (browser fingerprint data — regenerate per install)
+#   🚫 /root/.camoufox/ (same)
+#   🚫 /root/.cloakbrowser/

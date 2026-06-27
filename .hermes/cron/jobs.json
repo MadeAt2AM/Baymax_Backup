@@ -178,7 +178,54 @@
       "enabled_toolsets": null,
       "workdir": null,
       "fire_claim": null
+    },
+    {
+      "id": "cb68230d9072",
+      "name": "Baymax Daily Backup",
+      "prompt": "Run the Baymax backup procedure: execute /root/baymax_backup/backup.sh and deliver the output to telegram:-1003825565541. The backup script is self-contained and handles its own authentication. If there are no changes to push, it exits cleanly with no output \u2014 deliver nothing in that case. On successful push, send a brief confirmation message. On failure, send the error details.",
+      "skills": [
+        "baymax-backup"
+      ],
+      "skill": "baymax-backup",
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "minimax",
+      "model_snapshot": "MiniMax-M2.7",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "display": "0 16 * * *"
+      },
+      "schedule_display": "0 16 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-27T22:40:56.052744+08:00",
+      "next_run_at": "2026-06-28T16:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1003825565541",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1283992553",
+        "chat_name": "Chris Kal",
+        "thread_id": "55515",
+        "user_id": "1283992553"
+      },
+      "enabled_toolsets": null,
+      "workdir": null
     }
   ],
-  "updated_at": "2026-06-27T22:02:52.417927+08:00"
+  "updated_at": "2026-06-27T22:40:56.089114+08:00"
 }
