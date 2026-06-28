@@ -6,9 +6,18 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/root
-ExecStart=/usr/local/lib/hermes-agent/venv/bin/hermes dashboard --port 9119 --host 127.0.0.1 --no-open --tui
-Restart=on-failure
-RestartSec=5
+# NOTE: Do NOT add --tui here. --tui is a GLOBAL Hermes flag (applies to the
+# hermes CLI itself, not the dashboard subcommand) that tries to attach an
+# interactive terminal. In systemd daemon context it causes crashes and
+# SIGKILL timeouts. This was the root cause of the 2026-06-27 outage.
+ExecStart=/usr/local/lib/hermes-agent/venv/bin/hermes dashboard --port 9119 --host 127.0.0.1 --no-open
+Restart=always
+RestartSec=10
+# Memory guard: restart if RSS exceeds 1.2 GB (prevents runaway OOM kills)
+MemoryMax=1.5G
+MemoryHigh=1.2G
+# Timeout: give dashboard 60s to start before declaring dead
+TimeoutStartSec=60
 
 [Install]
 WantedBy=multi-user.target

@@ -220,9 +220,19 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/root
-ExecStart=/usr/local/lib/hermes-agent/venv/bin/hermes dashboard --port 9119 --host 127.0.0.1 --no-open --tui
-Restart=on-failure
-RestartSec=5
+# NOTE: Do NOT add --tui here. --tui is a GLOBAL Hermes flag (applies to the
+# hermes CLI itself, not the dashboard subcommand) that tries to attach an
+# interactive terminal. In systemd daemon context it causes crashes and
+# SIGKILL timeouts. Dashboard subcommand has no --tui mode.
+# See: https://github.com/nousresearch/hermes-agent/issues/dashboard-tui
+ExecStart=/usr/local/lib/hermes-agent/venv/bin/hermes dashboard --port 9119 --host 127.0.0.1 --no-open
+Restart=always
+RestartSec=10
+# Memory guard: restart if RSS exceeds 1.2 GB (prevents runaway OOM kills)
+MemoryMax=1.5G
+MemoryHigh=1.2G
+# Timeout: give it 60s to start before declaring dead
+TimeoutStartSec=60
 
 [Install]
 WantedBy=multi-user.target
@@ -232,6 +242,44 @@ Enable:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now hermes-dashboard.service
+```
+
+### 6b. Watchdog cron (secondary guard)
+
+`systemd Restart=always` handles most outages, but does NOT recover from clean
+admin stops (e.g. `systemctl stop`) or `hermes update`-triggered kills. A
+cron watchdog fills that gap and also alerts you via Telegram when a restart fires.
+
+Create the health-check script:
+```bash
+cat > /root/.hermes/scripts/check-dashboard.sh << 'SCRIPT'
+#!/bin/bash
+# Hermes Dashboard health check — restarts if backend unreachable
+SERVICE="hermes-dashboard.service"
+LOG="/root/.hermes/cron/output/dashboard_health.log"
+PORT=9119
+
+mkdir -p "$(dirname "$LOG")"
+
+if ! curl -s -o /dev/null http://127.0.0.1:${PORT}; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] HEALTH: Dashboard backend on :${PORT} unreachable, restarting ${SERVICE}..." >> "$LOG"
+    systemctl restart "$SERVICE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] HEALTH: ${SERVICE} restarted" >> "$LOG"
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] HEALTH: OK — dashboard on :${PORT} responding" >> "$LOG"
+fi
+SCRIPT
+chmod +x /root/.hermes/scripts/check-dashboard.sh
+```
+
+Schedule it every 5 minutes (via Hermes cron — silent unless restart fires):
+```
+cron create --name hermes-dashboard-health \
+  --script check-dashboard.sh \
+  --schedule "*/5 * * * *" \
+  --deliver telegram \
+  --no-agent \
+  --prompt "Run /root/.hermes/scripts/check-dashboard.sh. Deliver stdout only if it contains 'restarting'. Silent when healthy."
 ```
 
 ### 7. Final verification
@@ -268,6 +316,7 @@ print(sock.recv(4096).decode()[:200])
 | View logs | `journalctl -u hermes-dashboard -f` |
 | Update password | `sudo htpasswd -b /etc/nginx/.htpasswd chrisspeaks <newpassword>` |
 | Reload Nginx | `sudo systemctl reload nginx` (for routine config changes) |\n| **Restart Nginx** | `sudo systemctl restart nginx` — **required after any WebSocket/header-related config change**; `reload` leaves old workers running with stale config |\n| Check cert renewal | `sudo certbot renew --dry-run` |
+| Health-check backend | `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9119` (200 = up) |
 | Restart everything | `sudo systemctl restart hermes-dashboard nginx` |
 
 ---
@@ -284,7 +333,7 @@ print(sock.recv(4096).decode()[:200])
 | **WS works direct but fails through nginx after config change** | `nginx reload` updates config but existing workers keep old config — only new requests may hit new workers | Always `systemctl restart nginx` after WebSocket-related config changes, not just `reload` |
 | **API route returns HTML instead of JSON (e.g. `/api/status` returns SPA shell)** | `location ~ ^/api/` block missing — request fell through to default proxy which served the HTML SPA for a non-existent route | Add the broad `location ~ ^/api/ { auth_basic off; }` block before the WS-specific block |
 | **Repeated login prompts after valid basic-auth login** | API routes (plugins, sessions, kanban board) hit nginx's `auth_basic` before the backend session-token check — browser gets 401 on XHR, re-prompts for Basic Auth | Add `location ~ ^/api/ { auth_basic off; }` before the WS block — backend owns session-token auth for all `/api/*` routes |
-| **TUI not accessible** | `--tui` flag missing | Add `--tui` to `ExecStart` and `sudo systemctl daemon-reload && systemctl restart hermes-dashboard` |
+| **Dashboard goes down and doesn't recover** | `--tui` flag in `ExecStart` causes crashes in systemd daemon context — TTY attachment fails silently and uvicorn dies. Also `Restart=on-failure` only fires on abnormal exits, not clean admin stops. | Remove `--tui` from `ExecStart` (it is a global hermes CLI flag, not a dashboard subcommand flag). Change `Restart=on-failure` to `Restart=always`. Add `RestartSec=10`. Add the watchdog cron (see §6b). Run `/root/.hermes/scripts/check-dashboard.sh` to verify |
 | **Intermittent 401s even with correct password** | Duplicate htpasswd entries for same user | `sudo cat /etc/nginx/.htpasswd` — should have exactly one entry per user. Regenerate with `sudo htpasswd -c -b /etc/nginx/.htpasswd chrisspeaks Cris0037` |
 | **WS works direct but fails through nginx** | nginx not forwarding `Connection: Upgrade` | Must use `proxy_set_header Connection "upgrade";` — bare `upgrade` value, not `$http_upgrade` |
 | **WS still 401 through nginx after Connection: upgrade fix** | nginx `auth_basic` intercepts the WS upgrade at access phase before `proxy_pass` — browser WebSocket doesn't carry Basic Auth so nginx returns its own 401 | Add `location ~ ^/api/(ws|pty|events|pub)$` with `auth_basic off;` — backend validates `?token=` via HMAC, not nginx |
@@ -293,6 +342,7 @@ print(sock.recv(4096).decode()[:200])
 
 ## References
 
+- [Dashboard health-check diagnostic](references/health-check.md) — nginx-up/backend-down pattern, watchdog cron, full restart sequence
 - [Hermes update + dashboard restart procedure](references/update-cron-dashboard-restart.md) — the update-kills-dashboard problem, correct cron sequence, EADDRINUSE fix
 - [Auth Architecture deep-dive](references/auth-architecture.md) — full two-layer auth flow, header stripping rationale, WebSocket token handling, and htpasswd duplication pitfall
 - [Nginx proxy module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)

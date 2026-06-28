@@ -1,0 +1,23 @@
+[Unit]
+Description=Hermes LLM Wiki — bidirectional git sync daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /root/.hermes/scripts/wiki-sync.sh
+Restart=always
+RestartSec=10
+StandardOutput=append:/root/Obsidian-Vaults/.sync.log
+StandardError=append:/root/Obsidian-Vaults/.sync.log
+WorkingDirectory=/root/Obsidian-Vaults
+User=root
+Group=root
+
+# Hardening — allow /root access via ReadWritePaths
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/Obsidian-Vaults
+
+[Install]
+WantedBy=multi-user.target

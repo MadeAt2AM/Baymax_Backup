@@ -578,19 +578,20 @@ approvals:
   mcp_reload_confirm: true
   destructive_slash_confirm: false
 command_allowlist:
-  - stop/restart system service
-  - overwrite system file via tee
-  - delete in root path
-  - hermes update (restarts gateway, kills running agents)
-  - in-place edit of Hermes config/env
+  - copy/move file into system config path
   - sudo with privilege flag (stdin/askpass/shell/list)
   - kill hermes/gateway process (self-termination)
+  - in-place edit of Hermes config/env
+  - delete in root path
+  - hermes update (restarts gateway, kills running agents)
+  - script execution via -e/-c flag
+  - stop/restart system service
   - script execution via heredoc
   - in-place edit of system config
   - recursive delete
+  - overwrite system file via tee
+  - sudo with combined-flag privilege escalation
   - shell command via -c/-lc flag
-  - copy/move file into system config path
-  - script execution via -e/-c flag
 quick_commands: {}
 platform_hints: {}
 hooks: {}

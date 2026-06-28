@@ -29,8 +29,13 @@ do_sync() {
     
     cd "$REPO_DIR" || exit 1
     
-    # Save any staged changes first
+    # Stage and commit any local changes
     git add -A
+    if git diff --cached --quiet; then
+        log "Nothing to commit"
+    else
+        git commit -m "Sync from $(hostname): $(date -u '+%Y-%m-%d %H:%M UTC')" 2>&1 | tee -a "$LOG_FILE"
+    fi
     
     # Pull remote changes first (non-destructive merge)
     git fetch origin main 2>/dev/null
