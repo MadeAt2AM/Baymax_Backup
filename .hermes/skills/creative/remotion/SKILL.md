@@ -11,25 +11,46 @@ Use this skill whenever you are dealing with Remotion code.
 
 ## Active project this session
 
-**`/root/.hermes/projects/Remotion_ALL/`** — MadeAt2Am "4 Days: Noob to Claude Pro" B-roll package.
+**`/root/claude-code-reel/`** — MadeAt2Am "4 Days: Noob to Claude Pro" motion graphics package (2026-06-28).
 
-**Registered compositions (as of this session):**
-| ID | Purpose | Duration |
-|---|---|---|
-| `ChronixelMotionSystem` | Visual reference still — Chronixel Motion Graphics System design rules | 150f |
-| `4DayClaude` | **Full 90s timeline** — all 5 scenes in one comp via `Sequence` | 2700f |
-| `4DayClaude-Day1-Scene` | Hook scene only | 151f |
-| `4DayClaude-Day1-Scene2` | Day 1 scene only | 1050f |
-| `4DayClaude-Day2-Scene3` | Day 2 scene only | 450f |
-| `4DayClaude-Day3-Scene4` | Day 3 scene only | 600f |
-| `4DayClaude-Day4-Scene5` | Day 4 scene only | 450f |
+**Registered compositions:**
+| ID | Duration | Resolution | Notes |
+|---|---|---|---|
+| `Council` | 2100f (70s) | 1080×1920 | 5-scene neon/3D "Claude Council" reel — SFX wired via `@remotion/sfx` |
+| `MainComp` | 2700f (90s) | 1080×1080 | Legacy square format |
+| `4DayClaude` | 2700f (90s) | 1920×1080 | Full 5-scene composition with Three.js 3D |
+
+**⚠️ Root.tsx pattern — avoid `Composition` import collision:**
+| Scene | Frames | Content | 3D? |
+|---|---|---|---|
+| broll_01 Hook | 0–150 | Countdown 4→1, NOOB avatar, Claude Pro badge | CSS |
+| broll_02 Day1 | 151–1200 | "SPLIT YOUR LIFE" + 3 perspective cards | CSS 3D |
+| broll_03 Day2 | 1201–1650 | Rotating cube + orbit cubes + kanban cards | Three.js |
+| broll_04 Day3 | 1651–2250 | AI orb + pulse rings + orbit icons | Three.js |
+| broll_05 Day4 | 2251–2700 | Typewriter terminal + phone spring + CTA | CSS |
 
 **Key files:**
-- `src/ChronixelMotionSystem.tsx` — visual reference still (6-card glassmorphism layout, dark bg + grid, orange accents, Poppins ExtraBold)
-- `src/4DayClaude.tsx` — main composition; exports `FourDayClaude` (consolidated Sequence-based timeline) + individual scene stubs for per-scene Studio scrubbing
-- `src/Root.tsx` — registers all compositions
+- `src/Council.tsx` — 5-scene "Claude Council" reel (1080×1920 Reels format)
+- `src/4DayClaude.tsx` — full 5-scene composition
+- `src/Root.tsx` — registers `Council` (1080×1920) + `MainComp` (1080×1080) + `4DayClaude` (1920×1080)
 
-**Important — Composition structure:** One project = one composition with `Sequence` components inside. Do NOT create separate compositions per scene — that bloats the Studio sidebar and makes timeline stitching manual. Use `Sequence from={X} durationInFrames={Y}` to stitch scenes. Keep individual scene stub exports (`Scene1Hook_comp`, etc.) ONLY for per-scene scrubbing in Studio.
+**⚠️ Root.tsx pattern — avoid `Composition` import collision:**
+If your scene/stitching file exports a named `Composition` component (e.g. `export const Composition = ...`), importing `{ Composition }` from `"remotion"` in `Root.tsx` creates a name clash that TypeScript catches. Use an import alias:
+```tsx
+// Root.tsx
+import { Composition as RemotionComp } from "remotion";
+import { Composition as MainComp } from "./Composition";
+
+export const RemotionRoot: React.FC = () => (
+  <RemotionComp id="4DayClaude" component={MainComp} durationInFrames={1800} fps={30} width={1920} height={1080} />
+);
+```
+
+**⚠️ Studio startup always use `--port 3000`:**
+```bash
+cd /root/<project> && CHROME_BIN=/snap/bin/chromium npx remotion studio --port 3000 --listen
+```
+Without `--port 3000`, Remotion binds to a random port. Always specify it so the URL is predictable.
 
 ## Project location
 
@@ -94,6 +115,10 @@ cd /root/<project-name> && CHROME_BIN=/snap/bin/chromium npx remotion studio --l
 
 **⚠️ The `--listen` flag is required** — without it the studio binds to localhost only and is inaccessible from remote browsers.
 
+**⚠️ Port 3000 is the expected port.** If you see "port 3000 is not available" when starting a new studio, the kill step above did not work. Use `lsof -ti:3000 | xargs kill -9` forcefully, then `ss -tlnp | grep 3000` to confirm it's clear before retrying.
+
+**⚠️ Verify composition appears in sidebar.** After starting Studio, use `npx remotion compositions src/index.ts` to confirm the expected composition IDs are registered. If a new composition doesn't appear, check that `Root.tsx` has been updated to import and register it.
+
 Studio runs on port **3000**. After starting, get the host IP and give the user:
 
 ```
@@ -143,6 +168,72 @@ const FadeIn = () => {
 
   return <div style={{ opacity }}>Hello World!</div>;
 };
+```
+
+## CSS 3D neon card pattern
+
+Many compelling effects — floating cards, perspective shifts, glowing seats — can be built with pure CSS `transform-style: preserve-3d` and `perspective`, no `@remotion/three` needed.
+
+```tsx
+// Fly-in with spring overshoot
+const rotateX = interpolate(relativeFrame, [0, 30], [45, 0], {
+  extrapolateRight: "clamp",
+  easing: Easing.bezier(0.34, 1.56, 0.64, 1), // spring overshoot
+});
+const rotateY = interpolate(relativeFrame, [0, 30], [-30, 0], {
+  extrapolateRight: "clamp",
+  easing: Easing.bezier(0.34, 1.56, 0.64, 1),
+});
+const translateY = interpolate(relativeFrame, [0, 30], [120, 0], {
+  extrapolateRight: "clamp",
+  easing: Easing.bezier(0.16, 1, 0.3, 1), // ease-out
+});
+const scale = interpolate(relativeFrame, [0, 20], [0.6, 1], {
+  extrapolateRight: "clamp",
+  easing: Easing.bezier(0.16, 1, 0.3, 1),
+});
+
+<div
+  style={{
+    transformStyle: "preserve-3d",
+    transform: `perspective(1000px) translateY(${translateY}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`,
+  }}
+/>
+```
+
+Common easing values:
+- `Easing.bezier(0.16, 1, 0.3, 1)` — ease-out (fast start, slow end)
+- `Easing.bezier(0.34, 1.56, 0.64, 1)` — spring overshoot (bounces past, settles)
+- `Easing.bezier(0.25, 0.1, 0.25, 1)` — smooth ease-in-out
+
+## CSS neon glow (pure box-shadow)
+
+```tsx
+const glowStyle = (color: string, intensity = 1) => ({
+  boxShadow: `
+    0 0 ${5 * intensity}px ${color},
+    0 0 ${15 * intensity}px ${color},
+    0 0 ${40 * intensity}px ${color},
+    0 0 ${80 * intensity}px ${color}66
+  `,
+});
+
+const textGlow = (color: string, blur = 20) => ({
+  textShadow: `0 0 ${blur}px ${color}, 0 0 ${blur * 2}px ${color}`,
+});
+```
+
+## CSS glass panel
+
+```tsx
+<div
+  style={{
+    background: "rgba(17,24,39,0.75)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 20,
+    backdropFilter: "blur(12px)",
+  }}
+/>
 ```
 
 ## CSS transform pattern (for Remotion Studio editability)
@@ -200,6 +291,61 @@ import { Video } from "@remotion/media";
 import { Audio } from "@remotion/media";
 <Audio src={staticFile("audio.mp3")} />
 ```
+
+**⚠️ `@remotion/media` is NOT installed by default.** If `Audio` or `Video` from `@remotion/media` cause `Cannot find module '@remotion/media'`, install it explicitly:
+```bash
+cd /root/<project-name> && npx remotion add @remotion/media
+```
+
+## Adding sound effects (`@remotion/sfx`)
+
+The `@remotion/sfx` package provides 34 built-in sound effects. Install it:
+```bash
+cd /root/<project-name> && npx remotion add @remotion/sfx
+```
+
+**Full SFX catalog** (all importable by name):
+```
+animeWow, boneCrack, bruh, ding, dramaticBoomer, fah,
+illuminatiConfirmed, loadingLag, macQuack, minecraftHurt,
+mouseClick, nellAhh, ohMyGodVine, omgHellNah, pageTurn,
+priceIsRightFail, recordScratch, romanceMeme,
+sanctuaryGuardianWhat, shutterModern, shutterOld, skedaddle,
+snapchatNotification, spongebobFail, triggered, uiSwitch,
+vineBoom, whip, whoosh, wilhelmScream, windowsXpError, yippee
+```
+
+**Wiring SFX into a composition:**
+```tsx
+import { Audio } from "@remotion/media";
+import { whoosh, uiSwitch, vineBoom } from "@remotion/sfx";
+
+// SFXLayer component — all sfx fire as single-frame Sequences
+const SFXLayer: React.FC = () => {
+  return (
+    <>
+      <Sequence from={10} durationInFrames={1}>
+        <Audio src={whoosh} />
+      </Sequence>
+      <Sequence from={25} durationInFrames={1}>
+        <Audio src={uiSwitch} />
+      </Sequence>
+      <Sequence from={40} durationInFrames={1}>
+        <Audio src={vineBoom} />
+      </Sequence>
+    </>
+  );
+};
+
+export const MyComposition: React.FC = () => (
+  <AbsoluteFill>
+    {/* scenes... */}
+    <SFXLayer />
+  </AbsoluteFill>
+);
+```
+
+Frame math: `scene_start_fps * fps + offset_frames`. At 30fps, Scene 2 starting at 8 seconds → first SFX at frame `8 * 30 + 10 = 250`. Document SFX timestamps as inline comments for easy tuning.
 
 ## TailwindCSS
 
@@ -259,6 +405,11 @@ These will cause `tsc --noEmit` failures or esbuild bundle failures. Fix them be
 - **Wrong import names** — always check what's actually exported from `remotion` before importing. `useAnimatedStyle` does not exist in the `remotion` package — it belongs to `react-native-reanimated`. If you see `Module '"remotion"' has no exported member 'X'`, remove `X` from your import list.
 - **`useVideoConfig` only needed when using `fps`** — if you destructure `fps` from `useVideoConfig()` but never use `fps` in the component, remove the destructure. An unused import of `useVideoConfig` also causes `TS6133`.
 - **`spring` and `useAnimatedStyle`** — these are **not** re-exports from `remotion`. Use `interpolate()` for all animation unless you have a specific physics-spring need, in which case use `@remotion/gap` or calculate it manually with `interpolate`.
+
+- **`Easing.back` requires an explicit numeric argument** — `Easing.back` is a function factory, not a direct easing function. `Easing.out(Easing.back)` without calling it first passes the factory itself as the easing, which silently produces broken animations at render time. Always use `Easing.out(Easing.back(1.5))` — the numeric argument is required. Same applies to any other Remotion easing factory: always call it first, then pass the result.
+
+- **`@remotion/google-fonts` has no default namespace** — `import { loadFont } from "@remotion/google-fonts"` throws `Module has no exported member 'loadFont'`. Fonts are only available via per-font subpaths: `import { loadFont } from "@remotion/google-fonts/Inter"`. Also, `loadFont()` must be called at module top level (outside any component body) — calling it inside a component re-evaluates it on every render and can cause silent font-loading failures.
+
 - **Botched patches leaving the file in a broken state** — when a patch partially applies, it can leave you with two partial definitions of the same component or duplicate imports. Run `tsc --noEmit` AND `remotion still` after every edit cycle. If you see strange errors after what should have been a simple fix, read the file from scratch with `read_file` (not a partial offset read) to see its true current state.
 
 ## Rules reference

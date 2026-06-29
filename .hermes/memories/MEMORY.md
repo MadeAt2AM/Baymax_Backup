@@ -8,10 +8,6 @@ Dashboard watchdog: cron a0a18fe34a59 every 5min, /root/.hermes/scripts/check-da
 §
 GitHub: chrisvincodes — PAT ready, needs github-auth skill wired up.
 §
-Remotion: /root/claude-code-reel/ active project
-§
 LLM Wiki sync: systemd hermes-wiki-sync (enabled) + cron 59cc5538d6a5 every 15min. Script: /root/.hermes/scripts/wiki-sync.sh. Repo: MadeAt2AM/Obsidian-Vaults.
 §
-Remotion workspace: /root/.hermes/projects/Remotion_ALL. Always run `npx remotion studio` from this directory. New projects = new composition files (src/ProjectName.tsx) registered in src/Root.tsx. Studio URL: http://localhost:3000. Kill old process on port 3000 before starting.
-§
-Remotion default workflow: for each new video/project, create a new composition file in src/ (e.g. src/MadeAt2Am_Promo.tsx), register it in src/Root.tsx with a unique id, then preview in Remotion Studio. Never create separate Remotion project folders — all compositions live in /root/.hermes/projects/Remotion_ALL/src/.
+Remotion: /root/claude-code-reel/. Comps: src/*.tsx → src/Root.tsx. Studio: http://147.79.18.59:3000. Kill port 3000 first. Renders: CHROME_BIN=/snap/bin/chromium. 3D: @remotion/three + @remotion/google-fonts. Font: loadFont() from @remotion/google-fonts/Inter.

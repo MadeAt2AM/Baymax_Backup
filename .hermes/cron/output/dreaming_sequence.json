@@ -1,48 +1,47 @@
 {
-  "date": "2026-06-27",
+  "date": "2026-06-28",
   "analysis": {
     "active_projects": [
-      "Morning Brief Pipeline — dreaming-sequence + morning-brief cron jobs now live, tested successfully",
-      "Hermes Gateway Notification Routing — gateway restart/online msgs now correctly routed to -1003300736345",
-      "Browser Search / CamoFox — active project at /root/.hermes/projects/browser-search/ with SearXNG integration",
-      "Hermes Skills Reel — HyperFrames video project with multiple render iterations (v3 through final)",
-      "147-Agents Video — scene-based video project with check frames"
+      "4DayClaude Remotion video — built end-to-end June 28 in /root/claude-code-reel. 5 scenes, 2700 frames, 30fps, 1920×1080. Three.js 3D confirmed working (ThreeCanvas, orbiting cubes, orb with torus rings). Ad-hoc verification 4/4 passed — TypeScript clean, stills at frames 30/1210/1700 all render successfully. @remotion/three@4.0.484 installed.",
+      "Remotion_ALL project — separate /root/.hermes/projects/Remotion_ALL with its own 4DayClaude variant. Also has ChronixelMotionSystem. TypeScript clean, both compositions verified.",
+      "browser-search (CamoFox/SearXNG) — project at /root/.hermes/projects/browser-search/, not mentioned in recent sessions, likely idle.",
+      "Morning Brief pipeline — dreaming-sequence + morning-brief cron jobs live since June 27 evening."
     ],
     "upcoming_deadlines": [
-      "Gateway systemd stale unit warning — TimeoutStopSec=90s vs drain_timeout=180s, needs fix via `hermes gateway service install --replace`",
-      "Discord platform still paused since May 23 — not actively worked on in recent sessions"
+      "Stale hermes-gateway systemd unit — TimeoutStopSec=90s vs drain_timeout=180s. Flagged in June 27 dreaming sequence, still unresolved. Fix: `hermes gateway service install --replace`."
     ],
     "outstanding_items": [
-      "Stale systemd unit for hermes-gateway.service — recurring warnings every restart",
-      "Discord integration broken since May 23 (10 consecutive failures, failed to reconnect)",
-      "Browser-search/CamoFox project may need review/completion"
+      "Stale systemd unit for hermes-gateway — 2 days running, recurring warning on every gateway restart",
+      "Discord integration broken since May 23 (10 consecutive failures) — no resolution in past 5 days",
+      "browser-search/CamoFox project — idle, needs status review",
+      "4DayClaude final render — all 5 scenes verified as stills but full 90-second video render not yet executed"
     ],
-    "recent_context": "Chris spent the evening wrapping up three infrastructure items: (1) Telegram notification routing — gateway restart/online messages now correctly go to channel -1003300736345 instead of cluttering the home channel -1003825565541, confirmed working. (2) Telegram bot token was corrupted by a bad sed command earlier — fixed, bot operational. (3) Morning Brief pipeline fully created and tested end-to-end — Dreaming Sequence at 6 AM SGT and Morning Brief at 8 AM SGT are live, first real brief scheduled for tomorrow. The stale systemd unit warning for the gateway has been recurring for multiple days and hasn't been permanently fixed yet."
+    "recent_context": "June 28 was a Remotion-heavy day. Chris had the 4DayClaude video fully built and verified — 5 scenes spanning a countdown hook, split-life cards, co-working kanban with particle streams, tool-connection orb, and terminal/CTA outro. Three.js 3D was confirmed working via @remotion/three install and multi-frame still renders. Earlier in the week Chris compiled 57 Singapore aircon cold-call leads and got the morning brief pipeline live. The stale systemd unit and Discord have been sitting as outstanding since June 27 without action."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Fix the stale systemd unit warning permanently",
-      "reason": "Every gateway restart logs a WARNING about TimeoutStopSec=90s vs drain_timeout=180s. The fix is a one-liner: `hermes gateway service install --replace`, but it's been recurring for days without being addressed. Left alone it risks the gateway being SIGKILL'd by systemd mid-drain during a restart.",
-      "action": "Run `hermes gateway service install --replace` from a shell, then `systemctl daemon-reload && systemctl restart hermes-gateway`. Verify the warning disappears from logs."
+      "title": "Fix the stale hermes-gateway systemd unit before the next restart",
+      "reason": "This has been outstanding since the June 27 dreaming sequence — two full days. Every gateway restart logs a WARNING about TimeoutStopSec=90s vs drain_timeout=180s. With the gateway restarting multiple times per day, systemd can SIGKILL it mid-drain when the 90s stop timeout fires against a 180s drain. This is a compounding data-loss and stability risk.",
+      "action": "From a shell (not inside the gateway process): `hermes gateway service install --replace && sudo systemctl daemon-reload && sudo systemctl restart hermes-gateway`. Then verify with `journalctl -u hermes-gateway -n 30 | grep -i stale` — should return nothing."
     },
     {
       "priority": 2,
-      "title": "Review the browser-search/CamoFox project",
-      "reason": "This project at /root/.hermes/projects/browser-search/ has an active SearXNG integration and CamoFox browser tool. It hasn't been mentioned in recent sessions — it may be idle, complete, or need attention. A quick review determines its status before it goes stale.",
-      "action": "Open /root/.hermes/projects/browser-search/ and check if there's a README or active work outstanding. If it's deployable, consider integrating it into the regular workflow."
+      "title": "Review browser-search project status",
+      "reason": "The CamoFox/SearXNG browser-search project at /root/.hermes/projects/browser-search/ was set up but hasn't been mentioned in any recent sessions. It's unclear if it's complete, idle, or needs further work. Given it was an active build, a quick 5-minute review prevents it from going permanently stale.",
+      "action": "Check /root/.hermes/projects/browser-search/ for any README or active state. Determine if it's deployable or needs additional work."
     },
     {
       "priority": 3,
       "title": "Decide on Discord integration status",
-      "reason": "Discord has been paused since May 23 after 10 consecutive reconnection failures. This was flagged in the gateway logs but never resolved. If Discord is still needed as a comms channel, it should be investigated. If not, the paused state is fine but the underlying issue should be documented.",
-      "action": "If Discord is needed: investigate the connection failure in logs and resolve. If not: acknowledge the paused state and close the loop so it stops appearing as an outstanding item."
+      "reason": "Discord has been in a paused/broken state since May 23 — 10 consecutive reconnection failures. It was flagged on June 27 and still hasn't been addressed. If Discord is still needed as a comms channel, it needs investigation. If not, the open item should be formally closed so it stops appearing in reports.",
+      "action": "If needed: check `journalctl -u hermes-gateway | grep -i discord` for the underlying error and resolve. If not: acknowledge the paused state and remove or mark it as not-required so it stops surfacing as an outstanding item."
     }
   ],
   "non_negotiable": {
-    "title": "Fix the stale hermes-gateway systemd unit before the next restart",
-    "reason": "The gateway has been restarting multiple times per day (evidenced by the logs — Jun 25, Jun 26, Jun 27 all show shutdown/startup cycles). Every time it restarts with the current stale unit config, systemd may SIGKILL it mid-drain when TimeoutStopSec=90s fires against a 180s drain_timeout. This is a data-loss and stability risk that compounds with every restart.",
-    "action": "From a separate shell (not inside the gateway process): `hermes gateway service install --replace && sudo systemctl daemon-reload && sudo systemctl restart hermes-gateway`. Then check `journalctl -u hermes-gateway -n 20` to confirm no more stale-unit warnings."
+    "title": "Fix the stale hermes-gateway systemd unit now",
+    "reason": "This is now day 2 of this item sitting outstanding. The gateway is known to restart multiple times per day. Each restart with the current stale unit config risks an unclean shutdown where systemd SIGKILLs the process at 90s while the drain is still running (180s timeout). The longer it sits, the higher the chance of a restart happening and data loss compounding. The fix is a single command that takes under 60 seconds.",
+    "action": "Run: `hermes gateway service install --replace && sudo systemctl daemon-reload && sudo systemctl restart hermes-gateway`. Verify: `journalctl -u hermes-gateway -n 20` should show no stale-unit warning."
   },
-  "mood_check": "After a productive evening of infrastructure cleanup — notification routing fixed, morning brief pipeline live, Telegram bot repaired — Chris is in good momentum. The tone is constructive and action-oriented. Energy is positive but there's a pattern of systemd config issues that have lingered a bit too long. Best suited for focused, quick wins today."
+  "mood_check": "Chris is in strong execution mode — heavy Remotion build completed today with full 3D verification. Momentum is good. The outstanding items (systemd unit, Discord, browser-search) are all infrastructure hygiene issues that have lingered slightly too long. Today is well-suited for quick cleanup wins before diving into the next build cycle."
 }
