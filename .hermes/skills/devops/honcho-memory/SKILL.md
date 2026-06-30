@@ -109,6 +109,12 @@ These are called directly by name (not via terminal):
 - Chris's home channel: `-1003825565541`
 - Additional channels discovered during session: store in memory as they arise
 
+## User Preferences (Chris / MadeAt2Am)
+
+- **Direct style only** — short sentences, no fluff, no lengthy status reports. When asked to do something, just do it or confirm the approach. Do not respond with verbose multi-section status reports unless explicitly requested.
+- **No over-explaining** — if a task is simple, the answer should be simple. Only elaborate when the situation genuinely warrants it.
+- **Memory compression** — when memory is running high (>85%), compress aggressively. Cron IDs, script paths, systemd service names, and verbose technical descriptions are rediscoverable via `cronjob list`, skill files, or config on disk. Lean summaries are preferred over exhaustive detail in the memory block.
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |
@@ -120,3 +126,4 @@ These are called directly by name (not via terminal):
 | `honcho_context` returns `representation: ""` and `peer_card: null` | Workspace has no accumulated dialectic data yet | Normal on fresh workspace — accumulates via conversation turns |
 | `honcho_profile` says "No peer data yet" | Peer card not yet built | Normal — dialectic layer builds peer cards over time |
 | `hermes honcho status` shows API key but API calls fail with 404 | Wrong API version path used | Use `/v3/` prefix, not `/v1/` — the v3 routes are workspace-scoped |
+| `memory` tool `replace` action fails with "no entry matched" | Auth layer returns a different string than the system prompt shows | Read the actual file at `/root/.hermes/memories/MEMORY.md` via `read_file`, then patch it directly with the `patch` tool using the real content. The system prompt string and the live memory file can diverge. |

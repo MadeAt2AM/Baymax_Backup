@@ -348,3 +348,78 @@ print(sock.recv(4096).decode()[:200])
 - [Nginx proxy module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
 - [Certbot Nginx plugin](https://certbot.eff.org/instructions)
 - [Systemd service manual](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
+
+---
+
+## Additional Reference: VNC + noVNC Reverse Proxy
+
+The same nginx + SSL + basic auth pattern also covers **noVNC** (browser-accessible VNC desktop) for tasks requiring a real browser session — social media cookie extraction, LinkedIn login, etc.
+
+**Stack:** `tigervncserver` → `websockify` → `nginx` (SSL + basic auth) → browser
+
+**Key differences from a web dashboard:**
+- The upstream is a VNC server (port 5901) + websockify bridge (port 6080), not a web app
+- **WebSocket headers are required** in the nginx location block (websockify is the WS endpoint, not a web server):
+  ```nginx
+  location / {
+      proxy_pass http://localhost:6080;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_read_timeout 86400;
+  }
+  ```
+
+**htpasswd:** `htpasswd -bc /path/to/.htpasswd <user> <password>`
+
+**SSL (self-signed for internal use):**
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /path/to/ssl.key -out /path/to/ssl.crt \
+  -subj "/CN=<hostname>"
+```
+
+**VNC password:** `echo "<password>" | tigervncpasswd -f > ~/.vnc/passwd && chmod 600 ~/.vnc/passwd`
+
+**Start VNC (xfce4 desktop):** `vncserver :1 -fg -xstartup /usr/bin/startxfce4`
+Use `background=true` in terminal tool with a separate health-check follow-up call.
+
+**Start websockify (with SSL):** `websockify --web /usr/share/novnc --cert=/path/to/ssl.crt 6080 localhost:5901`
+Use `background=true`. Health check: `curl -s http://localhost:6080` should return noVNC HTML.
+
+**⚠️ Critical: the `--web /usr/share/novnc` flag is required.** Without it, websockify accepts WebSocket connections but has no HTML files to serve — the browser gets a 500 error when loading `vnc.html`. This is the most common failure mode. The `--web` flag tells websockify where to find the noVNC web assets.
+
+**nginx config for noVNC:**
+```nginx
+server {
+    listen 443 ssl;
+    server_name <hostname>;
+
+    ssl_certificate /path/to/ssl.crt;
+    ssl_certificate_key /path/to/ssl.key;
+
+    auth_basic "VNC Desktop — Restricted Access";
+    auth_basic_user_file /path/to/.htpasswd;
+
+    location / {
+        proxy_pass http://localhost:6080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+    }
+}
+```
+
+**Known quirks:**
+- TigerVNC with `-localhost=1` binds VNC to loopback only — websockify must be on the same host and connect to `localhost:5901`
+- Self-signed SSL: browsers will show a security warning — click "Advanced → Proceed" (internal use only)
+- Use `htpasswd -bc` only the first time; subsequent updates omit `-c`
+
+## Attribution
+
+- Inspired by: https://github.com/htr.-zero/zero-to-nginx
