@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-30T15:59:28.343491",
+  "updated_at": "2026-07-01T14:37:07.808279",
   "platforms": {
     "telegram": [
       {
@@ -25,6 +25,84 @@
         "name": "Chris Kal / topic 56056",
         "type": "dm",
         "thread_id": "56056"
+      },
+      {
+        "id": "1283992553:56300",
+        "name": "Chris Kal / topic 56300",
+        "type": "dm",
+        "thread_id": "56300"
+      },
+      {
+        "id": "1283992553:56635",
+        "name": "Chris Kal / topic 56635",
+        "type": "dm",
+        "thread_id": "56635"
+      },
+      {
+        "id": "1283992553:56643",
+        "name": "Chris Kal / topic 56643",
+        "type": "dm",
+        "thread_id": "56643"
+      },
+      {
+        "id": "1283992553:56768",
+        "name": "Chris Kal / topic 56768",
+        "type": "dm",
+        "thread_id": "56768"
+      },
+      {
+        "id": "1283992553:56835",
+        "name": "Chris Kal / topic 56835",
+        "type": "dm",
+        "thread_id": "56835"
+      },
+      {
+        "id": "1283992553:56919",
+        "name": "Chris Kal / topic 56919",
+        "type": "dm",
+        "thread_id": "56919"
+      },
+      {
+        "id": "1283992553:56952",
+        "name": "Chris Kal / topic 56952",
+        "type": "dm",
+        "thread_id": "56952"
+      },
+      {
+        "id": "1283992553:56970",
+        "name": "Chris Kal / topic 56970",
+        "type": "dm",
+        "thread_id": "56970"
+      },
+      {
+        "id": "1283992553:57192",
+        "name": "Chris Kal / topic 57192",
+        "type": "dm",
+        "thread_id": "57192"
+      },
+      {
+        "id": "1283992553:57217",
+        "name": "Chris Kal / topic 57217",
+        "type": "dm",
+        "thread_id": "57217"
+      },
+      {
+        "id": "1283992553:57308",
+        "name": "Chris Kal / topic 57308",
+        "type": "dm",
+        "thread_id": "57308"
+      },
+      {
+        "id": "1283992553:57312",
+        "name": "Chris Kal / topic 57312",
+        "type": "dm",
+        "thread_id": "57312"
+      },
+      {
+        "id": "1283992553:57336",
+        "name": "Chris Kal / topic 57336",
+        "type": "dm",
+        "thread_id": "57336"
       }
     ],
     "discord": [],

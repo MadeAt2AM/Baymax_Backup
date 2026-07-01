@@ -9,3 +9,5 @@ MadeAt2Am brand social links: Instagram - http://instagram.com/made.at.2am, YouT
 Project org: one folder per project inside /root/.hermes/projects/. No clutter.
 §
 Telegram home: -1003825565541. VNC browser: https://cyberslide.terrybot.top/vnc.html (chris/Cris0037.) — keep alive. Chrome profile: /root/.config/google-chrome/.
+§
+Voice comms: Chris sends Telegram voice messages and wants voice replies as native Telegram voice bubbles (OGG/Opus), not MP3. Use send_voice.py for Telegram voice delivery: /opt/kokoro-venv/bin/python /root/.kokoro/send_voice.py "text". TTS text must be well-punctuated — natural prosody and pauses matter to Chris. Kokoro voice: bm_fable, speed 0.95.
