@@ -1,0 +1,21 @@
+# Caddy reverse proxy for per-subdomain deployments on *.example.com
+#
+# How new deploys work:
+#   1. Create A record: <name>.example.com → VPS_IP (use cf-dns.sh)
+#   2. Write a sites/<name>.caddy file with:
+#        <name>.example.com {
+#            reverse_proxy <name>-app:8080
+#        }
+#   3. `docker exec caddy caddy reload --config /etc/caddy/Caddyfile`
+#
+# Caddy auto-issues Let's Encrypt certs via HTTP-01 challenge on port 80.
+
+{
+    email admin@example.com
+    # NOTE: do NOT set `auto_https on` here — it's on by default
+    # and the directive takes modifier flags (off / disable_redirects / etc.),
+    # not booleans. Setting it wrong triggers a silent restart loop.
+}
+
+# Import per-project site configs
+import /etc/caddy/sites/*.caddy

@@ -27,7 +27,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-01T19:28:37.310031+08:00",
-      "next_run_at": "2026-07-01T16:00:00+08:00",
+      "next_run_at": "2026-07-03T16:00:00+08:00",
       "last_run_at": "2026-06-23T16:02:12.391541+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -47,10 +47,10 @@
       "prompt": "Run the daily email briefing script and send the digest to Telegram.\n\nSteps:\n1. Execute: python3 /root/.hermes/scripts/email_briefing.py\n2. If the script exits non-zero, log the error but do not re-send.\n3. If successful, the script handles Telegram delivery automatically \u2014 no additional action needed.\n\nThe script reads recent Gmail (last ~24h), builds a structured digest with priority classification (urgent, needs reply, financial, events, security), and sends it directly to the configured Telegram channel.",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
-      "provider_snapshot": "minimax",
-      "model_snapshot": "MiniMax-M2.7",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
+      "provider_snapshot": null,
+      "model_snapshot": null,
       "base_url": null,
       "script": null,
       "no_agent": false,
@@ -63,17 +63,17 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
-      "next_run_at": "2026-07-02T03:00:00+08:00",
-      "last_run_at": "2026-07-01T03:01:05.533634+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-07-03T03:00:00+08:00",
+      "last_run_at": "2026-07-02T03:00:42.443405+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=5d79aefd3746 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
       "last_delivery_error": "no delivery target resolved for deliver=none",
       "deliver": "none",
       "origin": null,
@@ -91,10 +91,10 @@
         "dreaming-sequence"
       ],
       "skill": "dreaming-sequence",
-      "model": null,
-      "provider": null,
-      "provider_snapshot": "minimax",
-      "model_snapshot": "MiniMax-M2.7",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
+      "provider_snapshot": null,
+      "model_snapshot": null,
       "base_url": null,
       "script": null,
       "no_agent": false,
@@ -107,17 +107,17 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
-      "next_run_at": "2026-07-01T22:00:00+08:00",
-      "last_run_at": "2026-06-30T22:02:33.722262+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-07-02T22:00:00+08:00",
+      "last_run_at": "2026-07-01T22:00:35.177713+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=fab47f7704ba provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
       "last_delivery_error": null,
       "deliver": "local",
       "origin": {
@@ -139,10 +139,10 @@
         "morning-brief"
       ],
       "skill": "morning-brief",
-      "model": null,
-      "provider": null,
-      "provider_snapshot": "minimax",
-      "model_snapshot": "MiniMax-M2.7",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
+      "provider_snapshot": null,
+      "model_snapshot": null,
       "base_url": null,
       "script": null,
       "no_agent": false,
@@ -155,17 +155,17 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
-      "next_run_at": "2026-07-02T00:00:00+08:00",
-      "last_run_at": "2026-07-01T00:01:17.624863+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-07-03T00:00:00+08:00",
+      "last_run_at": "2026-07-02T00:00:39.614506+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=afb02a1433cf provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
       "last_delivery_error": null,
       "deliver": "telegram:-1004490060634",
       "origin": {
@@ -187,10 +187,10 @@
         "baymax-backup"
       ],
       "skill": "baymax-backup",
-      "model": null,
-      "provider": null,
-      "provider_snapshot": "minimax",
-      "model_snapshot": "MiniMax-M2.7",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
+      "provider_snapshot": null,
+      "model_snapshot": null,
       "base_url": null,
       "script": null,
       "no_agent": false,
@@ -203,17 +203,17 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-07-01T16:00:00+08:00",
-      "last_run_at": "2026-06-30T16:01:18.753256+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-07-02T16:00:00+08:00",
+      "last_run_at": "2026-07-01T16:00:52.486344+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=cb68230d9072 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
       "last_delivery_error": null,
       "deliver": "telegram:-1003825565541",
       "origin": {
@@ -225,7 +225,10 @@
       },
       "enabled_toolsets": null,
       "workdir": null,
-      "fire_claim": null
+      "fire_claim": {
+        "at": "2026-07-02T03:04:43.068538+08:00",
+        "by": "cyberslide:1593794"
+      }
     },
     {
       "id": "f52e7fc82801",
@@ -249,15 +252,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 355
+        "completed": 405
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-07-01T14:45:00+08:00",
-      "last_run_at": "2026-07-01T14:30:07.922623+08:00",
+      "next_run_at": "2026-07-02T03:15:00+08:00",
+      "last_run_at": "2026-07-02T03:00:42.438454+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -295,15 +298,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 338
+        "completed": 388
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-07-01T14:45:00+08:00",
-      "last_run_at": "2026-07-01T14:30:07.899983+08:00",
+      "next_run_at": "2026-07-02T03:15:00+08:00",
+      "last_run_at": "2026-07-02T03:00:42.393949+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -375,15 +378,15 @@
       "schedule_display": "55 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:21.732043+08:00",
-      "next_run_at": "2026-07-01T23:55:00+08:00",
-      "last_run_at": "2026-06-30T23:55:41.360348+08:00",
+      "next_run_at": "2026-07-02T23:55:00+08:00",
+      "last_run_at": "2026-07-01T23:55:37.997418+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -415,15 +418,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1009
+        "completed": 1158
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-07-01T14:40:00+08:00",
-      "last_run_at": "2026-07-01T14:35:07.955973+08:00",
+      "next_run_at": "2026-07-02T03:05:00+08:00",
+      "last_run_at": "2026-07-02T03:00:42.427605+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -434,5 +437,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-07-01T14:35:07.956573+08:00"
+  "updated_at": "2026-07-02T03:04:43.069083+08:00"
 }

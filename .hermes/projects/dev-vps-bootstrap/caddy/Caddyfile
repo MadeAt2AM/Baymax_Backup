@@ -1,0 +1,21 @@
+# Caddy reverse proxy for subdomains on *.terrybot.top
+#
+# How new deploys work:
+#   1. cf-dns.sh add <name>          → creates A record pointing to this VPS
+#   2. deploy playbook writes sites/<name>.caddy with: { reverse_proxy <name>-app:<port> }
+#   3. Playbook runs `docker compose exec caddy caddy reload`
+#
+# Caddy auto-issues Let's Encrypt certs via the HTTP-01 challenge on port 80.
+# The *.terrybot.top cert covers one specific subdomain per deployment.
+
+{
+    email admin@terrybot.top
+}
+
+# Import per-project site configs. Each file looks like:
+#
+#   <name>.terrybot.top {
+#       reverse_proxy <name>-app:8080
+#   }
+#
+import /etc/caddy/sites/*.caddy
