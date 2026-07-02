@@ -147,26 +147,26 @@
     "created_at": "2026-06-27T14:44:50.615048+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-27T14:53:39.837569+00:00",
-    "last_used_at": "2026-07-01T19:04:43.107332+00:00",
+    "last_used_at": "2026-07-02T08:00:44.199284+00:00",
     "last_viewed_at": "2026-07-01T06:39:15.976892+00:00",
     "patch_count": 2,
     "pinned": false,
     "state": "active",
-    "use_count": 8,
+    "use_count": 9,
     "view_count": 3
   },
   "baymax-voice": {
     "archived_at": null,
     "created_at": "2026-06-30T22:49:19.446733+00:00",
     "created_by": null,
-    "last_patched_at": "2026-07-01T06:07:00.547905+00:00",
-    "last_used_at": "2026-07-01T06:26:12.821249+00:00",
-    "last_viewed_at": "2026-07-01T06:26:12.813178+00:00",
-    "patch_count": 34,
+    "last_patched_at": "2026-07-01T21:30:34.453881+00:00",
+    "last_used_at": "2026-07-02T00:38:28.615464+00:00",
+    "last_viewed_at": "2026-07-02T00:38:28.611148+00:00",
+    "patch_count": 41,
     "pinned": false,
     "state": "active",
-    "use_count": 24,
-    "view_count": 24
+    "use_count": 38,
+    "view_count": 38
   },
   "blogwatcher": {
     "archived_at": null,
@@ -315,14 +315,14 @@
     "archived_at": null,
     "created_at": "2026-06-27T13:08:35.089250+00:00",
     "created_by": null,
-    "last_patched_at": null,
-    "last_used_at": "2026-07-01T14:00:35.081719+00:00",
-    "last_viewed_at": null,
-    "patch_count": 0,
+    "last_patched_at": "2026-07-01T20:22:27.948636+00:00",
+    "last_used_at": "2026-07-01T20:22:34.228263+00:00",
+    "last_viewed_at": "2026-07-01T20:22:34.177968+00:00",
+    "patch_count": 2,
     "pinned": false,
     "state": "active",
-    "use_count": 6,
-    "view_count": 0
+    "use_count": 11,
+    "view_count": 4
   },
   "dspy": {
     "archived_at": null,
@@ -537,13 +537,13 @@
     "created_at": "2026-07-01T06:27:09.452798+00:00",
     "created_by": "agent",
     "last_patched_at": null,
-    "last_used_at": null,
-    "last_viewed_at": null,
+    "last_used_at": "2026-07-01T21:30:22.427185+00:00",
+    "last_viewed_at": "2026-07-01T21:30:22.420773+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 0,
-    "view_count": 0
+    "use_count": 1,
+    "view_count": 1
   },
   "hermes-s6-container-supervision": {
     "archived_at": null,
@@ -862,12 +862,12 @@
     "created_at": "2026-06-27T13:12:54.077124+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-01T16:00:38.183735+00:00",
+    "last_used_at": "2026-07-01T20:16:26.796426+00:00",
     "last_viewed_at": null,
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 6,
+    "use_count": 7,
     "view_count": 0
   },
   "nano-pdf": {
@@ -1304,13 +1304,13 @@
     "created_at": "2026-06-21T05:43:27.261740+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-06-27T18:35:51.051619+00:00",
-    "last_viewed_at": "2026-06-27T18:35:51.043938+00:00",
+    "last_used_at": "2026-07-01T21:13:17.290098+00:00",
+    "last_viewed_at": "2026-07-01T21:13:17.281463+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 2,
-    "view_count": 2
+    "use_count": 3,
+    "view_count": 3
   },
   "teams-meeting-pipeline": {
     "archived_at": null,

@@ -1,47 +1,49 @@
 {
-  "date": "2026-06-30",
+  "date": "2026-07-02",
   "analysis": {
     "active_projects": [
-      "Agent Reach — 14/15 social media channels live, LinkedIn/Twitter/Reddit fully verified (June 30). VNC desktop set up for remaining cookie extraction.",
-      "The Council (Remotion) — 1080×1920 short-form video built and rendering verified. Audio track still unwired.",
-      "4DayClaude — Remotion project, likely a channel/content project. Last activity June 28.",
-      "LLM Wiki / Obsidian vault — synced every 15 min via systemd, git-backed."
+      "Dev VPS Bootstrap — fully landed July 1. Caddy reverse proxy + Cloudflare DNS + deploy/teardown playbooks live. hello-world-1 deployed at https://hello-world-1.terrybot.top (Let's Encrypt cert valid until Sep 29). Scripts at /root/.hermes/bin/ (cf-dns.sh, deploy.sh, teardown.sh). SSH config: ssh -i ~/.ssh/baymax_dev_vps deploy@147.79.18.32",
+      "Kokoro TTS + Hermes-native voice pipeline — operational as of July 1 evening after extensive debugging. bm_fable voice, 0.95 speed, chunked long-text handling in kokoro_tts.py. Gateway auto-TTS enabled, gateway_voice_mode.json created, transcription echo fix pending gateway patch.",
+      "Remotion 'The Council' reel (/root/.hermes/projects/4DayClaude/) — 5 scenes rendered and verified, 1080x1920 30fps. Audio track still NOT wired in (carries over from June 30 brief, unfinished for 3 days).",
+      "Agent Reach — 14/15 channels live (Twitter/Reddit/LinkedIn/Instagram verified). Cookie extraction from VNC session for Twitter + Reddit still pending.",
+      "Morning Brief pipeline — yesterday's 00:00 brief blocked by model inference drift (minimax-m2.7 -> minimax-m3 unpinned). Currently retrying via new dreaming-sequence run."
     ],
     "upcoming_deadlines": [
-      "No confirmed external deadlines found — calendar returned empty."
+      "No confirmed deadlines found — calendar returned empty for today (UTC Thursday 02 July 2026 = Friday 03 July SGT)."
     ],
     "outstanding_items": [
-      "The Council: audio track not yet wired in (hype beats / SFX packs not sourced)",
-      "VNC cookie extraction: Twitter/Reddit session cookies not yet extracted from VNC browser session",
-      "Memory limit increased to 5500 chars — gateway restarted, takes effect on next fresh session",
-      "Agent Reach Xueqiu/雪球 skipped (per Chris instruction)"
+      "The Council audio track — 3-day stale non-negotiable. Hype beat + click SFX not sourced yet.",
+      "Twitter + Reddit session cookies via VNC at https://cyberslide.terrybot.top/ (chris/Cris0037.) to bring Agent Reach from 14/15 to 15/15.",
+      "Gateway patch to suppress transcription echo (line 9518-9532 of /usr/local/lib/hermes-agent/gateway/run.py). Chris approved the patch on July 1 — not yet applied.",
+      "Pin model on cron job afb02a1433cf to prevent the minimax-m2.7 -> minimax-m3 drift blocking future morning briefs.",
+      "hello-world-1 deployment still live — smoke-test artifact. Decide: tear down or keep as proof-of-life."
     ],
-    "recent_context": "Chris has spent the past two days getting Agent Reach fully operational across 14/15 channels (Twitter, Reddit, LinkedIn, Instagram all now live via OpenCLI + LinkedIn MCP). The Remotion short-form video 'The Council' is fully built and rendering verified but still needs audio. Memory limit was just doubled to 5500 chars. VNC desktop is live for manual cookie work."
+    "recent_context": "Two heavy infrastructure wins landed yesterday (July 1): the dev VPS bootstrap went fully operational end-to-end with Caddy auto-TLS + Cloudflare DNS + a one-shot deploy procedure verified against hello-world-1.terrybot.top. The Kokoro TTS voice pipeline was debugged through the entire day and is now Hermes-native (gateway text_to_speech -> send_voice with thread_id routing), bm_fable selected and producing real native Telegram voice bubbles. Chris called out a routing misroute incident in the IT Infrastructure Support Chat topic (thread_id 57217), which triggered skill + memory hardening about always loading skills BEFORE acting. Chris also explicitly approved suppressing the transcript echo in the gateway — patch not yet applied. Notable: yesterday's scheduled 08:00 SGT morning brief failed entirely due to a provider/model-config drift (job was unpinned and refused to run). Mood: forward momentum but with one nagging loose end — The Council audio keeps getting pushed. Three consecutive morning briefs have flagged it as non-negotiable. It's time to either wire audio today or cut scope."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Wire the audio track into The Council",
-      "reason": "The Council video is 95% done — TypeScript compiles clean, renders verified at multiple frames — but it's silent. Without audio it's not a finished deliverable. This is the one piece blocking a publishable reel.",
-      "action": "Source a royalty-free hype beat (or use Remotion SFX packs) and integrate it into the Remotion composition. Check the existing Scene files in /root/.hermes/projects/4DayClaude/src/ for where the audio hook should go."
+      "title": "Wire The Council audio track — close out a 3-day open item",
+      "reason": "This is the third morning in a row The Council audio has been named non-negotiable. The Council is otherwise finished — TypeScript clean, renders verified, 5 scenes polished. Without audio it stays as a 95% done reel that never ships. The risk of carrying it again: another day lost, and the deeper risk is that 'perpetual 95% done' becomes a pattern.",
+      "action": "Spend 25 focused minutes on this. Pull a royalty-free hype beat (e.g. Pixabay free music, Uppbeat CC0, or YouTube Audio Library) — anything ~70s at 120-130 BPM with a strong build. Drop it at /root/.hermes/projects/4DayClaude/public/beat.mp3. Patch Council.tsx to use the @remotion/media Audio component with a 1s fade-in/out. Render frame 1500 + frame 1830 to verify. If no asset source fires in 10 min, cut to a stripped-back WHOOSH + click SFX pack and ship THAT. Do not carry this into a 4th day."
     },
     {
       "priority": 2,
-      "title": "Extract Twitter/Reddit session cookies via VNC",
-      "reason": "Agent Reach is at 14/15 — the last missing piece (Xueqiu skipped) is non-critical, but completing the cookie extraction from the VNC session would bring Twitter and Reddit channels to full authenticated status. The VNC session is already live at https://cyberslide.terrybot.top/",
-      "action": "Use the browser console on the VNC session to extract Twitter (twid + auth_token) and Reddit session cookies, then wire them into the Agent Reach configuration."
+      "title": "Pin the morning-brief cron job to prevent future failures",
+      "reason": "Yesterday's 08:00 SGT morning brief was blocked because cron job afb02a1433cf was created under minimax-m2.7 but the global config moved to minimax-m3, and the job was unpinned. The brief pipeline is now operating with a corrupt history file (last successful run was the manual 04:18 retry). Without pinning, this will recur every time the provider rotates models.",
+      "action": "Run `cronjob action=update job_id=afb02a1433cf provider=minimax model=minimax-m3` to pin to the current active model. Verify the fix by tailing /root/.hermes/cron/output/.last/morning_brief.json after the next scheduled run at 08:00 SGT. Document the pinning rule in MEMORY.md so future model rotations don't repeat the failure."
     },
     {
       "priority": 3,
-      "title": "Do a test render of The Council to confirm final output",
-      "reason": "Previous renders were verified at frames 5, 265, 1470, and 1830 — but those were partial spot-checks. A full render to MP4 has not been confirmed. If rendering fails or produces a blank/black output, it's better to know now before the morning-brief operator acts on it.",
-      "action": "Run `npx remotion render` in /root/.hermes/projects/4DayClaude/ and verify the output MP4 is playable and non-zero in size."
+      "title": "Patch the gateway transcription echo now that the patch is approved",
+      "reason": "Chris explicitly approved patching /usr/local/lib/hermes-agent/gateway/run.py (lines 9518-9532) on July 1 to suppress the duplicate transcript message that re-shows the user's voice message text. The patch was scoped and ready but never applied. This affects every voice interaction — leaving it open means the misroute-style friction around voice continues even though the native TTS pipeline is fixed.",
+      "action": "Open /usr/local/lib/hermes-agent/gateway/run.py lines 9518-9532, locate the `if _successful_transcripts:` block, gate it on a config flag (e.g. voice.suppress_transcript_echo), default to True for new sessions. Apply, run a quick test voice message via text_to_speech tool, confirm no echo appears. 15-minute task with clear before/after verification."
     }
   ],
   "non_negotiable": {
-    "title": "Wire the audio track into The Council",
-    "reason": "Without audio, The Council is not a finished video — it's a rendered animation with no sound. All the visual work is done (5 scenes, verified renders, composition at 1080×1920 30fps). The only remaining task to produce a publishable asset is the audio. Skipping this means the project stays in limbo indefinitely.",
-    "action": "Find and integrate a hype beat + click SFX into the Remotion composition. If no audio is available locally, source one (royalty-free) and patch it in."
+    "title": "Wire The Council audio today — do not carry this into a 4th morning brief",
+    "reason": "This reel is the closest thing to a shippable content piece in the queue. Every other piece of infrastructure (dev VPS, voice pipeline, Agent Reach, morning brief) is now stable. The Council is the only asset whose value compounds immediately once finished — every additional day it sits silent costs a day of organic reach. Carrying it a 4th time converts it from a delay into a pattern.",
+    "action": "Block 25-30 minutes before midday. Source the audio (CC0 hype beat from Pixabay/Uppbeat/YouTube Audio Library, ~70s, 120-130 BPM). Drop into /root/.hermes/projects/4DayClaude/public/beat.mp3. Wire @remotion/media Audio into Council.tsx. Render frames 1500 + 1830 to confirm audio plays. If sourcing fails, ship with a stripped click SFX pack rather than carrying the item."
   },
-  "mood_check": "High energy — Chris has been making serious progress on infrastructure and tooling. Today's sessions show confident, decisive moves: 14/15 Agent Reach channels live, memory upgraded, VNC cookie rig deployed. The tone is productive and forward-moving. Slight tension: audio track for The Council has been outstanding for over a day and hasn't been picked back up."
+  "mood_check": "Production-mode high — Chris has driven two major infrastructure milestones in the last 24 hours (dev VPS live with HTTPS, native voice pipeline operational). Clear preference for clean, no-noise interactions called out loud and reinforced in skill + memory. One stale commitment (audio for The Council) creating subtle weight — it's been three morning briefs now. Risk worth flagging: cron job failure on the morning brief itself means the pipeline that delivers these recommendations was broken 14 hours ago. Pin it before tonight so tomorrow's brief goes out clean."
 }

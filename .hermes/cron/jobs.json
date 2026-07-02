@@ -63,7 +63,7 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
@@ -71,11 +71,11 @@
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
       "next_run_at": "2026-07-03T03:00:00+08:00",
-      "last_run_at": "2026-07-02T03:00:42.443405+08:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=5d79aefd3746 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
-      "last_delivery_error": "no delivery target resolved for deliver=none",
-      "deliver": "none",
+      "last_run_at": "2026-07-02T04:34:07.094927+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:-1003825565541",
       "origin": null,
       "enabled_toolsets": [
         "terminal"
@@ -107,7 +107,7 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
@@ -115,9 +115,9 @@
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
       "next_run_at": "2026-07-02T22:00:00+08:00",
-      "last_run_at": "2026-07-01T22:00:35.177713+08:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=fab47f7704ba provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
+      "last_run_at": "2026-07-02T04:21:50.628347+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "local",
       "origin": {
@@ -155,7 +155,7 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
@@ -163,9 +163,9 @@
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
       "next_run_at": "2026-07-03T00:00:00+08:00",
-      "last_run_at": "2026-07-02T00:00:39.614506+08:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=afb02a1433cf provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
+      "last_run_at": "2026-07-02T04:18:31.644207+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "telegram:-1004490060634",
       "origin": {
@@ -203,17 +203,17 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-07-02T16:00:00+08:00",
-      "last_run_at": "2026-07-01T16:00:52.486344+08:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (model 'minimax-m2.7' -> 'minimax-m3'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=cb68230d9072 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
+      "next_run_at": "2026-07-03T16:00:00+08:00",
+      "last_run_at": "2026-07-02T03:05:01.494810+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "telegram:-1003825565541",
       "origin": {
@@ -225,10 +225,7 @@
       },
       "enabled_toolsets": null,
       "workdir": null,
-      "fire_claim": {
-        "at": "2026-07-02T03:04:43.068538+08:00",
-        "by": "cyberslide:1593794"
-      }
+      "fire_claim": null
     },
     {
       "id": "f52e7fc82801",
@@ -252,15 +249,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 405
+        "completed": 457
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-07-02T03:15:00+08:00",
-      "last_run_at": "2026-07-02T03:00:42.438454+08:00",
+      "next_run_at": "2026-07-02T16:15:00+08:00",
+      "last_run_at": "2026-07-02T16:00:44.204801+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -298,15 +295,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 388
+        "completed": 440
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-07-02T03:15:00+08:00",
-      "last_run_at": "2026-07-02T03:00:42.393949+08:00",
+      "next_run_at": "2026-07-02T16:15:00+08:00",
+      "last_run_at": "2026-07-02T16:00:44.171262+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -338,15 +335,15 @@
       "schedule_display": "0 14 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:13.667449+08:00",
-      "next_run_at": "2026-07-02T14:00:00+08:00",
-      "last_run_at": "2026-07-01T14:00:05.832230+08:00",
+      "next_run_at": "2026-07-03T14:00:00+08:00",
+      "last_run_at": "2026-07-02T14:00:42.259033+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -418,15 +415,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1158
+        "completed": 1314
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-07-02T03:05:00+08:00",
-      "last_run_at": "2026-07-02T03:00:42.427605+08:00",
+      "next_run_at": "2026-07-02T16:05:00+08:00",
+      "last_run_at": "2026-07-02T16:00:44.183926+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -437,5 +434,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-07-02T03:04:43.069083+08:00"
+  "updated_at": "2026-07-02T16:00:44.205141+08:00"
 }
