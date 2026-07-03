@@ -1,19 +1,212 @@
 {
   "unlocks": {
+    "actually_read_the_logs": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "autonomous_avalanche": {
+      "evidence": null,
+      "first_tier": "Gold",
+      "unlocked_at": 1783047050
+    },
+    "background_process_enjoyer": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "browser_possession": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "claude_confidant": {
+      "evidence": null,
+      "first_tier": "Diamond",
+      "unlocked_at": 1783047050
+    },
     "config_surgeon": {
       "evidence": null,
       "first_tier": "Copper",
       "unlocked_at": 1779464471
+    },
+    "context_dragon": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "dependency_hell_tourist": {
+      "evidence": null,
+      "first_tier": null,
+      "unlocked_at": 1783047050
+    },
+    "file_archaeologist": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "forgot_the_env_var": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "gateway_dweller": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "gemini_cartographer": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "let_him_cook": {
+      "evidence": {
+        "session_id": "20260625_041752_334274",
+        "title": "Setting up browser-search installation #6",
+        "value": 206
+      },
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "marathon_operator": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "memory_keeper": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "memory_palace": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "model_hopper": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
     },
     "model_sommelier": {
       "evidence": null,
       "first_tier": "Copper",
       "unlocked_at": 1779464471
     },
+    "night_shift_operator": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "one_character_fix": {
+      "evidence": null,
+      "first_tier": null,
+      "unlocked_at": 1783047050
+    },
+    "patch_wizard": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "permission_denied_any_percent": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "plugin_goblin": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "port_3000_taken": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
     "provider_polyglot": {
       "evidence": null,
       "first_tier": "Copper",
       "unlocked_at": 1779464471
+    },
+    "rebase_acrobat": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "red_text_connoisseur": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "screenshot_hunter": {
+      "evidence": null,
+      "first_tier": "Diamond",
+      "unlocked_at": 1783047050
+    },
+    "skill_issue_skill_created": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "skillsmith": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "stack_trace_sommelier": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "subagent_commander": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "supposed_to_be_quick": {
+      "evidence": {
+        "session_id": "20260625_041752_334274",
+        "title": "Setting up browser-search installation #6",
+        "value": 411
+      },
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "terminal_goblin": {
+      "evidence": null,
+      "first_tier": "Gold",
+      "unlocked_at": 1783047050
+    },
+    "test_suite_tamer": {
+      "evidence": null,
+      "first_tier": "Gold",
+      "unlocked_at": 1783047050
+    },
+    "the_fix_was_restarting": {
+      "evidence": null,
+      "first_tier": null,
+      "unlocked_at": 1783047050
+    },
+    "toolset_cartographer": {
+      "evidence": null,
+      "first_tier": "Diamond",
+      "unlocked_at": 1783047050
+    },
+    "voice_of_the_machine": {
+      "evidence": null,
+      "first_tier": "Silver",
+      "unlocked_at": 1783047050
+    },
+    "weekend_warrior": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
+    },
+    "yaml_colon_incident": {
+      "evidence": null,
+      "first_tier": "Copper",
+      "unlocked_at": 1783047050
     }
   }
 }

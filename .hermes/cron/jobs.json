@@ -27,7 +27,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-01T19:28:37.310031+08:00",
-      "next_run_at": "2026-07-03T16:00:00+08:00",
+      "next_run_at": "2026-07-05T16:00:00+08:00",
       "last_run_at": "2026-06-23T16:02:12.391541+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -44,9 +44,11 @@
     {
       "id": "5d79aefd3746",
       "name": "daily-email-briefing",
-      "prompt": "Run the daily email briefing script and send the digest to Telegram.\n\nSteps:\n1. Execute: python3 /root/.hermes/scripts/email_briefing.py\n2. If the script exits non-zero, log the error but do not re-send.\n3. If successful, the script handles Telegram delivery automatically \u2014 no additional action needed.\n\nThe script reads recent Gmail (last ~24h), builds a structured digest with priority classification (urgent, needs reply, financial, events, security), and sends it directly to the configured Telegram channel.",
-      "skills": [],
-      "skill": null,
+      "prompt": "You are running the **Daily Email Briefing** for Chris. Your job: pull the last ~24h of Gmail and produce an inbox-triage table with a 3-sentence draft reply for every ACTION item. The final response goes to Telegram home channel -1003825565541 (auto-delivered).\n\n## Procedure\n\n1. **Run the briefing script in JSON mode** to fetch raw emails:\n   ```bash\n   /root/.hermes/.venv/bin/python3 /root/.hermes/scripts/email_briefing.py --json\n   ```\n   The script outputs `{fetched_at, count, emails: [...]}` to stdout. Each email has: id, from, from_raw, subject, date, snippet, labels, is_unread, legacy_flags.\n\n   Use the venv python (bare `python3` returns empty Gmail results \u2014 googleapiclient is only in the venv).\n\n   If the script errors or returns `count: 0`, post a short \"no emails in the last 24h\" message to Telegram via the send_telegram helper at the bottom of the script and exit cleanly. Do not invent emails.\n\n2. **Load the inbox-triage skill** with `skill_view(name='inbox-triage')` and follow it exactly. The skill defines the ACTION / WAIT / ARCHIVE buckets, the \"default to ACTION for human senders\" guardrail, and the exact table format.\n\n3. **Classify every email** using the skill's bucket rules. Pay attention to:\n   - Rule 1-2: Direct asks and time-bound asks \u2192 ACTION\n   - Rule 3: Real 1:1 from a person Chris knows \u2192 ACTION by default. Do NOT auto-archive personal threads.\n   - Rule 5-6: Calendar invites / newsletters / system mail \u2192 WAIT or ARCHIVE\n   - Rule 7 (security carve-out): unsolicited password resets, financial bills \u2192 ACTION\n   - Rule 8: When in doubt \u2192 ACTION and flag in the \"needs your call\" list below the table\n\n   For senders you can't recognize, lean toward ACTION and flag. Don't archive on instinct.\n\n4. **Draft a 3-sentence reply for every ACTION row** using the skill's reply rules:\n   - Sentence 1: Acknowledge (\"Got it.\", \"Thanks for the heads-up.\", \"Will do.\")\n   - Sentence 2: The substance \u2014 the actual reply, not a meta-statement about needing to think\n   - Sentence 3: Concrete next step or close with a time\n   - Match Chris's voice: direct, no fluff. Use Honcho + session context to inform register and history with each sender.\n   - For WAIT / ARCHIVE rows, put `\u2014` in the Draft reply column\n   - Don't invent facts \u2014 if the email asks something you can't answer from context, draft a question back with a follow-up time\n\n5. **Output exactly one Markdown table** in this format (header row required):\n   ```\n   | From | Subject | Bucket | Draft reply (if ACTION) |\n   |---|---|---|---|\n   | <from> | <subject> | ACTION | <3-sentence draft> |\n   | <from> | <subject> | WAIT | \u2014 |\n   | <from> | <subject> | ARCHIVE | \u2014 |\n   ```\n\n   Sort: ACTION first (urgent / security first within ACTION), then WAIT, then ARCHIVE. Within each group, sort by date desc.\n\n   Below the table (only if needed), include:\n   - `**N** ACTION \u00b7 **M** WAIT \u00b7 **K** ARCHIVE` summary line\n   - `\u26a0\ufe0f Needs your call:` list of ambiguous items the skill couldn't classify with confidence\n   - Do NOT add \"Here's your briefing for today!\" or any other prose preamble. Table only.\n\n6. **Honor channel targeting.** Your final response is auto-delivered to the origin chat (Telegram home -1003825565541). Don't override with `send_telegram` from the script \u2014 the platform layer handles it. The script's --json mode is read-only; the post is your final assistant message.\n\n7. **Hard rules**:\n   - No invented facts. Drafts must be derivable from the email + Chris's known context.\n   - No drafts for WAIT / ARCHIVE rows. Em-dash only.\n   - Do NOT mark personal / 1:1 threads ARCHIVE on instinct \u2014 default ACTION for human senders.\n   - If `count: 0`, post a single \"no emails in last 24h\" line and stop. Don't fabricate.\n   - Do NOT recursively schedule cron jobs.\n   - This run has no current-chat context \u2014 load `honcho_profile` and `session_search` if you need to identify a sender or recall past correspondence. Cite what you used if it's non-obvious.\n\nDeliver the final response as the table. That's the briefing.",
+      "skills": [
+        "inbox-triage"
+      ],
+      "skill": "inbox-triage",
       "model": "MiniMax-M3",
       "provider": "minimax",
       "provider_snapshot": null,
@@ -63,15 +65,15 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 9
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
-      "next_run_at": "2026-07-03T03:00:00+08:00",
-      "last_run_at": "2026-07-02T04:34:07.094927+08:00",
+      "next_run_at": "2026-07-04T03:00:00+08:00",
+      "last_run_at": "2026-07-03T03:02:32.750545+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -107,15 +109,15 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
-      "next_run_at": "2026-07-02T22:00:00+08:00",
-      "last_run_at": "2026-07-02T04:21:50.628347+08:00",
+      "next_run_at": "2026-07-03T22:00:00+08:00",
+      "last_run_at": "2026-07-02T22:03:44.562162+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -155,15 +157,15 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
-      "next_run_at": "2026-07-03T00:00:00+08:00",
-      "last_run_at": "2026-07-02T04:18:31.644207+08:00",
+      "next_run_at": "2026-07-04T00:00:00+08:00",
+      "last_run_at": "2026-07-03T00:01:44.201003+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -203,15 +205,15 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-07-03T16:00:00+08:00",
-      "last_run_at": "2026-07-02T03:05:01.494810+08:00",
+      "next_run_at": "2026-07-04T16:00:00+08:00",
+      "last_run_at": "2026-07-02T16:01:11.132969+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -249,15 +251,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 457
+        "completed": 553
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-07-02T16:15:00+08:00",
-      "last_run_at": "2026-07-02T16:00:44.204801+08:00",
+      "next_run_at": "2026-07-03T16:15:00+08:00",
+      "last_run_at": "2026-07-03T16:00:35.945758+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -295,15 +297,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 440
+        "completed": 536
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-07-02T16:15:00+08:00",
-      "last_run_at": "2026-07-02T16:00:44.171262+08:00",
+      "next_run_at": "2026-07-03T16:15:00+08:00",
+      "last_run_at": "2026-07-03T16:00:35.891152+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -335,15 +337,15 @@
       "schedule_display": "0 14 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:13.667449+08:00",
-      "next_run_at": "2026-07-03T14:00:00+08:00",
-      "last_run_at": "2026-07-02T14:00:42.259033+08:00",
+      "next_run_at": "2026-07-04T14:00:00+08:00",
+      "last_run_at": "2026-07-03T14:00:29.964625+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -375,15 +377,15 @@
       "schedule_display": "55 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:21.732043+08:00",
-      "next_run_at": "2026-07-02T23:55:00+08:00",
-      "last_run_at": "2026-07-01T23:55:37.997418+08:00",
+      "next_run_at": "2026-07-03T23:55:00+08:00",
+      "last_run_at": "2026-07-02T23:55:59.285732+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -415,15 +417,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1314
+        "completed": 1602
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-07-02T16:05:00+08:00",
-      "last_run_at": "2026-07-02T16:00:44.183926+08:00",
+      "next_run_at": "2026-07-03T16:05:00+08:00",
+      "last_run_at": "2026-07-03T16:00:35.959000+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -434,5 +436,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-07-02T16:00:44.205141+08:00"
+  "updated_at": "2026-07-03T16:00:35.960206+08:00"
 }

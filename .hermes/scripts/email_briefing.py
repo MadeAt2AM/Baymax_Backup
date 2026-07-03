@@ -1,7 +1,21 @@
 #!/usr/bin/env python3
 """
-Daily Email Briefing — reads recent Gmail, compiles digest, sends to Telegram.
-Run manually: python3 /root/.hermes/scripts/email_briefing.py
+Daily Email Briefing — pulls the last ~24h of Gmail.
+
+Two output modes:
+
+  --pretty   (default)  Grouped HTML digest sent to Telegram (legacy format).
+                         Use for ad-hoc human runs:  python3 email_briefing.py
+
+  --json                 Emit one JSON object per email to stdout. The
+                         inbox-triage skill (LLM-driven) consumes this and
+                         formats the ACTION / WAIT / ARCHIVE table. This is
+                         the canonical interface for the daily-email-briefing
+                         cron.
+
+Examples:
+  python3 /root/.hermes/scripts/email_briefing.py --pretty
+  python3 /root/.hermes/scripts/email_briefing.py --json | jq '.[0].from'
 """
 
 import json
@@ -9,6 +23,7 @@ import subprocess
 import sys
 import os
 import re
+import argparse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -65,6 +80,11 @@ def format_address(sender: str) -> str:
 
 
 def classify_email(subject: str, snippet: str, sender: str, labels: list) -> dict:
+    """Legacy 5-flag classifier — only used by --pretty mode.
+    The inbox-triage skill does its own ACTION/WAIT/ARCHIVE classification
+    over the --json output. Do not unify these two — they have different
+    priorities (the old flags are about urgency; the new buckets are about
+    decision ownership)."""
     text = f"{subject} {snippet} {sender}".lower()
     label_set = set(l.lower() for l in labels)
 
@@ -85,24 +105,17 @@ def classify_email(subject: str, snippet: str, sender: str, labels: list) -> dic
     return {"flags": flags}
 
 
-def build_brief() -> str:
-    now_sgd = datetime.now(SGD_TZ)
-    date_str = now_sgd.strftime("%d %b %Y, %I:%M %p SGT")
+def fetch_emails() -> list:
+    """Pull last ~26h of Gmail. Returns list of dicts as returned by gapi."""
+    return run(f'{GAPI} gmail search "newer_than:1d" --max 30')
 
-    # Get last ~26h of emails (newer_than:1d catches most of yesterday SGT-midnight onwards)
-    emails = run(f'{GAPI} gmail search "newer_than:1d" --max 30')
 
-    if not emails:
-        return (
-            f"📬 <b>Email Briefing</b>\n"
-            f"🗓 {date_str}\n\n"
-            f"No emails found in the last 24 hours.\n"
-            f"You're all caught up! ✅"
-        )
-
-    # Parse emails into structured list
+def parse_emails(raw: list) -> list:
+    """Attach the legacy 5-flag classification to each email dict.
+    Used by --pretty and exposed in --json so the triage skill can see
+    what the legacy classifier thought, without being bound to it."""
     parsed = []
-    for e in emails:
+    for e in raw:
         flags = classify_email(
             e.get("subject", ""),
             e.get("snippet", ""),
@@ -112,41 +125,54 @@ def build_brief() -> str:
         parsed.append({
             "id": e.get("id"),
             "from": format_address(e.get("from", "")),
+            "from_raw": e.get("from", ""),
             "subject": e.get("subject") or "(no subject)",
             "date": e.get("date", ""),
             "snippet": e.get("snippet", ""),
             "labels": e.get("labels", []),
-            "flags": flags["flags"],
+            "is_unread": "unread" in [l.lower() for l in e.get("labels", [])],
+            "legacy_flags": flags["flags"],
         })
+    return parsed
+
+
+def build_pretty(parsed: list) -> str:
+    """Legacy grouped-by-flag HTML digest for Telegram."""
+    now_sgd = datetime.now(SGD_TZ)
+    date_str = now_sgd.strftime("%d %b %Y, %I:%M %p SGT")
+
+    if not parsed:
+        return (
+            f"📬 <b>Email Briefing</b>\n"
+            f"🗓 {date_str}\n\n"
+            f"No emails found in the last 24 hours.\n"
+            f"You're all caught up! ✅"
+        )
 
     # Sort: flagged items first, then by recency
     priority_order = ["⚠️ urgent", "📌 needs reply", "💰 financial", "📅 invite/event", "🔒 security"]
     def sort_key(e):
         flag_score = 0
         for i, f in enumerate(priority_order):
-            if f in e["flags"]:
+            if f in e["legacy_flags"]:
                 flag_score = len(priority_order) - i
         return (flag_score, e["date"])
+    parsed = sorted(parsed, key=sort_key, reverse=True)
 
-    parsed.sort(key=sort_key, reverse=True)
-
-    # Build Telegram message
     lines = []
     lines.append(f"📬 <b>Daily Email Briefing</b>")
     lines.append(f"🗓 {date_str}")
-    lines.append(f"📧 {len(emails)} emails in last 24h")
+    lines.append(f"📧 {len(parsed)} emails in last 24h")
     lines.append("")
     lines.append("─────────────────────")
 
-    # Group by priority
-    urgent = [e for e in parsed if "⚠️ urgent" in e["flags"]]
-    needs_reply = [e for e in parsed if "📌 needs reply" in e["flags"]]
-    financial = [e for e in parsed if "💰 financial" in e["flags"]]
-    events = [e for e in parsed if "📅 invite/event" in e["flags"]]
-    security = [e for e in parsed if "🔒 security" in e["flags"]]
-    other = [e for e in parsed if not e["flags"]]
+    urgent = [e for e in parsed if "⚠️ urgent" in e["legacy_flags"]]
+    needs_reply = [e for e in parsed if "📌 needs reply" in e["legacy_flags"]]
+    financial = [e for e in parsed if "💰 financial" in e["legacy_flags"]]
+    events = [e for e in parsed if "📅 invite/event" in e["legacy_flags"]]
+    security = [e for e in parsed if "🔒 security" in e["legacy_flags"]]
+    other = [e for e in parsed if not e["legacy_flags"]]
 
-    # Urgent
     if urgent:
         lines.append("\n🔴 <b>URGENT</b>")
         for e in urgent:
@@ -154,7 +180,6 @@ def build_brief() -> str:
             lines.append(f"    From: {e['from']} | {e['date']}")
             lines.append(f"    {e['snippet'][:120]}...")
 
-    # Needs Reply
     if needs_reply:
         lines.append("\n📌 <b>Needs Your Reply</b>")
         for e in needs_reply:
@@ -162,28 +187,24 @@ def build_brief() -> str:
             lines.append(f"    From: {e['from']} | {e['date']}")
             lines.append(f"    {e['snippet'][:120]}...")
 
-    # Financial
     if financial:
         lines.append("\n💰 <b>Financial</b>")
         for e in financial:
             lines.append(f"  • {e['subject']}")
             lines.append(f"    From: {e['from']} | {e['date']}")
 
-    # Events
     if events:
         lines.append("\n📅 <b>Invites / Events</b>")
         for e in events:
             lines.append(f"  • {e['subject']}")
             lines.append(f"    From: {e['from']} | {e['date']}")
 
-    # Security
     if security:
         lines.append("\n🔒 <b>Security Alerts</b>")
         for e in security:
             lines.append(f"  • {e['subject']}")
             lines.append(f"    {e['date']}")
 
-    # Other emails (show top 10)
     if other:
         shown = other[:10]
         lines.append(f"\n📗 <b>Other ({len(other)} total, showing {len(shown)})</b>")
@@ -199,13 +220,39 @@ def build_brief() -> str:
     return "\n".join(lines)
 
 
-if __name__ == "__main__":
-    print("Fetching emails...")
-    brief = build_brief()
-    print(f"\nBrief compiled ({len(brief)} chars), sending to Telegram...")
+def main():
+    parser = argparse.ArgumentParser(description="Daily email briefing")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--pretty", action="store_true", help="Grouped HTML digest (default)")
+    mode.add_argument("--json", action="store_true", help="Emit structured JSON to stdout for the inbox-triage skill")
+    args = parser.parse_args()
+
+    raw = fetch_emails()
+    parsed = parse_emails(raw)
+
+    if args.json:
+        # Add a couple of pre-computed hints the triage skill can lean on
+        # without being bound by them. The skill does its own classification.
+        output = {
+            "fetched_at": datetime.now(SGD_TZ).isoformat(),
+            "count": len(parsed),
+            "emails": parsed,
+        }
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+        return 0
+
+    # --pretty (default): send to Telegram, same behaviour as before
+    print(f"Fetching emails... found {len(parsed)}", file=sys.stderr)
+    brief = build_pretty(parsed)
+    print(f"\nBrief compiled ({len(brief)} chars), sending to Telegram...", file=sys.stderr)
 
     if send_telegram(brief):
-        print("✅ Briefing sent to Telegram.")
+        print("✅ Briefing sent to Telegram.", file=sys.stderr)
+        return 0
     else:
-        print("❌ Failed to send to Telegram. Check bot token.")
-        sys.exit(1)
+        print("❌ Failed to send to Telegram. Check bot token.", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

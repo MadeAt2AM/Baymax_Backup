@@ -90,7 +90,7 @@ terminal:
   modal_mode: auto
   cwd: .
   timeout: 180
-  daemon_term_grace_seconds: 2.0
+  daemon_term_grace_seconds: 2
   env_passthrough: []
   home_mode: auto
   shell_init_files: []
@@ -205,16 +205,12 @@ auxiliary:
     timeout: 120
     download_timeout: 30
   web_extract:
-    provider: auto
-    model: ''
-    base_url: ''
-    api_key: ''
+    provider: openrouter
+    model: nvidia/nemotron-3-super-120b-a12b:free
     timeout: 360
   compression:
-    provider: auto
-    model: ''
-    base_url: ''
-    api_key: ''
+    provider: openrouter
+    model: nvidia/nemotron-3-super-120b-a12b:free
     timeout: 120
   skills_hub:
     provider: auto
@@ -326,7 +322,7 @@ display:
   skin: default
   language: en
   tui_status_indicator: kaomoji
-  cli_refresh_interval: 1.0
+  cli_refresh_interval: 1
   user_message_preview:
     first_lines: 2
     last_lines: 2
@@ -434,7 +430,7 @@ voice:
   auto_tts: true
   beep_enabled: true
   silence_threshold: 200
-  silence_duration: 3.0
+  silence_duration: 3
 human_delay:
   mode: 'off'
   min_ms: 800
@@ -444,7 +440,7 @@ context:
 memory:
   memory_enabled: true
   user_profile_enabled: true
-  write_approval: false
+  write_approval: true
   memory_char_limit: 5500
   user_char_limit: 1375
   provider: honcho
@@ -528,7 +524,7 @@ discord:
     ambient_path: ''
     ambient_gain: 0.18
     duck_gain: 0.06
-    speech_gain: 1.0
+    speech_gain: 1
     ack_enabled: true
     ack_phrases:
       - Let me look into that.
@@ -641,7 +637,7 @@ streaming:
   edit_interval: 0.8
   buffer_threshold: 24
   cursor: ' ▉'
-  fresh_final_after_seconds: 0.0
+  fresh_final_after_seconds: 0
 sessions:
   auto_prune: false
   retention_days: 90
@@ -660,7 +656,7 @@ updates:
 lsp:
   enabled: true
   wait_mode: document
-  wait_timeout: 5.0
+  wait_timeout: 5
   install_strategy: auto
 x_search:
   model: grok-4.20-reasoning
