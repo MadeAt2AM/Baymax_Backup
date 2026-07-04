@@ -1,0 +1,14 @@
+{
+  "id": "b0d8ff5d",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: API contract convention for payntra (and likely other MadeAt2AM apps): server endpoints wrap top-level resources in a si",
+  "origin": "assistant_tool",
+  "created_at": 1783114991.6144702,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "API contract convention for payntra (and likely other MadeAt2AM apps): server endpoints wrap top-level resources in a singular-named envelope — GET /api/templates returns {templates:[...]}, POST returns {template:{...}}, PATCH /api/ledger/items/:id returns {item:{...}}. Client apiFetch<...> calls must declare the wrapper shape and unwrap with .then((r) => r.x). Forgetting this causes 'e.map is not a function' or 'undefined' at runtime — exactly the failure mode that bit TemplatesPage in Phase 8/10. AuthContext /api/profile returns the User shape directly at the root (no envelope) — that one is the exception, not the rule.",
+    "old_text": null
+  }
+}

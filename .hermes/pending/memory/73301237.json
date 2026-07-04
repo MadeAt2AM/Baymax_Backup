@@ -1,0 +1,14 @@
+{
+  "id": "73301237",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: Payntra API convention: server endpoints wrap top-level resources in a singular-named envelope ({templates:[...]}, {temp",
+  "origin": "background_review",
+  "created_at": 1783127422.3036578,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "Payntra API convention: server endpoints wrap top-level resources in a singular-named envelope ({templates:[...]}, {template:{...}}, {items:[...]}, {item:{...}}). Client apiFetch calls declare the wrapper shape and unwrap with .then((r) => r.x); consumers see the inner type, not the envelope. Exceptions are auth/health endpoints that return {ok:true} or {ok,db}. Discriminated-union service results (kind:'ok'|'forbidden'|'not_found') must be narrowed in route handlers before field access, and any variant the service never produces should be removed from the union type to keep TS happy.",
+    "old_text": null
+  }
+}

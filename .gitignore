@@ -63,6 +63,18 @@ baymax_backup/backup_data/hidden_configs/.local_bin/uvx
 .docker/buildx/**
 .docker/buildkit/**
 
+# ── Python venvs for tool-specific packages (regenerate on restore) ──
+.agent-reach-venv/**
+.agent-reach-venv/
+
+# ── Local ML model weights (download on demand) ─────────────
+.kokoro/models/**
+.kokoro/models/
+
+# ── Headless browser bundles (reinstalled by playwright/patchright) ──
+.linkedin-mcp/patchright-browsers/**
+.linkedin-mcp/patchright-browsers/
+
 # ── System temp files ────────────────────────────────────────
 .DS_Store
 Thumbs.db

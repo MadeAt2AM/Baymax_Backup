@@ -1,0 +1,14 @@
+{
+  "id": "6e5ecec4",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: Orphan-detection pitfall (2026-07-04): before any pkill on processes that \"look orphaned\" (PPID=1, days old, high RSS),",
+  "origin": "background_review",
+  "created_at": 1783131329.2970064,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "Orphan-detection pitfall (2026-07-04): before any pkill on processes that \"look orphaned\" (PPID=1, days old, high RSS), trace parent chain via `cat /proc/$pid/status | grep PPid` and check `kill -0 $ppid` to verify parent is genuinely dead vs detached from an active gateway. Caught a near-miss: 10 tsserver workers PPID=1 looked like leaks from old sessions, but their grandparent was the live hermes-gateway. Killing them would have broken my own LSP stack. Rule: only kill what is provably dead, never what looks dead. Documented in skill vps-ram-pressure.",
+    "old_text": null
+  }
+}

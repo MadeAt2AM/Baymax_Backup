@@ -222,3 +222,185 @@ vi .env
 hermes
 top
 exit
+cd /root/.hermes && python3 -m venv .venv && . .venv/bin/activate && pip install pyyaml python-dotenv
+hostname
+ipconfig
+ip
+ipaddr
+ipaddrs
+free -h
+cd
+hermes
+cd .hermes/
+vi .env
+top
+systemctl restart hermes-gateway
+cd
+ls- lrt
+ls -lrt
+pwd
+cd
+pwd
+ls -lrt
+cd projects/
+ls -lrt
+cd ../madeat2am-council/
+ls- lrt
+ls -lrt
+cd
+cd .hermes/
+vi .env 
+cd
+ls -lrt
+cd /root/
+ls- lrt
+ls -lrt
+cd baymax_backup/
+ls -lrt
+ls -lrta
+cd
+ls -lrta
+cd .honcho/
+ls -lrt
+cd
+cd /root/.hermes
+python3 -m venv .venv
+. .venv/bin/activate
+pip install pyyaml python-dotenv
+exit
+e github repo is https://github.com/remotion-dev/remotion.git
+---
+image: /generated/articles-docs-getting-started.png
+id: getting-started
+title: Creating a new project
+sidebar_label: Installation
+slug: /
+crumb: "Let's begin!"
+---
+## Coding Agent Prompt
+Paste into a coding agent, such as Claude Code, Codex or OpenCode:
+> Ensure Node.js is installed.  
+> Install Remotion Skills: `npx -y skills@latest add remotion-dev/skills -g -y`  
+e github repo is https://github.com/remotion-dev/remotion.git
+---
+image: /generated/articles-docs-getting-started.png
+id: getting-started
+title: Creating a new project
+sidebar_label: Installation
+slug: /
+crumb: "Let's begin!"
+---
+## Coding Agent Prompt
+Paste into a coding agent, such as Claude Code, Codex or OpenCode:
+> Ensure Node.js is installed.  
+> Install Remotion Skills: `npx -y skills@latest add remotion-dev/skills -g -y`  
+e github repo is https://github.com/remotion-dev/remotion.git
+---
+image: /generated/articles-docs-getting-started.png
+id: getting-started
+title: Creating a new project
+sidebar_label: Installation
+slug: /
+crumb: "Let's begin!"
+---
+## Coding Agent Prompt
+Paste into a coding agent, such as Claude Code, Codex or OpenCode:
+> Ensure Node.js is installed.  
+> Install Remotion Skills: `npx -y skills@latest add remotion-dev/skills -g -y`  
+e github repo is https://github.com/remotion-dev/remotion.git
+---
+image: /generated/articles-docs-getting-started.png
+id: getting-started
+title: Creating a new project
+sidebar_label: Installation
+slug: /
+crumb: "Let's begin!"
+---
+## Coding Agent Prompt
+Paste into a coding agent, such as Claude Code, Codex or OpenCode:
+> Ensure Node.js is installed.  
+> Install Remotion Skills: `npx -y skills@latest add remotion-dev/skills -g -y`  
+hermes
+hermes update
+hermes
+exit
+cd .hermes/
+cd projects/
+ls- lrt
+ls -lrt
+mkdir Remotion_ALL
+cd Remotion_ALL/
+pwd
+hermes
+tmux attach -t hermes1
+tmux new -s hermes1
+nano ~/.tmux.conf
+tmux source-file ~/.tmux.conf
+tmux new -s hermes1
+hermes
+cd .hermes/
+cd projects/
+ls -lrt
+cd Remotion_ALL/
+ls -lrt
+cd public/
+ls -lrt
+cd ../src/
+ls -lrt
+rm -rf 4DayClaude.tsx ChronixelMotionSystem.tsx
+cd
+cd root/claude-code-reel/src/
+cd claude-code-reel/src/
+ls -lrt
+rm -rf 4DayClaude.tsx
+cd ../
+ls -lrt
+cd ../
+ls -lrt
+tmux ls
+tmux new -s hermes1
+tmux attach -t hermes1
+hermes
+each — Live Status Report (Tested June 30, 2026)
+tmux attach -t hermes1
+hermes
+cd .hermes/
+vi config.yaml
+top
+hermes gateway restart
+hermes
+hermes update
+each — Live Status Report (Tested June 30, 2026)
+hermes
+exit
+hermes gateway restart
+tmux attach -t hermes1
+hermes gateway restart
+top
+systemctl restart hermes-gateway.service
+systemctl is-active hermes-gateway.service # expect: active
+systemctl restart hermes-gateway.service
+systemctl is-active hermes-gateway.service # expect: active
+tmux attach -t hermes1
+tmux new -s hermes1
+hermes gateway restart
+hermes modal
+hermes setup
+hermes
+systemctl restart hermes-gateway.service
+hermes gateway restart
+ssh -i ~/.ssh/baymax_dev_vps root@147.79.18.32 "whoami && hostname && date"
+ssh -i ~/.ssh/baymax_dev_vps deploy@147.79.18.32 "sudo whoami"
+ssh -i ~/.ssh/baymax_dev_vps root@147.79.18.32 "whoami && hostname && date"
+ssh -i ~/.ssh/baymax_dev_vps deploy@147.79.18.32 "sudo whoami"
+ssh -i ~/.ssh/baymax_dev_vps -o StrictHostKeyChecking=accept-new deploy@147.79.18.32 "whoami && hostname && sudo -n whoami"
+ssh-keygen -f '/root/.ssh/known_hosts' -R '147.79.18.32'
+ssh -i ~/.ssh/baymax_dev_vps -o StrictHostKeyChecking=accept-new deploy@147.79.18.32 "whoami && hostname && sudo -n whoami"
+dir %USERPROFILE%\.ssh
+cd /root/.ssh/
+ls -lrt
+cat authorized_keys 
+ls -lrt
+cat authorized_keys
+cat known_hosts
+cat /root/.ssh/baymax_dev_vps

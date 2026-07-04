@@ -1,0 +1,73 @@
+#!/bin/bash
+# vnc-status — show whether the VNC stack is running and how much RAM it eats
+#
+# Output: per-service status, PID, port listeners, RSS totals, time since last client disconnect.
+
+SERVICES=("vnc-stack.service" "vnc-websockify.service")
+LOG=/root/.vnc/cyberslide.terrybot.top:1.log
+
+echo "VNC Stack Status"
+echo "================"
+
+# 1. Per-service status
+for s in "${SERVICES[@]}"; do
+    if systemctl is-active --quiet "$s"; then
+        echo "  $s : UP"
+    else
+        echo "  $s : DOWN"
+    fi
+done
+
+# 2. Raw process check (catches edge cases)
+PROC=""
+if pgrep -f "Xtigervnc :1" >/dev/null 2>&1; then PROC="$PROC Xtigervnc(yes)"; else PROC="$PROC Xtigervnc(no)"; fi
+if pgrep -f "websockify" >/dev/null 2>&1; then PROC="$PROC websockify(yes)"; else PROC="$PROC websockify(no)"; fi
+echo ""
+echo "  Processes :$PROC"
+
+# 3. Listening ports
+PORTS=$(ss -tnl 2>/dev/null | awk '/:5901|:6080/ {print $4}' | tr '\n' ' ')
+[ -z "$PORTS" ] && PORTS="(none)"
+echo "  Listening : $PORTS"
+
+# 4. RSS totals
+XTIGER_RSS=0
+WEBSOCK_RSS=0
+XFCE_RSS=0
+CHROME_RSS=0
+if pgrep -f "Xtigervnc :1" >/dev/null 2>&1; then
+    XTIGER_RSS=$(ps -o rss= -p $(pgrep -f "Xtigervnc :1" | head -1) 2>/dev/null | tr -d ' ' || echo 0)
+fi
+if pgrep -f "websockify" >/dev/null 2>&1; then
+    WEBSOCK_RSS=$(ps -o rss= -p $(pgrep -f "websockify" | head -1) 2>/dev/null | tr -d ' ' || echo 0)
+fi
+XFCE_RSS=$(ps -eo rss,cmd | grep -E "(xfce4-session|xfwm4|xfdesktop|xfce4-panel|thunar)" | grep -v grep | awk '{sum+=$1} END {print sum+0}')
+CHROME_RSS=$(ps -eo rss,cmd | grep "/opt/google/chrome/chrome --no-sandbox --disable-gpu" | grep -v grep | awk '{sum+=$1} END {print sum+0}')
+
+TOTAL_KB=$((XTIGER_RSS + WEBSOCK_RSS + XFCE_RSS + CHROME_RSS))
+TOTAL_MB=$((TOTAL_KB / 1024))
+
+echo ""
+echo "  Memory (RSS)"
+echo "    Xtigervnc    : $((XTIGER_RSS / 1024)) MB"
+echo "    websockify   : $((WEBSOCK_RSS / 1024)) MB"
+echo "    XFCE desktop : $((XFCE_RSS / 1024)) MB"
+echo "    Chrome       : $((CHROME_RSS / 1024)) MB"
+echo "    ---"
+echo "    TOTAL        : $TOTAL_MB MB"
+
+# 5. Last client disconnect time
+if [ -f "$LOG" ]; then
+    LAST_LOG_MTIME=$(stat -c %Y "$LOG" 2>/dev/null || echo 0)
+    NOW=$(date +%s)
+    IDLE_MIN=$(( (NOW - LAST_LOG_MTIME) / 60 ))
+    LAST_LINE=$(tail -1 "$LOG" | head -c 60)
+else
+    IDLE_MIN="?"
+    LAST_LINE="(no log)"
+fi
+echo ""
+echo "  Last log line : $LAST_LINE"
+echo "  Idle for      : ${IDLE_MIN} minutes"
+echo ""
+echo "Tip: 'vnc-up' to start, 'vnc-down' to stop."

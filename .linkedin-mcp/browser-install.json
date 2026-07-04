@@ -1,0 +1,13 @@
+{
+  "browser_name": "chromium",
+  "browsers_path": "/root/.linkedin-mcp/patchright-browsers",
+  "installed_at": "2026-06-29T19:29:29Z",
+  "installed_targets": {
+    "chromium-": false,
+    "chromium_headless_shell-": true
+  },
+  "installer_name": "patchright",
+  "patchright_version": "1.61.1",
+  "runtime_id": "linux-amd64-container",
+  "version": 3
+}

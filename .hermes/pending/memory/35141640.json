@@ -1,0 +1,14 @@
+{
+  "id": "35141640",
+  "subsystem": "memory",
+  "action": "remove",
+  "summary": "remove from memory: Payntra session note (auto-archived context)",
+  "origin": "background_review",
+  "created_at": 1783127439.1631064,
+  "payload": {
+    "action": "remove",
+    "target": "memory",
+    "content": null,
+    "old_text": "Payntra session note (auto-archived context)"
+  }
+}

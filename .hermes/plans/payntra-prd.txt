@@ -1,0 +1,423 @@
+
+
+ 
+ 
+ Payntra
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ PAYNTRA - Ultimate Production PRD & Implementation Blueprint
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ Comprehensive System Architecture & Functional Specifications
+ 
+
+## PAYNTRA Master PRD
+ 
+Definitive technical specification mapping data synchronization, application layout design variables, and environment setup specs.
+ 
+ 
+ 
+Target URL: payntra.terrybot.top
+ 
+Deploy Target: Dev VPS (147.79.18.32)
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+
+## 
+ 1. Complete Business Logic & Data Constraints
+ 
+
+ 
+ 
+ 
+
+## Field Validation Constraints
+ 
+ 
+- **User Email:** Lowercased on receipt. Enforce strict RFC 5322 regex.
+ 
+- **Password Strength:** Min 8 characters, 1 number, 1 special character. Hashed using Argon2id or bcrypt (min 10 salt rounds).
+ 
+- **Ledger Quantities:** Numeric(12,2). Prevent negative balance limits. Client inputs strip commas instantly before database serialization.
+ 
+ 
+
+ 
+ 
+
+## Forgot Password Link Lifecycle
+ 
+ 
+**Generation Strategy:** Creating a forgot password call generates a cryptographically secure hex secret string length 64 using Node.js crypto.randomBytes(32).toString('hex').
+ 
+**Window Boundary:** The validation block evaluates NOW() - reset_secret_created_at < INTERVAL '5 minutes'. If it boundary leaks, return HTTP Status 410 Gone.
+ 
+ 
+
+ 
+ 
+
+## Direct Workspace Identity Mutations
+ 
+
+ When changing a password within the authenticated profile settings dashboard view, **no emails are dispatched.** The frontend forms present two text fields: Current Password and New Password. The API performs verification of the current hashed key string, updates the record array with the new hashed value, and revokes active secondary bearer tokens immediately.
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+## The Rollover Execution Blueprint (Step-by-Step Logic)
+ 
+ 
+- User logs in -> System determines client current calendar local date context -> extracts current string formatting identifier (e.g. "2026-07").
+ 
+- The engine hits the database: SELECT id FROM monthly_ledgers WHERE user_id = $1 AND month_year = $2.
+ 
+- **Path A (Data exists):** Fetch the matching ledger_items entries and return payload.
+ 
+- **Path B (Data absent - Initialization Triggered):** Compute target string representation of the immediately prior month (e.g., subtracting month integer values safely across year thresholds like transforming 2026-01 to 2025-12).
+ 
+- Query ledger details for that calculated prior period string. If matching rows exist, extract their list components. Perform a bulk-insert cloning them exactly into the fresh current month ledger container, but explicitly force all status fields to read as "PENDING". Retain the text string content of the notes parameter intact.
+ 
+- If no prior month row context is discovered in system memory logs, fallback instantly to read the user's permanent global boilerplate catalog profile records matching SELECT * FROM expense_templates WHERE user_id = $1 AND is_active = true. Clone those into active list arrays.
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+## 
+ 2. REST API Endpoint Route Matrix Contracts
+ 
+ 
+ 
+ 
+ 
+ Method
+ Endpoint Route
+ Payload / Processing Scope Description
+ Expected HTTP Response Codes
+ 
+ 
+ 
+ 
+ POST
+ /api/auth/login
+ Body: {email, password}. Validates login, issues a JWT token via standard HTTPOnly Cookies or Bearer headers.
+ 200 OK, 401 Unauthorized
+ 
+ 
+ POST
+ /api/auth/forgot-password
+ Body: {email}. Generates random unique string secret token link, updates timestamp parameters, dispatches secure SMTP envelope. Always returns 200 to prevent user enumeration.
+ 200 OK, 500 Server Error
+ 
+ 
+ POST
+ /api/auth/reset-password
+ Body: {secret, newPassword}. Verifies expiration (< 5 mins). Mutates pass hash, clears secret parameters string back to null values.
+ 200 OK, 410 Gone, 400 Bad Req
+ 
+ 
+ PUT
+ /api/profile/password
+ Body: {currentPassword, newPassword}. Direct profile mutations block. Assumes active JWT cookie session parameters context.
+ 200 OK, 403 Forbidden
+ 
+ 
+ GET
+ /api/ledger/:monthYear
+ Params: monthYear="YYYY-MM". Evaluates ledger presence context, triggers internal automated initialization rollover sequence if target entry is missing.
+ 200 OK, 201 Created
+ 
+ 
+ PATCH
+ /api/ledger/items/:id
+ Body: {status, notes, amount}. Triggers partial record mutations dynamically. Supports optimistic client state adjustments.
+ 200 OK, 404 Not Found
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+
+## 
+ 3. PostgreSQL Normalized Core Schema
+ 
+ -- 1. Streamlined Users Storage with Reset Window Metadata Tracker
+CREATE TABLE users (
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ email VARCHAR(255) UNIQUE NOT NULL,
+ password_hash VARCHAR(255) NOT NULL,
+ reset_secret VARCHAR(255) DEFAULT NULL,
+ reset_secret_created_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+ created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Permanent Baseline Master Reference Catalog
+CREATE TABLE expense_templates (
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+ name VARCHAR(100) NOT NULL,
+ default_amount NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
+ is_active BOOLEAN NOT NULL DEFAULT TRUE,
+ created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Monthly Financial Aggregates Index
+CREATE TABLE monthly_ledgers (
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+ month_year VARCHAR(7) NOT NULL, -- Strict Format Layout Pattern Match Check: "YYYY-MM"
+ UNIQUE(user_id, month_year)
+);
+
+-- 4. Isolated Monthly Execution Line Records (Cloned Historical Ledger State)
+CREATE TABLE ledger_items (
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ ledger_id UUID REFERENCES monthly_ledgers(id) ON DELETE CASCADE,
+ template_id UUID REFERENCES expense_templates(id) ON DELETE SET NULL, 
+ name VARCHAR(100) NOT NULL,
+ amount NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
+ status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- Option States Check constraints: 'PENDING' | 'PAID'
+ notes TEXT DEFAULT NULL,
+ created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for Fast Query Executions under Load
+CREATE INDEX idx_ledgers_user_date ON monthly_ledgers(user_id, month_year);
+CREATE INDEX idx_ledger_items_lookup ON ledger_items(ledger_id);
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+## 
+ 4. High-Density Multi-Mode Layout Engine Engine
+ 
+ 
+Click the selectors to simulate application response patterns across Light and Charcoal-Slate themes.
+ 
+ 
+ Standard Light Layout
+ Charcoal Dark Mode
+ 
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+## WORKSPACE DATA VIEW
+ 
+ June 2026
+ Current Period
+ 
+ 
+ 
+ 
+ < Prev Month
+ 
+ 
+ + Dynamic Line Row
+ 
+ 
+ 
+
+ 
+ 
+ 
+ TOTAL MONTHLY OBLIGATIONS
+ $3,644.00
+ 
+ 
+ SETTLED VALUE CASH
+ $1,190.00
+ 
+ 
+ PENDING REMAINING OUTFLOW
+ $2,454.00
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Status
+ Expense Identity Label
+ Settlement Amount
+ Granular Sub-row Notes Field Breakdowns
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Rent
+ $1,190.00
+ Primary monthly accommodation draft (Cleared baseline).
+ 
+ 
+ 
+ 
+ 
+ 
+ PUB
+ $230.00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ Lend
+ $1,014.00
+ Amortized index tracking metric trace.
+ 
+ 
+ 
+ 
+ 
+ 
+ VPS
+ $20.00
+ Infrastructure deployment environments context bindings.
+ 
+ 
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+## System Authentication
+ 
+Provide registration fields to access operational records profiles.
+ 
+ 
+ 
+ Email Address
+ 
+ 
+ 
+ 
+ Password Input
+ Forgot Password?
+ 
+ 
+ 
+ 
+ Log In to Dashboard
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+## Profile Control Workspace
+ 
+Perform immediate row adjustments on account parameters configurations.
+ 
+ 
+ 
+ Active Session Identity Profile
+ operator@terrybot.top
+ 
+
+ 
+ 
+
+## Direct Password Update Form
+ 
+ Current Password Validation
+ 
+ 
+ 
+ Target New Password Value
+ 
+ 
+ 
+ Commit Profile Password Instantly
+ 
+ 
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+
+ 
+ PAYNTRA Specification Engine Blueprint Asset File. Ready for implementation.
+ 
+
+ 
+ 
+ 
+
+

@@ -1,0 +1,14 @@
+{
+  "id": "dcf1bc63",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Plan-then-build cadence for full-feature work: (1) write complete opinionated plan with phases + file paths + verificati",
+  "origin": "background_review",
+  "created_at": 1783107338.844859,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Plan-then-build cadence for full-feature work: (1) write complete opinionated plan with phases + file paths + verification in one shot, (2) bundle 2-4 architectural decisions into ONE clarifying question not four rounds, (3) wait for explicit \"approve\" / \"use default\" / \"go\" before touching code, (4) then build phase by phase with live verification (real HTTP, not \"tests pass\"). Apply when user says \"plan the complete app\", \"plan and deploy\", or implies gated execution. Skip for one-shot tasks.",
+    "old_text": null
+  }
+}

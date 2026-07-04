@@ -1,0 +1,14 @@
+{
+  "id": "25c8c463",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: mail.cyberslide.net (157.173.106.6) silently blocks TLS handshakes from the dev VPS (147.79.18.32) on both port 465 (imp",
+  "origin": "assistant_tool",
+  "created_at": 1783110361.3482916,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "mail.cyberslide.net (157.173.106.6) silently blocks TLS handshakes from the dev VPS (147.79.18.32) on both port 465 (implicit SSL) and port 587 (STARTTLS). Plain SMTP banner works on 587, but STARTTLS upgrade never completes (times out 30s later). Confirmed across nodemailer, raw openssl s_client, node tls.connect. Same creds+host+port work from Edison Mail on mobile. Root cause is server-side IP filtering of cloud VPS ranges, not creds or config. Don't waste time re-testing from dev VPS. Resolution requires a different SMTP provider (Gmail App Password, SES, Mailgun, etc.) or a residential relay.",
+    "old_text": null
+  }
+}

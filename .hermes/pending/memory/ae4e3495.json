@@ -1,0 +1,14 @@
+{
+  "id": "ae4e3495",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: GitHub PAT in /root/.hermes/.env is fine-grained with read+write+issues but NO webhook permission. Creating repo webhook",
+  "origin": "assistant_tool",
+  "created_at": 1783072538.6212094,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "GitHub PAT in /root/.hermes/.env is fine-grained with read+write+issues but NO webhook permission. Creating repo webhooks returns 403 'Resource not accessible by personal access token'. Needed workflow: register webhooks manually via gh UI OR upgrade token to include webhooks:write on MadeAt2AM org. project.sh new auto-attempts registration and falls back to telling Chris exactly which payload URL + secret to use.",
+    "old_text": null
+  }
+}

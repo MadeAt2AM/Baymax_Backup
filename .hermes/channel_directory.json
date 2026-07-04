@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-03T15:55:50.738459",
+  "updated_at": "2026-07-04T15:55:38.991598",
   "platforms": {
     "telegram": [
       {
@@ -163,6 +163,18 @@
         "name": "Chris Kal / topic 58479",
         "type": "dm",
         "thread_id": "58479"
+      },
+      {
+        "id": "1283992553:58809",
+        "name": "Chris Kal / topic 58809",
+        "type": "dm",
+        "thread_id": "58809"
+      },
+      {
+        "id": "1283992553:60192",
+        "name": "Chris Kal / topic 60192",
+        "type": "dm",
+        "thread_id": "60192"
       }
     ],
     "discord": [],

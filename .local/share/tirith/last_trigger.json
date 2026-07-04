@@ -1,121 +1,22 @@
 {
   "rule_ids": [
-    "variation_selector"
+    "raw_ip_url"
   ],
   "severity": "MEDIUM",
-  "command_redacted": "mkdir -p /root/baymax_backup/backup_data/hidden_configs\n\n# 1. .local/bin — use...",
+  "command_redacted": "scp -i /root/.ssh/baymax_dev_vps /tmp/payntra.caddy deploy@147.79.18.32:/tmp/pay...",
   "findings": [
     {
-      "rule_id": "variation_selector",
+      "rule_id": "raw_ip_url",
       "severity": "MEDIUM",
-      "title": "Variation selector characters detected",
-      "description": "Content contains Unicode variation selectors (VS1-256). These are commonly used in emoji sequences but may indicate steganographic encoding or obfuscation",
+      "title": "URL uses raw IP address",
+      "description": "URL points to IP address 147.79.18.32 instead of a domain name",
       "evidence": [
         {
-          "type": "byte_sequence",
-          "offset": 501,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 665,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 827,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1007,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1204,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1363,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1517,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1690,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 1908,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 2208,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 2461,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 2696,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 2894,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 3070,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 3300,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 3497,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
-        },
-        {
-          "type": "byte_sequence",
-          "offset": 3747,
-          "hex": "U+FE0F",
-          "description": "variation selector U+FE0F"
+          "type": "url",
+          "raw": "147.79.18.32"
         }
-      ],
-      "mitre_id": "T1036.005"
+      ]
     }
   ],
-  "timestamp": "2026-06-27T14:46:08.356550345+00:00"
+  "timestamp": "2026-07-03T18:50:56.748874409+00:00"
 }

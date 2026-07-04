@@ -1,0 +1,19 @@
+[Unit]
+Description=GitHub webhook receiver for MadeAt2AM project redeploys
+Documentation=https://github.com/adnanh/webhook
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=WH_HOST=127.0.0.1
+Environment=WH_PORT=9000
+Environment=WH_TLS_VERIFY=false
+Environment=WH_HTTP_METHODS_POST=true
+EnvironmentFile=-/etc/webhook/webhook.env
+ExecStart=/usr/bin/webhook -hooks /etc/webhook/hooks.json -hotreload -verbose -logfile /var/log/webhook.log
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,69 @@
+#!/bin/bash
+# vnc-down — tear down the VNC stack and any orphaned Chrome attached to display :1
+#
+# Stops both vnc-stack.service (Xtigervnc + XFCE) and vnc-websockify.service
+# (the noVNC bridge). Then kills orphan Chrome processes from display :1 that
+# re-parented to init and won't die with Xtigervnc.
+#
+# Usage:
+#   vnc-down          # graceful stop
+#   vnc-down --force  # SIGKILL everything after 5s
+
+set -e
+
+SERVICES=("vnc-stack.service" "vnc-websockify.service")
+FORCE=0
+
+if [ "${1:-}" = "--force" ]; then
+    FORCE=1
+fi
+
+echo "Stopping VNC stack..."
+
+# Stop in reverse order: websockify first (it's the one that depends on X)
+for s in "${SERVICES[@]}"; do
+    if systemctl is-active --quiet "$s"; then
+        systemctl stop "$s" 2>&1 || true
+    fi
+done
+
+# Belt and braces — anything still bound to display :1
+pkill -TERM -f "Xtigervnc :1"          2>/dev/null || true
+pkill -TERM -f "websockify.*6080"       2>/dev/null || true
+pkill -TERM -f "xfce4-session"          2>/dev/null || true
+pkill -TERM -f "xfwm4"                  2>/dev/null || true
+pkill -TERM -f "xfdesktop"              2>/dev/null || true
+pkill -TERM -f "xfce4-panel"            2>/dev/null || true
+
+# Orphan Chrome from prior sessions: launched with --no-sandbox --disable-gpu
+# and parent=init (PPID 1). Match on cmdline pattern.
+pkill -TERM -f "/opt/google/chrome/chrome --no-sandbox --disable-gpu" 2>/dev/null || true
+
+if [ "$FORCE" = "1" ]; then
+    sleep 1
+    pkill -KILL -f "Xtigervnc :1"          2>/dev/null || true
+    pkill -KILL -f "websockify.*6080"       2>/dev/null || true
+    pkill -KILL -f "xfce4-session"          2>/dev/null || true
+    pkill -KILL -f "/opt/google/chrome/chrome --no-sandbox --disable-gpu" 2>/dev/null || true
+fi
+
+# Wait up to 5s for graceful exit
+for i in 1 2 3 4 5; do
+    if ! pgrep -f "Xtigervnc :1" >/dev/null && ! pgrep -f "websockify.*6080" >/dev/null; then
+        break
+    fi
+    sleep 1
+done
+
+# Cleanup X11 sockets/locks so a fresh start is clean
+rm -f /tmp/.X1-lock 2>/dev/null || true
+rm -f /tmp/.X11-unix/X1 2>/dev/null || true
+
+if pgrep -f "Xtigervnc :1" >/dev/null; then
+    echo "WARNING: Xtigervnc still running after stop. Check: pgrep -f Xtigervnc"
+    exit 1
+fi
+
+echo "VNC stack stopped. RAM should drop ~1.7-2 GB."
+free -h | grep -E "^Mem:"
+exit 0

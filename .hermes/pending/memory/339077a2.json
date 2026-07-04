@@ -1,0 +1,14 @@
+{
+  "id": "339077a2",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: Payntra (PRD-driven monthly expense ledger) lives at /root/projects/payntra (control VPS) and /srv/projects/payntra (dev",
+  "origin": "background_review",
+  "created_at": 1783114092.719297,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "Payntra (PRD-driven monthly expense ledger) lives at /root/projects/payntra (control VPS) and /srv/projects/payntra (dev VPS 147.79.18.32), live at https://payntra.terrybot.top. GitHub repo MadeAt2AM/payntra (private), webhook → /srv/scripts/project_dev.sh redeploy. Seeded test user chris@madeat2am.in / TestPass1! with June+July 2026 ledgers + 10 templates. SMTP outbound blocked from this dev VPS (TLS handshake hangs on mail.cyberslide.net:465/587); for forgot-password recovery, read users.reset_secret directly from DB. PRD-style projects under this user follow the GitHub webhook deploy pattern documented in skill `vps-container-deploy` — see references/fullstack-spa-deploy.md for the Vite+Fastify+Postgres SPA specifics and pitfalls A-L.",
+    "old_text": null
+  }
+}

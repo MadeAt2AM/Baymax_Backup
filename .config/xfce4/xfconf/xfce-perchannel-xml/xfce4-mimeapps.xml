@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-mimeapps" version="1.0">
+  <property name="default-browser" type="string">chromium-browser.desktop</property>
+  <property name="MIMEType">
+    <property name="text/html" type="string" value="chromium-browser.desktop"/>
+    <property name="x-scheme-handler/http" type="string" value="chromium-browser.desktop"/>
+    <property name="x-scheme-handler/https" type="string" value="chromium-browser.desktop"/>
+  </property>
+</channel>

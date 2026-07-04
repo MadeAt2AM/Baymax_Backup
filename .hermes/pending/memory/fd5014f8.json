@@ -1,0 +1,14 @@
+{
+  "id": "fd5014f8",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: When Chris starts a new project: ASK for the project name first, do not auto-detect. Create /root/projects/<name>/ from",
+  "origin": "assistant_tool",
+  "created_at": 1783070122.982931,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "When Chris starts a new project: ASK for the project name first, do not auto-detect. Create /root/projects/<name>/ from _template scaffold, create MadeAt2AM/<name> private repo via API, first commit+push, then SSH first-pull to dev VPS. project.sh 'new' does this end-to-end. NEVER skip the name confirmation (per memory 2026-07-03).",
+    "old_text": null
+  }
+}

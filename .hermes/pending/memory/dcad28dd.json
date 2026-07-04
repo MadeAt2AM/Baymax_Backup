@@ -1,0 +1,14 @@
+{
+  "id": "dcad28dd",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Payntra: monthly expense ledger, live at https://payntra.terrybot.top. Built 2026-07-04. Stack: React+Vite+TS+Tailwind f",
+  "origin": "background_review",
+  "created_at": 1783105440.3617663,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Payntra: monthly expense ledger, live at https://payntra.terrybot.top. Built 2026-07-04. Stack: React+Vite+TS+Tailwind frontend, Fastify+Postgres backend, JWT-in-HTTPOnly-cookie auth, SMTP via mail.cyberslide.net:465 (support@madeat2am.in). DB on dev VPS. Brand accent: Crimson #D32F2F. Phase 1-3 done & verified live (health, login, logout, forgot, reset, profile, password change). Test user chris@madeat2am.in seeded in DB. Phases 4-10 pending: rollover engine, ledger item PATCH, templates CRUD, frontend design system, dashboard with optimistic mutations, profile UI, Playwright E2E. Plan: /root/.hermes/plans/2026-07-04_020000-payntra.md. Project: /root/projects/payntra/. GitHub: MadeAt2AM/payntra (private).",
+    "old_text": null
+  }
+}

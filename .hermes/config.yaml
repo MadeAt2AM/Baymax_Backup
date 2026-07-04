@@ -1,18 +1,19 @@
 model:
-  default: MiniMax-M3
-  provider: minimax
-  base_url: https://api.minimax.io/anthropic
+  default: nvidia/nemotron-3-ultra-550b-a55b:free
+  provider: openrouter
+  base_url: https://openrouter.ai/api/v1
+  api_mode: chat_completions
 fallback_providers:
+  - provider: openrouter
+    model: openrouter/free
+    base_url: https://openrouter.ai/api/v1
+    api_mode: chat_completions
   - provider: openrouter
     model: openrouter/owl-alpha
     base_url: https://openrouter.ai/api/v1
     api_mode: chat_completions
   - provider: openrouter
     model: nvidia/nemotron-3-super-120b-a12b:free
-    base_url: https://openrouter.ai/api/v1
-    api_mode: chat_completions
-  - provider: openrouter
-    model: z-ai/glm-5.1
     base_url: https://openrouter.ai/api/v1
     api_mode: chat_completions
   - provider: nvidia
@@ -24,6 +25,9 @@ fallback_providers:
   - provider: nvidia
     model: stepfun-ai/step-3.5-flash
     base_url: https://integrate.api.nvidia.com/v1
+  - provider: minimax
+    model: MiniMax-M3
+    base_url: https://api.minimax.io/anthropic
 toolsets:
   - hermes-cli
 max_live_sessions: 16
@@ -457,10 +461,10 @@ delegation:
   child_timeout_seconds: 600
   reasoning_effort: ''
   max_concurrent_children: 3
-  max_async_children: 3
   max_spawn_depth: 1
   orchestrator_enabled: true
   subagent_auto_approve: false
+  max_async_children: 3
 prefill_messages_file: ''
 goals:
   max_turns: 20
@@ -477,10 +481,10 @@ moa:
       aggregator:
         provider: openrouter
         model: anthropic/claude-opus-4.8
-      reference_temperature: 0.6
-      aggregator_temperature: 0.4
       max_tokens: 4096
       enabled: true
+      reference_temperature: 0.6
+      aggregator_temperature: 0.4
 skills:
   external_dirs: []
   template_vars: true
@@ -553,25 +557,30 @@ approvals:
   mcp_reload_confirm: true
   destructive_slash_confirm: false
 command_allowlist:
-  - overwrite system config
-  - execute_code
+  - overwrite system file via tee
+  - overwrite project env/config file
   - recursive delete
-  - shell command via -c/-lc flag
-  - kill hermes/gateway process (self-termination)
-  - script execution via heredoc
-  - in-place edit of system config
-  - docker compose restart/stop/kill/down (container lifecycle)
   - delete in root path
   - sudo with combined-flag privilege escalation
-  - copy/move file into system config path
+  - script execution via heredoc
   - hermes update (restarts gateway, kills running agents)
-  - overwrite system file via redirection
-  - stop/restart system service
-  - overwrite system file via tee
-  - force kill processes
+  - copy/move file into system config path
+  - kill hermes/gateway process (self-termination)
   - sudo with privilege flag (stdin/askpass/shell/list)
+  - execute_code
+  - in-place edit of system config
+  - kill process via pgrep/pidof expansion (self-termination)
+  - stop/restart system service
   - script execution via -e/-c flag
   - in-place edit of Hermes config/env
+  - shell command via -c/-lc flag
+  - docker compose restart/stop/kill/down (container lifecycle)
+  - git reset --hard (destroys uncommitted changes)
+  - docker restart/stop/kill (container lifecycle)
+  - SQL TRUNCATE
+  - overwrite system config
+  - overwrite system file via redirection
+  - force kill processes
 hooks_auto_accept: false
 security:
   allow_private_urls: false

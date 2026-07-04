@@ -1,0 +1,74 @@
+#!/bin/bash
+# vnc-idle-killer — tear down the VNC stack if no client has connected in N minutes
+#
+# Designed to run from cron every 5 minutes. Idempotent — safe to run repeatedly.
+#
+# Heuristic: if VNC log file mtime is older than IDLE_MIN minutes, no client has
+# connected. Stack gets torn down. RAM is freed.
+#
+# Configurable via env:
+#   IDLE_MIN=10   # default
+#   FORCE=0       # set 1 to SIGKILL on stuck stop
+
+set -e
+
+SERVICES=("vnc-stack.service" "vnc-websockify.service")
+LOG=/root/.vnc/cyberslide.terrybot.top:1.log
+IDLE_MIN=${IDLE_MIN:-10}
+
+# Don't kill if service is already down
+STACK_ACTIVE=0
+for s in "${SERVICES[@]}"; do
+    if systemctl is-active --quiet "$s"; then
+        STACK_ACTIVE=1
+        break
+    fi
+done
+if [ "$STACK_ACTIVE" = "0" ]; then
+    exit 0
+fi
+
+# If no log file, treat as fresh start — give it a grace period
+if [ ! -f "$LOG" ]; then
+    exit 0
+fi
+
+LAST_LOG_MTIME=$(stat -c %Y "$LOG" 2>/dev/null || echo 0)
+NOW=$(date +%s)
+IDLE_SEC=$((NOW - LAST_LOG_MTIME))
+IDLE_MIN_ACTUAL=$((IDLE_SEC / 60))
+
+if [ "$IDLE_SEC" -lt $((IDLE_MIN * 60)) ]; then
+    # Still active
+    exit 0
+fi
+
+echo "[$(date -Iseconds)] VNC idle for ${IDLE_MIN_ACTUAL}m (>${IDLE_MIN}m threshold). Tearing down."
+
+# Stop in reverse order: websockify first
+for s in $(echo "${SERVICES[@]}" | tr ' ' '\n' | tac); do
+    systemctl stop "$s" 2>&1 || true
+done
+
+# Belt and braces — orphan Chrome processes from display :1
+pkill -TERM -f "/opt/google/chrome/chrome --no-sandbox --disable-gpu" 2>/dev/null || true
+pkill -TERM -f "Xtigervnc :1" 2>/dev/null || true
+pkill -TERM -f "websockify.*6080" 2>/dev/null || true
+pkill -TERM -f "xfce4-session" 2>/dev/null || true
+
+if [ "${FORCE:-0}" = "1" ]; then
+    sleep 1
+    pkill -KILL -f "/opt/google/chrome/chrome --no-sandbox --disable-gpu" 2>/dev/null || true
+    pkill -KILL -f "Xtigervnc :1" 2>/dev/null || true
+    pkill -KILL -f "websockify.*6080" 2>/dev/null || true
+fi
+
+# Cleanup X11 sockets/locks
+rm -f /tmp/.X1-lock 2>/dev/null || true
+rm -f /tmp/.X11-unix/X1 2>/dev/null || true
+
+# Log the action
+mkdir -p /var/log/hermes-vnc
+echo "[$(date -Iseconds)] torn down after ${IDLE_MIN_ACTUAL}m idle" >> /var/log/hermes-vnc/idle-killer.log
+
+exit 0

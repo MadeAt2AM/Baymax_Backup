@@ -1,0 +1,84 @@
+# Payntra-class docker-compose for a Node fullstack app on the dev VPS.
+#
+# Bakes in two vps-container-deploy pitfalls:
+#   - App MUST attach to the external `web` network so Caddy can reverse_proxy
+#     it (pitfall L)
+#   - `detect_port` greps for `PORT=N` only; the comment block makes the YAML
+#     `PORT: 3000` discoverable (pitfall M, fix option 1)
+#
+# Pair with: templates/node-fullstack-dockerfile
+#
+# The `.env` file in the same directory must define at minimum:
+#   JWT_SECRET, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, APP_URL
+#
+# Postgres creds here are local-only (docker internal). For production, rotate
+# POSTGRES_PASSWORD and reflect in DATABASE_URL.
+
+name: <project>
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: <project>-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: <project>
+      POSTGRES_PASSWORD: <project>
+      POSTGRES_DB: <project>
+    volumes:
+      - <project>-db-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U <project> -d <project>"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: <project>-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://<project>:<project>@db:5432/<project>
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-<project>.terrybot.top}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE:-true}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      APP_URL: ${APP_URL:-https://<project>.terrybot.top}
+    ports:
+      - "3000"
+    # PORT=3000 — consumed by /srv/scripts/project_dev.sh detect_port
+    # (the script greps for `PORT=N` to fill in the Caddy reverse_proxy port)
+    networks:
+      - default
+      - web          # ← CRITICAL: Caddy is on this external network
+    healthcheck:
+      # 127.0.0.1, NOT localhost — alpine DNS can fail to resolve localhost
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    driver: bridge
+  web:                 # ← CRITICAL: must be external so it joins Caddy's network
+    external: true
+    name: web
+
+volumes:
+  <project>-db-data:

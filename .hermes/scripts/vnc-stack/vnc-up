@@ -1,0 +1,64 @@
+#!/bin/bash
+# vnc-up — spin up the VNC stack on demand
+#
+# Usage:
+#   vnc-up           # start stack if not running
+#   vnc-up --wait    # start and wait until port 6080 is accepting connections
+#
+# Returns 0 if stack is up (was already running, or just started).
+# Returns 1 if start failed.
+
+set -e
+
+SERVICES=("vnc-stack.service" "vnc-websockify.service")
+HOST_PORT=6080
+WAIT_TIMEOUT=20
+
+wait_for_port() {
+    local i
+    for i in $(seq 1 $WAIT_TIMEOUT); do
+        if ss -tnl 2>/dev/null | grep -q ":${HOST_PORT} "; then
+            return 0
+        fi
+        sleep 1
+    done
+    return 1
+}
+
+case "${1:-}" in
+    --wait) WAIT=1 ;;
+    *)      WAIT=0 ;;
+esac
+
+# Already running? Both must be active.
+if systemctl is-active --quiet "${SERVICES[0]}" && systemctl is-active --quiet "${SERVICES[1]}"; then
+    if [ "$WAIT" = "1" ]; then
+        wait_for_port
+    fi
+    echo "VNC stack already running."
+    for s in "${SERVICES[@]}"; do systemctl is-active "$s"; done
+    exit 0
+fi
+
+echo "Starting VNC stack..."
+for s in "${SERVICES[@]}"; do
+    if ! systemctl is-active --quiet "$s"; then
+        systemctl start "$s" || {
+            echo "ERROR: failed to start $s"
+            exit 1
+        }
+    fi
+done
+
+if [ "$WAIT" = "1" ]; then
+    if wait_for_port; then
+        echo "VNC stack up and accepting connections on :$HOST_PORT"
+        exit 0
+    else
+        echo "ERROR: VNC stack started but port $HOST_PORT not ready after ${WAIT_TIMEOUT}s"
+        systemctl status "${SERVICES[0]}" --no-pager | head -10
+        systemctl status "${SERVICES[1]}" --no-pager | head -10
+        exit 1
+    fi
+fi
+exit 0

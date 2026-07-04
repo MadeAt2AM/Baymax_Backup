@@ -1,0 +1,14 @@
+{
+  "id": "474fcbf2",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Payntra project: monthly expense ledger, React+Vite+TS+Tailwind frontend, Fastify+Postgres backend, JWT-in-cookie auth,",
+  "origin": "assistant_tool",
+  "created_at": 1783102284.653399,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Payntra project: monthly expense ledger, React+Vite+TS+Tailwind frontend, Fastify+Postgres backend, JWT-in-cookie auth, SMTP via mail.cyberslide.net:465 (support@madeat2am.in). Subdomain: payntra.terrybot.top (lowercase). Brand accent: Crimson #D32F2F (CYBERSLIDE/MadeAt2AM brand kit). Live on dev VPS via project.sh GitHub flow. Plan: /root/.hermes/plans/2026-07-04_020000-payntra.md. PRD: /root/.hermes/plans/payntra-prd.html.",
+    "old_text": null
+  }
+}

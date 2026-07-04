@@ -1,0 +1,7 @@
+2026/06/30-13:37:28.354 140c39 Reusing MANIFEST /root/.config/google-chrome/Default/IndexedDB/https_www.linkedin.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/06/30-13:37:28.355 140c39 Recovering log #3
+2026/06/30-13:37:28.355 140c39 Reusing old log /root/.config/google-chrome/Default/IndexedDB/https_www.linkedin.com_0.indexeddb.leveldb/000003.log 
+2026/07/01-13:12:08.080 140c3b Level-0 table #5: started
+2026/07/01-13:12:08.083 140c3b Level-0 table #5: 61451 bytes OK
+2026/07/01-13:12:08.085 140c3b Delete type=0 #3
+2026/07/01-13:12:08.085 140c3b Manual compaction at level-0 from (begin) .. (end); will stop at (end)

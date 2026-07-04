@@ -1,0 +1,14 @@
+{
+  "id": "11b6db1e",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: Payntra session note (auto-archived context): the user's full PRD implementation shipped live at https://payntra.terrybo",
+  "origin": "background_review",
+  "created_at": 1783127434.1473718,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "Payntra session note (auto-archived context): the user's full PRD implementation shipped live at https://payntra.terrybot.top with 76 tests passing (40 server Vitest + 19 client Vitest + 17 Playwright E2E, reduced to 8 E2E final after consolidations). All 10 phases done: schema, auth, profile, rollover engine, ledger UI, templates, dark mode, dashboard, profile page, e2e. Phase 11 (per-month item additions via POST /api/ledger/:m/items + [+] Add on templates rows) shipped after fixing the discriminated-union TS narrowing bug + vi.mock hoisting trap. No outstanding PRD work. Operational debt: outbound SMTP blocked from dev VPS IP (mail.cyberslide.net TLS handshake hangs); flagged for production readiness.",
+    "old_text": null
+  }
+}

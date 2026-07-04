@@ -1,0 +1,14 @@
+{
+  "id": "9bae6e9e",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Chris uses \"use default\" as a shortcut for: defer to existing brand / project / infra conventions rather than re-asking.",
+  "origin": "background_review",
+  "created_at": 1783105159.9369297,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Chris uses \"use default\" as a shortcut for: defer to existing brand / project / infra conventions rather than re-asking. When given the choice between a custom palette and the MadeAt2AM brand kit (Warm Cream #FDFBF7, Obsidian #111111, Crimson #D32F2F, Yellow #FFC107), \"use default\" means use the brand kit. Same logic for subdomain casing (use lowercase), HTTP methods, libraries (prefer what's already in /root/projects/* over new ones).",
+    "old_text": null
+  }
+}

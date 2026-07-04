@@ -1,0 +1,14 @@
+{
+  "id": "93845335",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Brand \"use default\" rule for Chris: when he says \"use default\" on a brand/color/styling decision on a CYBERSLIDE/MadeAt2",
+  "origin": "background_review",
+  "created_at": 1783107339.8473928,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Brand \"use default\" rule for Chris: when he says \"use default\" on a brand/color/styling decision on a CYBERSLIDE/MadeAt2AM project, pull from the canonical brand palette — Warm Cream #FDFBF7 (bg), Obsidian #111111 (text), Crimson #D32F2F (accent), Yellow #FFC107 (highlight). Don't ask, don't show swatches, just apply. Confirmed 2026-07-04 (Payntra: \"Use default for color scheme\" → used Crimson accent across the build).",
+    "old_text": null
+  }
+}

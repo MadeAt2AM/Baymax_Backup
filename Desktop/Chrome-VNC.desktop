@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Chrome (VNC)
+Comment=Open Chrome on VNC Desktop
+Exec=google-chrome --no-sandbox --disable-gpu --display=:1
+Icon=chromium
+Terminal=false
+Categories=Network;WebBrowser;

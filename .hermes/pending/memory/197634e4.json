@@ -1,0 +1,14 @@
+{
+  "id": "197634e4",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Payntra Phase 11 added two features live at https://payntra.terrybot.top on 2026-07-04: (1) templates page has [+ Add] b",
+  "origin": "background_review",
+  "created_at": 1783127995.4716928,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Payntra Phase 11 added two features live at https://payntra.terrybot.top on 2026-07-04: (1) templates page has [+ Add] button per row that clones the template into the current month's ledger via POST /api/ledger/:monthYear/items with {templateId}; (2) dashboard has [+ Add item] button that opens a modal collecting name/amount/notes/also-create-as-template-checkbox. The same endpoint accepts both shapes via Zod .superRefine — server validates either-or semantics, client sends flat optional-everywhere body. Two real bugs were caught via live curl that local tsc missed: (a) the original schema declared name/amount as non-optional, blocking the {templateId}-only path; (b) the modal flow's createTemplate:true atomically inserts both an expense_template and a ledger_item in one transaction. After Phase 11 the codebase is 41 server vitest tests, 22 client tests, 8 Playwright e2e tests, all green. Live URL is live; latest commits auto-deploy via push to main on the GitHub webhooks pipeline at 147.79.18.32.",
+    "old_text": null
+  }
+}

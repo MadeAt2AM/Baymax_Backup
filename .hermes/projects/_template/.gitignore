@@ -1,0 +1,84 @@
+# .gitignore — standard for MadeAt2AM project folders (this VPS)
+# One project per folder under /root/projects/<name>/
+
+# ─── secrets & env ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+config.local.*
+
+# ─── node / python / go caches ─────────────────────────
+node_modules/
+.pnp/
+.pnp.js
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+*.egg-info/
+dist/
+build/
+
+# ─── framework outputs ──────────────────────────────────
+.next/
+.nuxt/
+.svelte-kit/
+build/
+out/
+.cache/
+.parcel-cache/
+.turbo/
+
+# ─── logs / runtime ─────────────────────────────────────
+*.log
+*.log.*
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+.pid/
+
+# ─── OS / editor cruft ──────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── heavy binaries (rebuild on deploy) ─────────────────
+*.tar
+*.tar.gz
+*.zip
+*.tgz
+*.dmg
+*.exe
+coverage/
+.nyc_output/
+
+# ─── docker / compose local artefacts ───────────────────
+.docker/
+docker-compose.override.yml
+.dockerignore.bak
+
+# ─── baymax sync artefacts (managed by project.sh, not git) ─
+.baymax-deploy-id
+.baymax-last-sync
+.baymax-deploy.log

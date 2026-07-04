@@ -1,0 +1,14 @@
+{
+  "id": "4cbf82fb",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to memory: Project workflow rule (2026-07-03): every web app/website lives in /root/projects/<name>/ on cyberslide, mirrored to pri",
+  "origin": "assistant_tool",
+  "created_at": 1783070121.9760642,
+  "payload": {
+    "action": "add",
+    "target": "memory",
+    "content": "Project workflow rule (2026-07-03): every web app/website lives in /root/projects/<name>/ on cyberslide, mirrored to private GitHub MadeAt2AM/<name>. Push to main → webhook at 147.79.18.32:9000 (adnanh/webhook on dev VPS) → /srv/scripts/project_dev.sh redeploy → docker compose up + caddy reload → https://<name>.terrybot.top. Drive via `/root/.hermes/bin/project.sh {new|push|deploy|status|logs|teardown}`. Webhook secret at /root/.hermes/.dev-vps-webhook.secret + /etc/webhook/hooks.json on dev VPS. Token persists at /srv/scripts/.gh-token on dev VPS. UFW allows 9000/tcp. project_dev.sh at /srv/scripts/ (NOT /root/.hermes/bin/ — wrong path assumption I almost made). Dev VPS uses deploy user with NOPASSWD sudo, /srv/{projects,caddy,scripts}/ all deploy-owned.",
+    "old_text": null
+  }
+}

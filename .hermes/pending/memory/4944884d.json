@@ -1,0 +1,14 @@
+{
+  "id": "4944884d",
+  "subsystem": "memory",
+  "action": "add",
+  "summary": "add to user profile: Chris approves long autonomous builds via out-of-band \"approve all action related to this project, I will be offline...",
+  "origin": "background_review",
+  "created_at": 1783105158.9350283,
+  "payload": {
+    "action": "add",
+    "target": "user",
+    "content": "Chris approves long autonomous builds via out-of-band \"approve all action related to this project, I will be offline... continue\" messages. When this lands mid-tool, treat it as blanket pre-authorization for the rest of the task: skip future `clarify` calls on the same scope, keep going through the plan, and only pause for genuinely destructive/destructive-to-other-users actions (e.g. teardown of someone else's repo, secrets rotations, prod data deletes). Don't re-ask for phase-by-phase go-aheads once approved.",
+    "old_text": null
+  }
+}
