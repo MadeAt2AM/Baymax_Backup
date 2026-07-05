@@ -27,3 +27,13 @@ Patch-then-test + restart + verify protocol: gateway code = (1) write unit test 
 Voice mode rule (2026-07-02 lesson): Chris's chat was left on `"all"` in `~/.hermes/gateway_voice_mode.json` after voice-pipeline debugging, which auto-TTS'd every reply with a voice bubble stitched on top of the text — same bug class as yesterday's voice-after-text. Default for ALL chats is `"off"` — voice is opt-in via the `text_to_speech` tool. `"all"` mode is for explicit debugging only, must be reverted to `"off"` before declaring voice work closed. Part of the verification checklist, not an afterthought.
 §
 Timezone rule (HARD): operator lives in Singapore. ALL time/date/schedule output in SGT (UTC+8, Asia/Singapore). Convert from source data (UTC/EDT/etc) and show SGT first; include source-native timestamps alongside for reconciliation. Applies to live scores, fixtures, cron runtimes, log timestamps, "yesterday/today/tonight" — anything time-anchored. Persisted in /root/.hermes/SOUL.md "Operator Profile — Singapore (SGT)" section on 2026-07-02.
+§
+MTU mismatch is the #1 cause of 'works on host, fails in container' for TLS/Postgres/SMTP on Hetzner/Cloud VPS. Host eth0 MTU=1400, Docker default bridge MTU=1500. Fix: custom docker network with driver_opts mtu=1400, explicit networks on ALL services. Discovered 2026-07-05 on Payntra deploy.
+§
+SMTP: mail.cyberslide.net:587 STARTTLS works. Port 465 SSL failed. Credentials: support@madeat2am.in (user provided, not default Hermes SMTP). Fixed in Payntra deploy 2026-07-05.
+§
+Deploy flow: push to main → GitHub webhook → VPS port 9000 → project_dev.sh redeploy → Caddy reload → live at payntra.terrybot.top. Webhook: MadeAt2AM/payntra private repo.
+§
+Project: Payntra at payntra.terrybot.top on VPS 147.79.18.32 (Hetzner Helsinki). Stack: React/Vite/TS/Tailwind + Fastify/Zod/Postgres. Docker network payntra-net MTU 1400. Brand accent: Crimson #D32F2F.
+§
+Cookie: HTTPOnly, Secure, SameSite=Lax, 30-day TTL, domain=payntra.terrybot.top. JWT in cookie, bcrypt 10 rounds, reset token crypto.randomBytes(32).hex. First-run rollover falls back to expense_templates.

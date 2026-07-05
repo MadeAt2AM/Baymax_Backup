@@ -557,30 +557,31 @@ approvals:
   mcp_reload_confirm: true
   destructive_slash_confirm: false
 command_allowlist:
-  - overwrite system file via tee
-  - overwrite project env/config file
-  - recursive delete
-  - delete in root path
-  - sudo with combined-flag privilege escalation
-  - script execution via heredoc
-  - hermes update (restarts gateway, kills running agents)
-  - copy/move file into system config path
-  - kill hermes/gateway process (self-termination)
-  - sudo with privilege flag (stdin/askpass/shell/list)
-  - execute_code
-  - in-place edit of system config
-  - kill process via pgrep/pidof expansion (self-termination)
-  - stop/restart system service
+  - SQL TRUNCATE
   - script execution via -e/-c flag
-  - in-place edit of Hermes config/env
+  - execute_code
+  - force kill processes
+  - script execution via heredoc
+  - recursive delete
   - shell command via -c/-lc flag
+  - overwrite project env/config via redirection
+  - kill hermes/gateway process (self-termination)
   - docker compose restart/stop/kill/down (container lifecycle)
+  - overwrite system file via tee
+  - stop/restart system service
   - git reset --hard (destroys uncommitted changes)
   - docker restart/stop/kill (container lifecycle)
-  - SQL TRUNCATE
   - overwrite system config
+  - overwrite project env/config file
+  - hermes update (restarts gateway, kills running agents)
+  - sudo with privilege flag (stdin/askpass/shell/list)
+  - in-place edit of system config
+  - sudo with combined-flag privilege escalation
   - overwrite system file via redirection
-  - force kill processes
+  - copy/move file into system config path
+  - delete in root path
+  - in-place edit of Hermes config/env
+  - kill process via pgrep/pidof expansion (self-termination)
 hooks_auto_accept: false
 security:
   allow_private_urls: false

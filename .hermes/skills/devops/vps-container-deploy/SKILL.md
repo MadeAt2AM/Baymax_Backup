@@ -952,11 +952,48 @@ curl -sI https://<name>.<domain>/ | grep -i cache-control
 
 Verified 2026-07-04 (Payntra Phase 12 — user reported "the `[+ Add]` button is still wrapping to two lines after your fix"; verified the new bundle `index-DOTPvg92.js` contained the fix; sent the hard-refresh recipe; user confirmed the new layout worked first try).
 
-### AE. The `terminal` tool's "looks like a long-lived process" heuristic mis-fires on `vite build` and `npx vite build` — use `npm run` with explicit timeout instead
+### AF. Docker bridge network MTU mismatch causes TLS handshake timeouts — match host MTU in network opts
 
-**Symptom:** `terminal` returns:
+**Symptom:** Outbound TCP connections (especially TLS handshakes) from Docker containers time out with `ETIMEDOUT` errors, even though:
+- The host can reach the destination successfully
+- `nc -zv` shows ports as "open" from inside the container
+- Basic TCP connectivity works (three-way handshake succeeds)
+- The issue affects encrypted protocols like SMTP (STARTTLS), HTTPS, etc. more than plain TCP
 
+**Root cause:** MTU mismatch between host and Docker bridge network.
+- Host's physical interface (e.g. eth0) may have MTU 1400 (common on cloud/VPS environments)
+- Docker's default bridge networks use MTU 1500
+- When containers try to send packets larger than 1400 bytes (after IP/TCP headers), they get fragmented
+- The fragments are often dropped by intermediate network equipment, causing silent data loss
+- TLS handshakes are particularly vulnerable because they exchange large certificates and key material
+
+**Fix — explicitly set the Docker network MTU to match the host:**
+
+In your `docker-compose.yml`:
+
+```yaml
+networks:
+  your-network-name:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"  # Must match host's MTU
 ```
+
+**How to find your host's MTU:**
+```bash
+ip link show | grep -E 'mtu|eth|ens|enp' | head -5
+```
+
+Look for the physical interface (not docker0, veth*, or br-*) and note its mtu value.
+
+**Verification:**
+1. After setting the MTU, check inside the container: `ip link show eth0` (should show mtu 1400)
+2. Test TLS connectivity: `openssl s_client -connect smtp.gmail.com:587 -starttls smtp`
+3. Test SMTP from your application code
+
+**Why this wasn't caught earlier:** Most cloud/VPS environments have standard MTU 1500, so the issue only appears on specific infrastructure where the host MTU is reduced (often for VPN/tunneling overhead). It's environment-specific and easy to miss when testing from a dev machine with standard MTU.
+
+Verified 2026-07-05 (Payntra SMTP timeout fix — host eth0 had MTU 1400, Docker bridge used 1500, causing SMTP TLS handshakes to time out; setting driver_opts.com.docker.network.driver.mtu=1400 resolved the issue).
 "status":"error","error":"This foreground command appears to start a long-lived server/watch process.
 Run it with background=true, verify readiness (health endpoint/log signal), then execute tests
 in a separate command."
@@ -999,6 +1036,180 @@ cd client && npm run build 2>&1 | tail -20
 ```
 
 Verified 2026-07-04 (Payntra Phase 12 — `npx vite build` and `vite build` both rejected with the heuristic message; `npm run build` worked first try, output `dist/assets/index-DOTPvg92.js` confirming the rebuild).
+
+### AF. Docker bridge network MTU mismatch causes TLS handshake timeouts — match host MTU in network opts
+
+**Symptom:** Outbound TCP connections (especially TLS handshakes) from Docker containers time out with `ETIMEDOUT` errors, even though:
+- The host can reach the destination successfully
+- `nc -zv` shows ports as "open" from inside the container
+- Basic TCP connectivity works (three-way handshake succeeds)
+- The issue affects encrypted protocols like SMTP (STARTTLS), HTTPS, etc. more than plain TCP
+
+**Root cause:** MTU mismatch between host and Docker bridge network.
+- Host's physical interface (e.g. eth0) may have MTU 1400 (common on cloud/VPS environments)
+- Docker's default bridge networks use MTU 1500
+- When containers try to send packets larger than 1400 bytes (after IP/TCP headers), they get fragmented
+- The fragments are often dropped by intermediate network equipment, causing silent data loss
+- TLS handshakes are particularly vulnerable because they exchange large certificates and key material
+
+**Fix — explicitly set the Docker network MTU to match the host:**
+
+In your `docker-compose.yml`:
+
+```yaml
+networks:
+  your-network-name:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"  # Must match host's MTU
+```
+
+**How to find your host's MTU:**
+```bash
+ip link show | grep -E 'mtu|eth|ens|enp' | head -5
+```
+
+Look for the physical interface (not docker0, veth*, or br-*) and note its mtu value.
+
+**Verification:**
+1. After setting the MTU, check inside the container: `ip link show eth0` (should show mtu 1400)
+2. Test TLS connectivity: `openssl s_client -connect smtp.gmail.com:587 -starttls smtp`
+3. Test SMTP from your application code
+
+**Why this wasn't caught earlier:** Most cloud/VPS environments have standard MTU 1500, so the issue only appears on specific infrastructure where the host MTU is reduced (often for VPN/tunneling overhead). It's environment-specific and easy to miss when testing from a dev machine with standard MTU.
+
+**Full debugging path from this session:**
+1. `curl /forgot-password` → 500 with "Connection timeout" in logs
+2. Check container logs → `nodemailer` shows `ETIMEDOUT` at TLS handshake
+3. Test from host → `nc -zv mail.cyberslide.net 587` works, `openssl s_client -connect ... -starttls smtp` works
+4. Test from container → `docker exec nc -zv` shows "open", but `node` TLS handshake times out
+5. Test raw TLS from container → `docker exec node -e "tls.connect(...)"` → hangs after "220 Go ahead"
+6. Test with `--network host` → works! TLS 1.3 handshake succeeds
+7. Compare MTUs → host eth0=1400, container eth0=1500
+8. Add `driver_opts.mtu=1400` to docker-compose network, recreate containers
+8. Verify container MTU is now 1400, test SMTP → works
+
+Verified 2026-07-05 (Payntra SMTP timeout fix — host eth0 had MTU 1400, Docker bridge used 1500, causing SMTP TLS handshakes to time out; setting driver_opts.com.docker.network.driver.mtu=1400 resolved the issue).
+
+### AG. SMTP/environment variables missing from containers — always use `env_file` and verify .env has actual values
+
+**Symptom:** Application inside Docker container cannot connect to external services (SMTP, DB) because environment variables are empty or have placeholder values, even though `.env` file exists on the host.
+
+**Root causes (multiple):**
+1. `docker-compose.yml` missing `env_file: .env` on services — Docker Compose doesn't auto-load `.env` into container environment unless explicitly told
+2. `.env` file has masked/placeholder values (e.g., `DATABASE_URL=postgresql://payntra:***@db:5432/payntra` instead of actual password)
+3. `.env` file has stale config (old SMTP port 465 instead of new 587 with STARTTLS)
+
+**Fix — docker-compose.yml must declare `env_file` for EVERY service:**
+
+```yaml
+services:
+  app:
+    env_file: .env
+    # ... rest of config
+  db:
+    env_file: .env
+    # ... rest of config
+```
+
+**Fix — .env must have ACTUAL values, not placeholders:**
+
+```env
+# WRONG (placeholder):
+DATABASE_URL=postgresql://payntra:***@db:5432/payntra
+SMTP_PORT=465
+SMTP_SECURE=true
+
+# RIGHT (actual values):
+DATABASE_URL=postgresql://payntra:payntra@db:5432/payntra
+SMTP_PORT=587
+SMTP_SECURE=false
+```
+
+**Verification checklist after deploying:**
+```bash
+# 1. Check container env vars
+docker exec <container> env | grep -E 'SMTP|DATABASE'
+
+# 2. Test connectivity from inside container
+docker exec <container> node -e "require('nodemailer').createTransport(...).verify()"
+
+# 3. Test DB connectivity
+docker exec <container> node -e "const { Pool } = require('pg'); new Pool({connectionString: process.env.DATABASE_URL}).query('SELECT 1')"
+```
+
+**Why this happens:** The `.env` file on the VPS was created during initial scaffold with placeholder values, and when we updated it locally, the VPS copy wasn't synced. The `env_file` directive was also missing from the docker-compose.yml that was actually being used on the dev VPS (the control VPS version had it, but the dev VPS copy didn't).
+
+Verified 2026-07-05 (Payntra — SMTP config was empty in container because docker-compose.yml lacked `env_file: .env`; DB password was `***` placeholder; both fixed, then SMTP worked).
+
+### AH. Database service not on application Docker network — services that communicate MUST share a network
+
+**Symptom:** Application container cannot resolve database hostname (`EAI_AGAIN getaddrinfo EAI_AGAIN db`) even though both containers are running and healthy.
+
+**Root cause:** In `docker-compose.yml`, the `db` service was missing the `networks:` directive, so it attached to the default project network (`payntra_default`), while the `app` service explicitly declared `networks: - payntra-net - web`. They were on different networks and couldn't communicate.
+
+**Fix — every service that needs to talk to another MUST declare the shared network:**
+
+```yaml
+services:
+  db:
+    networks:
+      - payntra-net   # <-- ADD THIS
+    # ...
+  app:
+    networks:
+      - payntra-net
+      - web
+    # ...
+networks:
+  payntra-net:
+    driver: bridge
+    # ...
+```
+
+**Verification:**
+```bash
+# Check which networks each container is on
+docker inspect <container> --format '{{json .NetworkSettings.Networks}}'
+
+# Test DNS resolution from app container
+docker exec payntra-app getent hosts db
+```
+
+**Why this happens:** When scaffolding docker-compose.yml, it's easy to add networks to the app service (which needs web for Caddy) but forget the db service. The `depends_on` directive only controls startup order, not network connectivity.
+
+Verified 2026-07-05 (Payntra — `db` service missing `networks: - payntra-net`; app couldn't resolve `db` hostname; fixed by adding the network declaration to db service).
+
+### AI. Docker network MTU changes require network recreation — can't hot-patch an existing bridge network
+
+**Symptom:** You add `driver_opts: com.docker.network.driver.mtu: "1400"` to docker-compose.yml and run `docker compose up -d`, but containers still show MTU 1500 inside.
+
+**Root cause:** Docker bridge networks are created once and their MTU is immutable. `docker compose up -d` with an existing network will reuse the old network (with old MTU) rather than recreating it.
+
+**Fix — explicitly remove the old network before bringing up:**
+
+```bash
+# Stop and remove containers
+docker compose down
+
+# Remove the old network (by project-prefixed name)
+docker network rm <project>_payntra-net
+
+# Bring up fresh (creates network with new MTU)
+docker compose up -d
+```
+
+**Or if using project_dev.sh redeploy:**
+The redeploy script should include network recreation when docker-compose.yml changes. Add a network-recreate step if the compose file hash changed.
+
+**Verification:**
+```bash
+# After recreate, check container MTU
+docker exec <container> ip link show eth0 | grep mtu
+# Should show 1400, not 1500
+```
+
+Verified 2026-07-05 (Payntra — added MTU 1400 to docker-compose.yml but containers kept MTU 1500 until we ran `docker compose down && docker network rm ... && docker compose up -d`).
 
 Verified 2026-07-04 (Payntra Phase 11 across multiple iterations).
 
