@@ -1211,6 +1211,148 @@ docker exec <container> ip link show eth0 | grep mtu
 
 Verified 2026-07-05 (Payntra — added MTU 1400 to docker-compose.yml but containers kept MTU 1500 until we ran `docker compose down && docker network rm ... && docker compose up -d`).
 
+### AJ. Password authentication failed for postgres user — .env DATABASE_URL placeholder not replaced with actual password
+
+**Symptom:** Application healthcheck returns `{"ok":false,"db":"down","error":"password authentication failed for user \"payntra\""}` even though Postgres container is healthy and environment variables look correct at first glance.
+
+**Root cause:** The `.env` file had `DATABASE_URL=postgresql://payntra:***@db:5432/payntra` with `***` as a placeholder instead of the actual password (`payntra`). The container picked up this literal string and tried to authenticate with password `***`.
+
+**Fix:** Replace placeholder with actual password in `.env`:
+```env
+DATABASE_URL=postgresql://payntra:payntra@db:5432/payntra
+```
+
+**Why this happens:** The `.env` file was scaffolded with a masked password for security in documentation/examples, but the mask was never replaced with the real value during deployment. The `env_file` directive passes the literal string to the container.
+
+**Verification:**
+```bash
+# Check what the container actually sees
+docker exec <app-container> env | grep DATABASE_URL
+# Should show the real password, not ***
+```
+
+Verified 2026-07-05 (Payntra — .env had `***` placeholder, app container couldn't authenticate to Postgres; fixed .env, recreated app container, healthcheck passed).
+
+### AG. SMTP/environment variables missing from containers — always use `env_file` and verify .env has actual values
+
+**Symptom:** Application inside Docker container cannot connect to external services (SMTP, DB) because environment variables are empty or have placeholder values, even though `.env` file exists on the host.
+
+**Root causes (multiple):**
+1. `docker-compose.yml` missing `env_file: .env` on services — Docker Compose doesn't auto-load `.env` into container environment unless explicitly told
+2. `.env` file has masked/placeholder values (e.g., `DATABASE_URL=postgresql://payntra:***@db:5432/payntra` instead of actual password)
+3. `.env` file has stale config (old SMTP port 465 instead of new 587 with STARTTLS)
+
+**Fix — docker-compose.yml must declare `env_file` for EVERY service:**
+
+```yaml
+services:
+  app:
+    env_file: .env
+    # ... rest of config
+  db:
+    env_file: .env
+    # ... rest of config
+```
+
+**Fix — .env must have ACTUAL values, not placeholders:**
+
+```env
+# WRONG (placeholder):
+DATABASE_URL=postgresql://payntra:***@db:5432/payntra
+SMTP_PORT=465
+SMTP_SECURE=true
+
+# RIGHT (actual values):
+DATABASE_URL=postgresql://payntra:payntra@db:5432/payntra
+SMTP_PORT=587
+SMTP_SECURE=false
+```
+
+**Verification checklist after deploying:**
+```bash
+# 1. Check container env vars
+docker exec <container> env | grep -E 'SMTP|DATABASE'
+
+# 2. Test connectivity from inside container
+docker exec <container> node -e "require('nodemailer').createTransport(...).verify()"
+
+# 3. Test DB connectivity
+docker exec <container> node -e "const { Pool } = require('pg'); new Pool({connectionString: process.env.DATABASE_URL}).query('SELECT 1')"
+```
+
+**Why this happens:** The `.env` file on the VPS was created during initial scaffold with placeholder values, and when we updated it locally, the VPS copy wasn't synced. The `env_file` directive was also missing from the docker-compose.yml that was actually being used on the dev VPS (the control VPS version had it, but the dev VPS copy didn't).
+
+Verified 2026-07-05 (Payntra — SMTP config was empty in container because docker-compose.yml lacked `env_file: .env`; DB password was `***` placeholder; both fixed, then SMTP worked).
+
+### AH. Database service not on application Docker network — services that communicate MUST share a network
+
+**Symptom:** Application container cannot resolve database hostname (`EAI_AGAIN getaddrinfo EAI_AGAIN db`) even though both containers are running and healthy.
+
+**Root cause:** In `docker-compose.yml`, the `db` service was missing the `networks:` directive, so it attached to the default project network (`payntra_default`), while the `app` service explicitly declared `networks: - payntra-net - web`. They were on different networks and couldn't communicate.
+
+**Fix — every service that needs to talk to another MUST declare the shared network:**
+
+```yaml
+services:
+  db:
+    networks:
+      - payntra-net   # <-- ADD THIS
+    # ...
+  app:
+    networks:
+      - payntra-net
+      - web
+    # ...
+networks:
+  payntra-net:
+    driver: bridge
+    # ...
+```
+
+**Verification:**
+```bash
+# Check which networks each container is on
+docker inspect <container> --format '{{json .NetworkSettings.Networks}}'
+
+# Test DNS resolution from app container
+docker exec payntra-app getent hosts db
+```
+
+**Why this happens:** When scaffolding docker-compose.yml, it's easy to add networks to the app service (which needs web for Caddy) but forget the db service. The `depends_on` directive only controls startup order, not network connectivity.
+
+Verified 2026-07-05 (Payntra — `db` service missing `networks: - payntra-net`; app couldn't resolve `db` hostname; fixed by adding the network declaration to db service).
+
+### AI. Docker network MTU changes require network recreation — can't hot-patch an existing bridge network
+
+**Symptom:** You add `driver_opts: com.docker.network.driver.mtu: "1400"` to docker-compose.yml and run `docker compose up -d`, but containers still show MTU 1500 inside.
+
+**Root cause:** Docker bridge networks are created once and their MTU is immutable. `docker compose up -d` with an existing network will reuse the old network (with old MTU) rather than recreating it.
+
+**Fix — explicitly remove the old network before bringing up:**
+
+```bash
+# Stop and remove containers
+docker compose down
+
+# Remove the old network (by project-prefixed name)
+docker network rm <project>_payntra-net
+
+# Bring up fresh (creates network with new MTU)
+docker compose up -d
+```
+
+**Or if using project_dev.sh redeploy:**
+The redeploy script should include network recreation when docker-compose.yml changes. Add a network-recreate step if the compose file hash changed.
+
+**Verification:**
+```bash
+# After recreate, check container MTU
+docker exec <container> ip link show eth0 | grep mtu
+# Should show 1400, not 1500
+```
+
+Verified 2026-07-05 (Payntra — added MTU 1400 to docker-compose.yml but containers kept MTU 1500 until we ran `docker compose down && docker network rm ... && docker compose up -d`).
+
 Verified 2026-07-04 (Payntra Phase 11 across multiple iterations).
 
 12. **Test `webhook` with manual signed POST before going through GitHub.**

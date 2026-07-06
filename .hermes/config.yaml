@@ -464,7 +464,6 @@ delegation:
   max_spawn_depth: 1
   orchestrator_enabled: true
   subagent_auto_approve: false
-  max_async_children: 3
 prefill_messages_file: ''
 goals:
   max_turns: 20
@@ -686,7 +685,7 @@ paste_collapse_threshold_fallback: 5
 paste_collapse_char_threshold: 2000
 computer_use:
   cua_telemetry: false
-_config_version: 32
+_config_version: 33
 session_reset:
   mode: both
   idle_minutes: 1440
