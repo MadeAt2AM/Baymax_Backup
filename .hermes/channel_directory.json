@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-08T15:56:57.459570",
+  "updated_at": "2026-07-09T15:59:51.847751",
   "platforms": {
     "telegram": [
       {
@@ -165,12 +165,6 @@
         "thread_id": "58479"
       },
       {
-        "id": "1283992553:58809",
-        "name": "Chris Kal / topic 58809",
-        "type": "dm",
-        "thread_id": "58809"
-      },
-      {
         "id": "1283992553:60546",
         "name": "Chris Kal / topic 60546",
         "type": "dm",
@@ -187,6 +181,18 @@
         "name": "Chris Kal / topic 60560",
         "type": "dm",
         "thread_id": "60560"
+      },
+      {
+        "id": "1283992553:60996",
+        "name": "Chris Kal / topic 60996",
+        "type": "dm",
+        "thread_id": "60996"
+      },
+      {
+        "id": "1283992553:61044",
+        "name": "Chris Kal / topic 61044",
+        "type": "dm",
+        "thread_id": "61044"
       }
     ],
     "discord": [],

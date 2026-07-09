@@ -1,6 +1,6 @@
 ---
 name: vps-container-deploy
-description: Deploy containerised apps to a remote Docker host with per-subdomain DNS and auto-TLS. Use when you need to point a new subdomain (such as app.yourdomain.com) at a fresh app running on a separate VPS — DNS via Cloudflare API, reverse proxy via Caddy in Docker, one project per directory. Also covers the GitHub-webhook auto-redeploy pipeline, Node+TS full-stack build gates, dense-table destructive-op UX patterns, and iOS Safari JS-bundle cache as a deploy verification blocker. Trigger on phrases like "deploy app on remote VPS", "create new subdomain", "spin up Docker app on different server", "point hostname to container", "hello-world deploy", "Caddy auto TLS", "let's encrypt on Caddy", "Cloudflare DNS API for A record", "push to main auto-deploy", "GitHub webhook redeploy", "vite build stuck", "mobile Safari cache", "hard refresh iOS".
+description: Deploy containerised apps to a remote Docker host with per-subdomain DNS and auto-TLS. Use when you need to point a new subdomain (such as app.yourdomain.com) at a fresh app running on a separate VPS — DNS via Cloudflare API, reverse proxy via Caddy in Docker, one project per directory. Covers the GitHub-webhook auto-redeploy pipeline, Node+TS full-stack build gates, multi-container compose with shared networks, repo-name vs subdomain asymmetry, Docker daemon MTU fix for Hetzner hosts, bcrypt-via-pgcrypto user seeding, Alpine vs Debian-slim base-image gotchas, and the background-process UX rule. Trigger on "deploy app on remote VPS", "create new subdomain", "Caddy auto TLS", "Cloudflare DNS API", "push to main auto-deploy", "GitHub webhook redeploy", "vite build stuck", "MTU 1400 build fail", "apt-get fails in Docker build", "repo name different from subdomain", "bcrypt seed users".
 category: devops
 version: 1.4.0
 ---
@@ -80,6 +80,19 @@ Use the helper scripts in `~/.hermes/bin/` on the control VPS. They live at:
 - `cf-dns.sh` — Cloudflare DNS CRUD
 - `deploy.sh` — full one-shot deploy (calls cf-dns plus SSH to dev VPS)
 - `teardown.sh` — reverse a deploy
+
+### Background-process UX rule (Chris, 2026-07-08)
+
+When a single deploy step is expected to take more than ~30 seconds (`docker compose build` for a Node+pnpm monorepo, `docker compose up -d --build` after a schema change, heavy `pnpm install` over a constrained MTU, `drizzle-kit push` on a large DB), the foreground timeout fires OR the user is left staring at a silent tool stream.
+
+Always do this:
+
+1. **Announce what you're doing before kicking off the long step.** One sentence, no flowery prose: "Standing by — kicking off web build in background, will notify on completion." The user reads Telegram between turns and the silence reads as "agent is stuck."
+2. **Use `background=true` + `notify_on_complete=true`** for any step expected to take >30s. The runtime streams a notification the moment the process exits instead of forcing a single foreground tool result that's past the timeout.
+3. **Use foreground for short steps** (<30s) — healthchecks, curl probes, git fetch+reset on a small repo, status reads. Don't over-notify.
+4. **Continue working in parallel** while a background step runs. Don't `wait` on it unless the next step genuinely depends on its output.
+
+Verified 2026-07-08 (SYNTRA deploy — user pinged mid-session with "when long processes are running in background give me indication you are working so im not left hanging").
 
 ### 1. `cf-dns.sh <verb> <subdomain> [ip]`
 
@@ -330,6 +343,171 @@ ssh -i ~/.ssh/baymax_dev_vps deploy@147.79.18.32 \
 ```
 
 Verified 2026-07-04 (Payntra — heredoc blocked, scp+cat worked first try).
+
+### AJ. `git fetch` in a deploy script's `else` branch fails with "not a git repository" when `cd` happens AFTER the fetch
+
+**Symptom:** A `do_redeploy()` function in a deploy script (`project_dev.sh`, `syntra_dev.sh`, etc.) has two branches:
+
+```bash
+if [ ! -d "$proj_dir/.git" ]; then
+  cd "$proj_dir"
+  git fetch ...         # first-deploy: works, cd was above
+else
+  git fetch ...         # re-deploy branch: FAILS — script cwd isn't $proj_dir yet
+  cd "$proj_dir"
+  git reset --hard ...
+fi
+```
+
+The script logs "→ git fetch + reset to origin/main" then dies with `fatal: not a git repository`. The error message is misleading — it suggests the repo is missing, but the real cause is the `cd` is below the `fetch` in the re-deploy branch.
+
+**Why it's confusing:** the script's *outer* working directory (where it was launched) is `/root` or `/srv/scripts` — not the project. `git fetch` resolves remote refs relative to the local `.git` directory, and without the `cd` first, it scans the launch directory's `.git` (none) and dies.
+
+**Fix — `cd` first in BOTH branches:**
+
+```bash
+if [ ! -d "$proj_dir/.git" ]; then
+  mkdir -p "$proj_dir"
+  cd "$proj_dir"
+  git init -q
+  git remote add origin ...
+  git fetch ...
+  git checkout ...
+else
+  cd "$proj_dir"                 # <-- ADD THIS
+  git fetch --depth=1 origin main
+  git reset --hard origin/main
+fi
+```
+
+**Diagnostic when "redeploy fails with not a git repository but the repo IS there":**
+
+```bash
+ssh dev-vps "cd /srv/projects/<name> && git log --oneline -3"
+# If this prints commits, the repo is fine. The bug is in the deploy script.
+```
+
+Verified 2026-07-08 (SYNTRA — first-pull branch worked, redeploy branch failed; patched by moving `cd` above `git fetch`. Then re-ran redeploy and it succeeded.)
+
+### AK. Repo name ≠ subdomain — fork the deploy script per project OR add a webhook dispatcher
+
+**Symptom:** The shared `project_dev.sh` script on the dev VPS conflates the GitHub repo name with the subdomain. It does `cd /srv/projects/$name && git remote add origin https://.../$GH_ORG/$name.git` and writes `/srv/caddy/sites/$name.caddy`. For SYNTRA, the repo is `SYNTRA_VPS` but the subdomain is `syntra` — so a single `$name` variable can't satisfy both.
+
+Three workarounds (ordered by cleanliness):
+
+1. **Per-project deploy script** (what SYNTRA did): create `/srv/scripts/<project>_dev.sh` with separate `PROJ_NAME=syntra` and `REPO_NAME=SYNTRA_VPS` constants, plus a custom Caddy block writer that uses the right container:port. Add a separate webhook hook entry that calls `<project>_dev.sh redeploy` instead of `project_dev.sh`.
+
+2. **Webhook dispatcher** (for projects that don't justify a full script fork): add a `match` clause on `repository.name` in `hooks.json` to route to different scripts:
+   ```json
+   { "id": "github-push", "execute-command": "/srv/scripts/project_dev.sh", ... "trigger-rule": { "and": [ ..., { "match": { "type": "value", "value": "payntra", "parameter": { "source": "payload", "name": "repository.name" } } }, { "match": { "type": "value", "value": "baymax-pipeline-probe", "parameter": { "source": "payload", "name": "repository.name" } } } ] } },
+   { "id": "github-push-syntra", "execute-command": "/srv/scripts/syntra_dev.sh", ... "trigger-rule": { "and": [ ..., { "match": { "type": "value", "value": "SYNTRA_VPS", "parameter": { "source": "payload", "name": "repository.name" } } } ] } }
+   ```
+   The original hook needs explicit repo matches added too — otherwise a future project without a specific match falls through silently.
+
+3. **Symmetric naming** (cheapest going forward): name the repo `MadeAt2AM/<subdomain>` so `repo == subdomain`. Requires accepting the repo's public name. Avoids the whole class of bug.
+
+**Why option 2's first hook needs repo-name matches:** the original shared hook accepts ANY push to `refs/heads/main` (no repo filter). If you add a second hook for SYNTRA_VPS without also narrowing the first, the first hook still fires for SYNTRA pushes and tries `project_dev.sh redeploy SYNTRA_VPS` which then fails (`cd /srv/projects/SYNTRA_VPS` doesn't exist). Adding explicit `repository.name == "payntra"` and `repository.name == "baymax-pipeline-probe"` matches to the original hook preserves its current behavior.
+
+Verified 2026-07-08 (SYNTRA — created `/srv/scripts/syntra_dev.sh` with `PROJ_NAME=syntra`, `REPO_NAME=SYNTRA_VPS`, and a custom Caddy block writer. Hooks.json updated to add the new hook entry AND narrow the existing one.)
+
+### AL. Build-time `apt-get update` fails on Hetzner (or other MTU=1400 hosts) — set Docker daemon MTU globally, not per-network
+
+**Symptom:** `docker compose build` fails mid-stage on `RUN apt-get update` with `E: Unable to locate package wget` and `W: Some index files failed to download`. The host's eth0 has MTU=1400 (Hetzner and similar), the Docker default bridge is MTU=1500, and large apt index responses fragment and silently drop.
+
+This is **different from** the SMTP/TLS MTU pitfall (AF) which only affected runtime network calls. Builds run their own DNS+HTTP fetches through the buildkit's network, which is the default bridge. Per-network `driver_opts.mtu` in the project's `docker-compose.yml` does NOT fix this — the build happens before any service network is created.
+
+**Fix — set the Docker daemon MTU globally:**
+
+```bash
+cat > /etc/docker/daemon.json <<EOF
+{
+  "mtu": 1400,
+  "default-network-opts": {
+    "bridge": {
+      "com.docker.network.driver.mtu": "1400"
+    }
+  }
+}
+EOF
+systemctl restart docker
+```
+
+**Disruptive:** all running containers restart when the daemon restarts. ~5-10s of downtime for every project on the host. **Get explicit user approval before doing this.** Some hosts (Payntra in this case) rebound their host port mappings on restart (e.g. `32825` → `32769`) — that's docker-proxy re-binding, not a config change.
+
+**Verification:**
+
+```bash
+docker network inspect bridge --format '{{.Options}}'
+# Should show: com.docker.network.driver.mtu:1400
+```
+
+If you can't change the daemon (multi-tenant host, shared VPS, etc.), the fallback is a slow workaround: pre-build images locally and `docker save | docker load` them onto the dev VPS. Only worth it if the daemon restart is genuinely not allowed.
+
+Verified 2026-07-08 (SYNTRA — `docker compose build api` failed at `RUN apt-get update` with `E: Unable to locate package wget` until `/etc/docker/daemon.json` was set with global MTU=1400. All containers restarted cleanly: payntra, probe-app, caddy. SYNTRA then built and ran successfully.)
+
+### AM. HEALTHCHECK `wget` not present in `node:20-bookworm-slim` runtime stage — install wget OR use node-based check
+
+**Symptom:** Container is "unhealthy" forever with healthcheck log:
+```
+/bin/sh: 1: wget: not found
+```
+
+The Dockerfile has `HEALTHCHECK CMD wget -qO- http://localhost:8080/api/healthz` but `wget` is in BusyBox (Alpine) not in Debian-slim.
+
+**Fix — install wget in the runtime stage:**
+
+```dockerfile
+FROM node:20-bookworm-slim AS runner
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends wget ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+# ... rest
+HEALTHCHECK CMD wget -qO- http://localhost:8080/api/healthz
+```
+
+**Why this hits people:** the trap is going Alpine → Debian-slim (or vice versa) and not auditing every RUN-time command. `wget`, `curl`, `ip`, `nslookup` — these are all present in Alpine's BusyBox but absent in Debian-slim. Either install them or use Node-based health checks:
+
+```dockerfile
+HEALTHCHECK CMD node -e "fetch('http://127.0.0.1:8080/api/healthz').then(r => process.exit(r.ok ? 0 : 1))"
+```
+
+Note: `node -e` needs the right `WORKDIR` and the `node` binary path. `wget` install is simpler.
+
+**Pairs with pitfall J** (`apk add` in Alpine hangs) and **pitfall K** (HEALTHCHECK `localhost` vs `127.0.0.1`). All three are "healthcheck footguns" worth a single audit before declaring a Dockerfile done.
+
+Verified 2026-07-08 (SYNTRA — first build with Debian-slim succeeded but container was "unhealthy"; `docker inspect syntra_api --format '{{json .State}}'` showed three failing healthcheck logs all `/bin/sh: 1: wget: not found`. Installed wget in the runner stage, rebuilt, container healthy.)
+
+### AN. Generate bcrypt-compatible hashes from Postgres with `crypt(pw, gen_salt('bf', N))` — no Node bcryptjs needed
+
+**Symptom:** You want to seed test users directly via SQL but the app's API runtime image is too slim to run `bcrypt.hash()`. The docs say "use bcryptjs inside the container" but `bcryptjs` isn't in the runtime `node_modules` (the bundle was built with it bundled/removed, depending on the build pipeline).
+
+**Fix — use pgcrypto's `crypt()` with the `bf` (bcrypt) algorithm. The output is a standard `$2a$N$…` hash that bcryptjs / bcrypt-node / Python bcrypt / Go bcrypt — every implementation — accepts.**
+
+```sql
+-- Enable once per DB:
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Insert user with bcrypt-hashed password:
+INSERT INTO users (email, password_hash, name, role, status)
+VALUES (
+  'admin@demo.com',
+  crypt('TestPass1!', gen_salt('bf', 12)),  -- $2a$12$...
+  'Demo Admin', 'admin', 'active'
+)
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
+```
+
+`gen_salt('bf', 12)` matches the API's default cost (12 rounds). Cost is the integer after the second `$` in the hash. If your app uses cost=10, pass `gen_salt('bf', 10)`.
+
+**Why this works across implementations:** bcrypt hash format `$2[abxy]$NN$salt+hash` is a de-facto standard. `crypt()` in Postgres implements the same algorithm with the same on-disk format as `bcryptjs.hashSync(pw, 12)` — only the salt generation is different (Postgres uses random bytes, bcryptjs uses Node's randomBytes — both produce cryptographically random salts).
+
+**When to NOT use this:**
+- If the app uses a custom password scheme (Argon2, scrypt, PBKDF2) — `crypt()` has flags for those (`'argon2i'`, `'argon2id'`, `'x'` for scrypt) but check the app's verifier accepts the format first.
+- If the app's password column has a CHECK constraint on the hash format (rare).
+
+**Seed script that wraps this nicely** is in `templates/seed_demo_users.sh` (added 2026-07-08, SYNTRA pattern). Idempotent (`ON CONFLICT DO UPDATE`) so re-runs are safe.
+
+Verified 2026-07-08 (SYNTRA — wanted to seed 4 demo users with `Test123!`; bcryptjs wasn't in the runtime image; switched to `crypt('Test123!', gen_salt('bf', 12))` and confirmed `bcryptjs.compareSync('Test123!', '$2a$12$...')` returned true when the API container was later brought up).
 
 ## GitHub-Driven Project Lifecycle (added 2026-07-03)
 
@@ -1398,6 +1576,7 @@ Verified 2026-07-04 (Payntra Phase 11 across multiple iterations).
 - [Live curl smoke tests — verifying app-layer behavior after deploy](references/live-curl-smoke-tests.md) (added 2026-07-04, Payntra auth round-trip protocol; extended 2026-07-04 Phase 5 with ownership-protected PATCH + cross-user attack protocol; extended 2026-07-04 Phase 6 with templates CRUD roundtrip + pure template-fallback verification)
 - [Build-time hard gates — typecheck + tests as Dockerfile gates](references/build-time-hard-gates.md) (added 2026-07-04, Payntra Phase 4 pattern)
 - [Full-stack SPA deploy — Vite client + Fastify server, single webhook](references/fullstack-spa-deploy.md) (added 2026-07-04, Payntra Phase 7 — 3-stage Dockerfile, SPA fallback, FOUC prevention, browser verification protocol)
+- [SYNTRA deploy runbook — repo-name ≠ subdomain, multi-container compose, daemon MTU fix](references/syntra-deploy-runbook.md) (added 2026-07-08, SYNTRA — when the deploy repo's name doesn't match the served subdomain, and how to wire per-project deploy script + webhook hook entry)
 
 ## Scripts (templates)
 
@@ -1412,6 +1591,7 @@ Copy these to `~/.hermes/bin/` when bootstrapping a new control VPS:
 - [templates/webhook.service](templates/webhook.service) — systemd unit for the webhook daemon (added 2026-07-03)
 - [templates/node-fullstack-dockerfile](templates/node-fullstack-dockerfile) — multi-stage Dockerfile for Node 20 + Vite + Fastify/Express, bakes in pitfalls I/J/K (added 2026-07-04)
 - [templates/node-fullstack-docker-compose.yml](templates/node-fullstack-docker-compose.yml) — docker-compose pairing the Dockerfile, bakes in pitfalls L/M (added 2026-07-04)
+- [templates/seed_demo_users.sh](templates/seed_demo_users.sh) — Postgres-side demo-user seeder using pgcrypto `crypt()` (bcrypt-compatible). For any project with a Postgres users table. Idempotent. (added 2026-07-08, SYNTRA pattern)
 
 ## Attribution
 
