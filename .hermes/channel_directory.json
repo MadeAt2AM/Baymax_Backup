@@ -1,96 +1,126 @@
 {
-  "updated_at": "2026-07-09T15:59:51.847751",
+  "updated_at": "2026-07-10T15:55:24.696468",
   "platforms": {
     "telegram": [
       {
-        "id": "1283992553:55410",
-        "name": "Chris Kal / topic 55410",
+        "id": "1283992553:61422",
+        "name": "Chris Kal / topic 61422",
         "type": "dm",
-        "thread_id": "55410"
+        "thread_id": "61422"
       },
       {
-        "id": "1283992553:55422",
-        "name": "Chris Kal / topic 55422",
+        "id": "1283992553:60996",
+        "name": "Chris Kal / topic 60996",
         "type": "dm",
-        "thread_id": "55422"
+        "thread_id": "60996"
       },
       {
-        "id": "1283992553:55515",
-        "name": "Chris Kal / topic 55515",
+        "id": "1283992553:61044",
+        "name": "Chris Kal / topic 61044",
         "type": "dm",
-        "thread_id": "55515"
+        "thread_id": "61044"
       },
       {
-        "id": "1283992553:56056",
-        "name": "Chris Kal / topic 56056",
+        "id": "1283992553:60560",
+        "name": "Chris Kal / topic 60560",
         "type": "dm",
-        "thread_id": "56056"
+        "thread_id": "60560"
       },
       {
-        "id": "1283992553:56300",
-        "name": "Chris Kal / topic 56300",
+        "id": "1283992553:58809",
+        "name": "1283992553 / topic 58809",
         "type": "dm",
-        "thread_id": "56300"
+        "thread_id": "58809"
       },
       {
-        "id": "1283992553:56635",
-        "name": "Chris Kal / topic 56635",
+        "id": "1283992553:60557",
+        "name": "Chris Kal / topic 60557",
         "type": "dm",
-        "thread_id": "56635"
+        "thread_id": "60557"
       },
       {
-        "id": "1283992553:56643",
-        "name": "Chris Kal / topic 56643",
+        "id": "1283992553:60546",
+        "name": "Chris Kal / topic 60546",
         "type": "dm",
-        "thread_id": "56643"
+        "thread_id": "60546"
       },
       {
-        "id": "1283992553:56768",
-        "name": "Chris Kal / topic 56768",
+        "id": "1283992553:60192",
+        "name": "1283992553 / topic 60192",
         "type": "dm",
-        "thread_id": "56768"
+        "thread_id": "60192"
       },
       {
-        "id": "1283992553:56835",
-        "name": "Chris Kal / topic 56835",
+        "id": "1283992553:58929",
+        "name": "1283992553 / topic 58929",
         "type": "dm",
-        "thread_id": "56835"
+        "thread_id": "58929"
       },
       {
-        "id": "1283992553:56919",
-        "name": "Chris Kal / topic 56919",
+        "id": "1283992553:58542",
+        "name": "1283992553 / topic 58542",
         "type": "dm",
-        "thread_id": "56919"
+        "thread_id": "58542"
       },
       {
-        "id": "1283992553:56952",
-        "name": "Chris Kal / topic 56952",
+        "id": "1283992553:58479",
+        "name": "Chris Kal / topic 58479",
         "type": "dm",
-        "thread_id": "56952"
+        "thread_id": "58479"
       },
       {
-        "id": "1283992553:56970",
-        "name": "Chris Kal / topic 56970",
+        "id": "1283992553:58389",
+        "name": "Chris Kal / topic 58389",
         "type": "dm",
-        "thread_id": "56970"
+        "thread_id": "58389"
       },
       {
-        "id": "1283992553:57192",
-        "name": "Chris Kal / topic 57192",
+        "id": "1283992553:58313",
+        "name": "Chris Kal / topic 58313",
         "type": "dm",
-        "thread_id": "57192"
+        "thread_id": "58313"
       },
       {
-        "id": "1283992553:57217",
-        "name": "Chris Kal / topic 57217",
+        "id": "1283992553:58241",
+        "name": "Chris Kal / topic 58241",
         "type": "dm",
-        "thread_id": "57217"
+        "thread_id": "58241"
       },
       {
-        "id": "1283992553:57308",
-        "name": "Chris Kal / topic 57308",
+        "id": "1283992553:58171",
+        "name": "Chris Kal / topic 58171",
         "type": "dm",
-        "thread_id": "57308"
+        "thread_id": "58171"
+      },
+      {
+        "id": "1283992553:58134",
+        "name": "Chris Kal / topic 58134",
+        "type": "dm",
+        "thread_id": "58134"
+      },
+      {
+        "id": "1283992553:57461",
+        "name": "1283992553 / topic 57461",
+        "type": "dm",
+        "thread_id": "57461"
+      },
+      {
+        "id": "1283992553:58015",
+        "name": "Chris Kal / topic 58015",
+        "type": "dm",
+        "thread_id": "58015"
+      },
+      {
+        "id": "1283992553:57998",
+        "name": "Chris Kal / topic 57998",
+        "type": "dm",
+        "thread_id": "57998"
+      },
+      {
+        "id": "1283992553:57668",
+        "name": "Chris Kal / topic 57668",
+        "type": "dm",
+        "thread_id": "57668"
       },
       {
         "id": "1283992553:57312",
@@ -105,123 +135,102 @@
         "thread_id": "57336"
       },
       {
-        "id": "1283992553:57461",
-        "name": "Chris Kal / topic 57461",
+        "id": "1283992553:57308",
+        "name": "Chris Kal / topic 57308",
         "type": "dm",
-        "thread_id": "57461"
+        "thread_id": "57308"
       },
       {
-        "id": "1283992553:57668",
-        "name": "Chris Kal / topic 57668",
+        "id": "1283992553:57217",
+        "name": "Chris Kal / topic 57217",
         "type": "dm",
-        "thread_id": "57668"
+        "thread_id": "57217"
       },
       {
-        "id": "1283992553:57998",
-        "name": "Chris Kal / topic 57998",
+        "id": "1283992553:57192",
+        "name": "Chris Kal / topic 57192",
         "type": "dm",
-        "thread_id": "57998"
+        "thread_id": "57192"
       },
       {
-        "id": "1283992553:58015",
-        "name": "Chris Kal / topic 58015",
+        "id": "1283992553:56970",
+        "name": "Chris Kal / topic 56970",
         "type": "dm",
-        "thread_id": "58015"
+        "thread_id": "56970"
       },
       {
-        "id": "1283992553:58134",
-        "name": "Chris Kal / topic 58134",
+        "id": "1283992553:56835",
+        "name": "Chris Kal / topic 56835",
         "type": "dm",
-        "thread_id": "58134"
+        "thread_id": "56835"
       },
       {
-        "id": "1283992553:58171",
-        "name": "Chris Kal / topic 58171",
+        "id": "1283992553:56952",
+        "name": "Chris Kal / topic 56952",
         "type": "dm",
-        "thread_id": "58171"
+        "thread_id": "56952"
       },
       {
-        "id": "1283992553:58241",
-        "name": "Chris Kal / topic 58241",
+        "id": "1283992553:56919",
+        "name": "Chris Kal / topic 56919",
         "type": "dm",
-        "thread_id": "58241"
+        "thread_id": "56919"
       },
       {
-        "id": "1283992553:58313",
-        "name": "Chris Kal / topic 58313",
+        "id": "1283992553:56643",
+        "name": "Chris Kal / topic 56643",
         "type": "dm",
-        "thread_id": "58313"
+        "thread_id": "56643"
       },
       {
-        "id": "1283992553:58389",
-        "name": "Chris Kal / topic 58389",
+        "id": "1283992553:56768",
+        "name": "Chris Kal / topic 56768",
         "type": "dm",
-        "thread_id": "58389"
+        "thread_id": "56768"
       },
       {
-        "id": "1283992553:58479",
-        "name": "Chris Kal / topic 58479",
+        "id": "1283992553:56635",
+        "name": "Chris Kal / topic 56635",
         "type": "dm",
-        "thread_id": "58479"
+        "thread_id": "56635"
       },
       {
-        "id": "1283992553:60546",
-        "name": "Chris Kal / topic 60546",
+        "id": "1283992553:56300",
+        "name": "Chris Kal / topic 56300",
         "type": "dm",
-        "thread_id": "60546"
+        "thread_id": "56300"
       },
       {
-        "id": "1283992553:60557",
-        "name": "Chris Kal / topic 60557",
+        "id": "1283992553:56257",
+        "name": "1283992553 / topic 56257",
         "type": "dm",
-        "thread_id": "60557"
+        "thread_id": "56257"
       },
       {
-        "id": "1283992553:60560",
-        "name": "Chris Kal / topic 60560",
+        "id": "1283992553:56056",
+        "name": "Chris Kal / topic 56056",
         "type": "dm",
-        "thread_id": "60560"
+        "thread_id": "56056"
       },
       {
-        "id": "1283992553:60996",
-        "name": "Chris Kal / topic 60996",
+        "id": "1283992553:55515",
+        "name": "Chris Kal / topic 55515",
         "type": "dm",
-        "thread_id": "60996"
+        "thread_id": "55515"
       },
       {
-        "id": "1283992553:61044",
-        "name": "Chris Kal / topic 61044",
+        "id": "1283992553:55422",
+        "name": "Chris Kal / topic 55422",
         "type": "dm",
-        "thread_id": "61044"
+        "thread_id": "55422"
+      },
+      {
+        "id": "1283992553:55410",
+        "name": "Chris Kal / topic 55410",
+        "type": "dm",
+        "thread_id": "55410"
       }
     ],
-    "discord": [],
-    "whatsapp": [],
-    "whatsapp_cloud": [],
-    "slack": [],
-    "signal": [],
-    "mattermost": [],
-    "matrix": [],
-    "homeassistant": [],
-    "email": [],
-    "sms": [],
-    "dingtalk": [],
-    "msgraph_webhook": [],
-    "feishu": [],
-    "wecom": [],
-    "wecom_callback": [],
-    "weixin": [],
-    "bluebubbles": [],
-    "qqbot": [],
-    "yuanbao": [],
-    "relay": [],
-    "google_chat": [],
-    "irc": [],
-    "line": [],
-    "ntfy": [],
-    "photon": [],
-    "raft": [],
-    "simplex": [],
-    "teams": []
+    "email": []
   }
 }
