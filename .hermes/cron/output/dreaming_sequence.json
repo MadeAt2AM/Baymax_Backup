@@ -1,50 +1,51 @@
 {
-  "date": "2026-07-09",
+  "date": "2026-07-10",
   "analysis": {
     "active_projects": [
-      "SYNTRA — shift scheduling SaaS, just deployed live at syntra.terrybot.top; full feature audit completed (13 prioritised recommendations across 3 tiers)",
-      "Payntra — expense tracking app live at payntra.terrybot.top on the same Hetzner VPS (147.79.18.32); running steady, MTU-1400 docker network stable",
-      "Hermes infrastructure — gateway voice pipeline stable, morning-brief pipeline running, LLM Wiki syncing, dashboard watchdog holding",
-      "Agent Reach — 14/15 channels live (Xueqiu skipped), Exa/Groq/LinkedIn/xiaohongshu MCPs operational"
+      "SYNTRA — shift scheduling SaaS live at syntra.terrybot.top since 2026-07-08; full feature audit (13 recs across 3 tiers) delivered to Chris 21:35 SGT (9 Jul); Tier 1 buildout not yet started (awaiting Chris's pick)",
+      "Payntra — expense tracking app live at payntra.terrybot.top on dev VPS 147.79.18.32 (Hetzner Helsinki); MTU-1400 docker network + SMTP stable; residual cookie/toast/reset bugs deferred (not blocking, requires upstream Caddy fixes outside scope)",
+      "Hermes infrastructure — gateway voice pipeline stable, morning-brief pipeline running, LLM Wiki syncing (MadeAt2AM/Obsidian-Vaults), dashboard watchdog holding (:9119 green), baymax-backup cron clean at 16:00 SGT (10 Jul)",
+      "Agent Reach — 14/15 social channels live (Xueqiu skipped), Exa/Groq/LinkedIn/xiaohongshu MCPs operational; McPorter routing stable"
     ],
     "upcoming_deadlines": [
-      "Google Calendar OAuth reauth: Chris started reauth at 21:37 SGT (8 Jul) but never pasted the redirect URL back — calendar layer has been down 4 consecutive dreaming runs",
-      "SYNTRA Tier 1 feature delivery: leave balances → mobile PWA clock-in → shift swap → payroll export → time-log validation (audit recommendations, no hard date set)",
-      "Council audio backlog: 10+ morning briefs stale in the queue (carried over from previous dreaming runs)",
-      "Gateway echo patch: approved ~10 days ago but never landed in main (carried over)"
+      "Google Calendar OAuth reauth: same blocker as 5 consecutive mornings — `invalid_grant: Token has been expired or revoked` from madeat2am.ai@gmail.com. Last reauth link was generated and sent to Chris at 21:37 SGT (9 Jul) in the 'Calendar Reauth Link' Telegram session; Chris never pasted the redirect URL back. Gates the entire morning-brief pipeline (calendar + gmail + drive + sheets + docs).",
+      "SYNTRA Tier 1 ship order: leave balances → mobile PWA clock-in → shift swap → payroll export → time-log validation. No hard date — awaiting Chris's decision on which to start first (recommendation: leave balances).",
+      "Council audio backlog: 10+ morning briefs queued, was behind the same voice pipeline now stabilised; not re-checked since voice went green on 2026-07-02.",
+      "Gateway echo suppression patch: approved ~10 days ago, never landed in main, still unverified end-to-end live (32 unit tests green, but per the patch-then-test + verify protocol from 2026-07-02, that ≠ working delivery)."
     ],
     "outstanding_items": [
-      "Calendar OAuth: reauth link was generated and sent to Chris but the redirect URL was never pasted back — token is still revoked this morning (4th invalid_grant in a row)",
-      "Council audio backlog: stuck behind the same gateway voice pipeline that was just stabilised — worth re-checking the queue now that voice is green",
-      "Gateway echo suppression patch: 10 days approved-never-landed, needs a final pass to land",
-      "Payntra README real root cause update: carried over from 2 prior dreaming runs — now even more relevant since SYNTRA ships on the same mail.cyberslide.net SMTP stack"
-    ],
-    "recent_context": "Big night — SYNTRA went from a stub project to a fully deployed multi-tenant shift scheduling app at syntra.terrybot.top in one 363-message session. The full feature audit (13 recommendations across Tier 1/2/3) was delivered to Chris last night. Before that, the daily backup ran clean (commit 9fbb06b, new caddy-service-dns-aliases skill + syntra submodule captured). Chris also flagged the calendar reauth last night but didn't complete the OAuth handshake — calendar stays offline for the 4th consecutive morning."
+      "Calendar OAuth reauth: 5th consecutive dreaming run hitting `invalid_grant`. The morning-brief pipeline has been running on calendar-empty + gmail-blank for 5 mornings straight. 30-second fix Chris needs to action (Incognito → approve scopes → paste redirect URL back).",
+      "Council audio backlog re-check: voice pipeline stabilised 2026-07-02 but the audio queue hasn't been touched since. Worth a single `process list` to see if there's stuck work.",
+      "Gateway echo patch finalisation: approved-never-landed. Per the verification protocol, even after rebase the live round-trip has to actually run before declaring closed.",
+      "SYNTRA Tier 1 feature decision: Chris has the full audit (13 recs); without a pick, SYNTRA sits at 'deployed but not differentiated' — a real opportunity cost given the momentum from the launch night.",
+      "Payntra residual bugs: cookie-domain stripping (upstream Caddy outside scope), toast text on forgot-password, reset-redirect — all deferred, all low-priority while the upstream proxy chain stays external."
+  ],
+    "recent_context": "Quiet 24h on the user-facing front — only cron housekeeping since the last dreaming run. The big story is that Chris's calendar reauth handshake from 21:37 SGT (9 Jul) was never completed, so the morning-brief pipeline is running on a 5th consecutive invalid_grant. Before that, Chris shipped SYNTRA end-to-end (8 Jul, 363-message session from kickoff to feature audit), with the full Tier 1/2/3 feature audit sitting in his inbox unanswered. The dev VPS is healthy (Payntra + SYNTRA + Caddy all green); Hermes infra is steady; no new incidents to react to."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Finish the Google Calendar OAuth reauth — calendar has been down 4 mornings in a row",
-      "reason": "Chris started reauth at 21:37 SGT (8 Jul) — link generated, instructions sent, but the redirect URL was never pasted back. Every dreaming run since has hit `invalid_grant: Token has been expired or revoked`. Calendar is the single dependency the morning-brief pipeline keeps tripping over, and it costs ~30 seconds to fix once Chris pastes the redirect URL.",
-      "action": "At top of morning brief, prompt Chris to complete the reauth handshake: open the link in Chrome Incognito as madeat2am.ai@gmail.com, approve all scopes, copy the redirect URL, paste it back. I'll exchange it for a fresh token and verify calendar + email return together. If Chris prefers, I can re-generate a fresh reauth link instead."
+      "title": "Complete the Google Calendar OAuth reauth — 5 mornings in a row now on stale data",
+      "reason": "Same blocker carried forward from the 9 Jul dreaming run. Chris requested the reauth link at 21:37 SGT (9 Jul), I generated and sent it, but the redirect URL was never pasted back. The `invalid_grant: Token has been expired or revoked` is now hitting for the 5th consecutive morning. This silently degrades every downstream brief — no calendar events, no email digest, no Drive/Sheets/Docs reads. The 30-second fix has slipped to 5 separate wake-ups; it's becoming a pattern, not a one-off.",
+      "action": "At the top of the morning brief, prompt Chris clearly: 'Open the reauth link in Chrome Incognito as madeat2am.ai@gmail.com, approve all scopes, copy the full redirect URL from the address bar, paste it back here.' Once the URL is in, exchange it via the setup script, then run live verification: `calendar list` (expect at least the all-day events) and `gmail list --max-results 5` (expect recent inbox items). Both green = declare closed. If the link has expired, regenerate a fresh one first thing."
     },
     {
       "priority": 2,
-      "title": "Decide SYNTRA's Tier 1 ship order and pick one to start today",
-      "reason": "The full feature audit (leave balances, mobile PWA clock-in, shift swap, payroll export, time-log validation) was delivered last night. Without a decision, SYNTRA sits at 'deployed but not differentiated' — every Tier 1 feature directly maps to revenue/Differentiation per the audit. Picking one and shipping it this week is the difference between 'nice demo' and 'product someone pays for'.",
-      "action": "Ask Chris to confirm which Tier 1 feature to start (my recommendation: leave balances — biggest UX gap, schema already supports it via `type` column, no new infra). Once confirmed, scaffold the migration + the `leave_balances` table in /root/.hermes/projects/syntra/source/ and wire it through the existing Fastify/Zod API."
+      "title": "Pick a SYNTRA Tier 1 feature to start building today — momentum from launch night is fading",
+      "reason": "The full feature audit (13 recs across 3 tiers) was delivered to Chris 21:35 SGT (9 Jul) but no decision has been made. SYNTRA is live but 'just a demo' — every Tier 1 feature maps to a revenue/differentiation gain. The longer this sits undecided, the higher the chance the launch-night momentum dissipates and the project becomes shelf-ware. Per the audit's own ordering: leave balances (1) → mobile clock-in PWA (5) → shift swap (4) → payroll export (3) → time-log validation (2).",
+      "action": "Recommend Chris picks leave balances as the first build: it's the biggest UX gap (manager in SG can't answer 'how many days do I have left?'), the schema already supports the `type` column on `leave_requests`, and it's pure additive — no new infra, no new external dependencies. Concretely: (1) add `leave_balances` table `(company_id, user_id, type, year, total_days, used_days, accrued_days)`; (2) 'Leave entitlement' panel in Company Settings; (3) 'My Balances' widget on employee Dashboard; (4) carryover rule on Jan 1. Half a day's work for the schema + API, plus a UI pass. After it's shipped, immediately queue the next Tier 1."
     },
     {
       "priority": 3,
-      "title": "Land the gateway echo suppression patch — 10 days approved, still not in main",
-      "reason": "The voice pipeline patch has been sitting in approved-never-landed state across multiple dreaming runs. With voice now stable (verified 2026-07-02) and the morning-brief pipeline running on it daily, leaving an approved patch un-landed is technical debt that risks regressing when the next voice incident hits.",
-      "action": "Locate the approved branch (check git log in /root for `voice-prose-suppression` or similar), rebase against current main, run the 32-case test suite at tests/gateway/test_voice_prose_suppression.py, then push and verify with a live round-trip. If the patch has gone stale, ask Chris to confirm whether to revive it or close it out."
+      "title": "Verify the gateway echo suppression patch is actually live — don't trust 'tests green'",
+      "reason": "The patch was approved ~10 days ago and has been carried forward across multiple dreaming runs. Per the lesson from 2026-07-02 (gateway integration bug, voice-after-text misroute), unit tests passing is not the same as working delivery. The 32-case test suite in tests/gateway/test_voice_prose_suppression.py pins the logic, but the actual integration needs a live end-to-end round-trip — fire the tool, confirm Chris receives the right artefact. This is the patch-then-test + verify protocol in MEMORY.md. With voice now stable for 8+ days, this is a safe time to land the change without compounding risk.",
+      "action": "Locate the approved branch (`git log --all --oneline | grep -i voice` in /root), rebase against current main, run the existing 32-case test suite, then — critically — fire a real voice reply to Chris through the gateway and confirm he receives exactly one clean voice bubble (no echo, no auto-append). If the patch has gone stale, ask Chris whether to revive or close it out. If the live round-trip fails, halt and patch — never declare 'fixed' on tests alone."
     }
   ],
   "non_negotiable": {
     "title": "Complete the Google Calendar OAuth reauth",
-    "reason": "Without calendar + gmail scopes restored, the entire morning-brief pipeline runs on stale data — no calendar events, no email digest, no drive/sheets/docs reads. This is the single dependency that, if left broken, silently degrades every subsequent brief until fixed. It's a 30-second repair: paste one URL back. Skipping this means another day of degraded context for every downstream decision.",
-    "action": "If Chris hasn't already pasted the redirect URL, regenerate a fresh auth URL via `python /root/.hermes/skills/productivity/google-workspace/scripts/setup.py --auth-url`, surface it as the first item in the morning brief, and walk Chris through the Incognito flow. Once the token exchanges successfully, run `calendar list` and `gmail list --max-results 5` as live verification before declaring closed."
+    "reason": "This is now the 5th consecutive dreaming run hitting the same `invalid_grant` blocker. The morning-brief pipeline (calendar + gmail + drive + sheets + docs) has been running on stale/empty data for 5 days — every brief Chris reads right now is missing calendar context, email digests, and any Drive-backed notes. The cost of skipping is no longer just 'a degraded brief' — it's 'a 5-day pattern of degraded briefs' that compounds the longer it goes. The fix is genuinely 30 seconds: open reauth link in Incognito, approve scopes, paste redirect URL back. Skipping it again means the 11 Jul morning brief will also be calendar-blind.",
+    "action": "If Chris hasn't already pasted the redirect URL: (1) regenerate a fresh auth URL via the google-workspace setup script, (2) surface it as the first item in the morning brief with the exact Incognito + madeat2am.ai@gmail.com instructions, (3) once he pastes the URL back, exchange it for a token and run live verification — `calendar list` and `gmail list --max-results 5` must both return real data before declaring closed. If Chris comes back saying 'I'll do it later' again, push back: this is day 5, and the brief quality is materially affected."
   },
-  "mood_check": "Energised but slightly scattered. SYNTRA shipped last night (huge win — 363 messages, full deploy + feature audit) which is a clear momentum spike. The lingering calendar OAuth incompleteness from 21:37 SGT is the only drag — it's a 30-second fix that Chris has likely just been too deep in SYNTRA to circle back on. Tone in the SYNTRA audit was confident and forward-leaning; nothing stressed or blocked. Good day for a Tier 1 decision."
+  "mood_check": "Settled, not stressed. Chris is in a 'shipped-then-thinking' phase — SYNTRA's launch night was a clean win, and the follow-through (feature audit, reauth request) suggests he's engaged but not blocked. The 5-day calendar reauth stall is the only drag on otherwise-clean momentum. No active incidents, no failed builds, no stressed comms in any of the last 7 days of sessions. Good day for a Tier 1 SYNTRA decision and the gateway patch land."
 }
