@@ -1,6 +1,6 @@
 ---
 name: deploy-app-to-dev-vps
-description: "Deploy a new (or replacement) app to the dev VPS at 147.79.18.32 behind the existing Caddy reverse proxy. Covers the full lifecycle: source preparation, mirror to MadeAt2AM org, teardown, first-pull, schema migration, seed data, comprehensive validation, webhook auto-redeploy, and live verification. SYNTRA v1 + v2 (Jul 2026) are the worked examples."
+description: "Deploy a new (or replacement) app to the dev VPS at 147.79.18.32 behind the existing Caddy reverse proxy. Covers the full lifecycle: source preparation, mirror to MadeAt2AM org, teardown, first-pull, schema migration, seed data, comprehensive validation, webhook auto-redeploy, live verification, and the three-layer custom-domain / white-label routing pattern. SYNTRA v1 + v2 + custom-domain fix (Jul 2026) are the worked examples."
 ---
 
 # Deploy an app to the dev VPS (147.79.18.32)
@@ -18,16 +18,18 @@ adding a new app or replacing an existing one.
 | Caddy vhost files | `/srv/caddy/sites/<name>.caddy` | One file per project; auto-imported by `Caddyfile` glob |
 | Project directory | `/srv/projects/<name>/` | Cloned repo + live docker-compose |
 | Secret env file | `/srv/secrets/<name>.env` | Materialized into `/srv/projects/<name>/.env` on first deploy only — manual edits to `/srv/projects/<name>/.env` survive redeploys |
+| **Custom-domain sidecar** | `/srv/secrets/<name>-custom-domains` | One hostname per line; materialised into `/srv/caddy/sites/<name>-extra-hosts.caddy` by the deploy script. See `references/custom-domain-routing.md`. |
 | Webhook receiver | `/etc/webhook/hooks.json` (`github-push-<name>` entry) | Receives GitHub push events on port 9000, runs `syntra_dev.sh redeploy` |
-| Deploy helper | `/srv/scripts/syntra_dev.sh` | Reads `GH_TOKEN` from `/srv/scripts/.gh-token`, runs `docker compose up -d --build`, writes caddy block, reloads Caddy |
+| Deploy helper | `/srv/scripts/<name>_dev.sh` | Reads `GH_TOKEN` from `/srv/scripts/.gh-token`, runs `docker compose up -d --build`, writes caddy blocks (platform + extras), reloads Caddy. **This file lives on the VPS only — it is NOT auto-synced from `deploy/<name>_dev.sh` in the repo. See gotcha #26.** |
 | CF DNS env | `/srv/scripts/.cf-env` | Cloudflare API token + zone ID, sourced by deploy helper for idempotent DNS |
 | Network | external `web` (Docker bridge) | Shared with Caddy. Has Caddy + payntra-app + baymax-pipeline-probe-app already attached |
 | Private DB network | `<name>_<name>-net` (e.g. `syntra_syntra-net`) | MTU 1400 to match Hetzner eth0; carries DB traffic only |
 
 DO NOT:
-- Modify `/srv/scripts/project_dev.sh` for a new project — it's used by payntra/probe. Add a project-specific deploy helper like `syntra_dev.sh` instead.
+- Modify `/srv/scripts/project_dev.sh` for a new project — it's used by payntra/probe. Add a project-specific deploy helper like `<name>_dev.sh` instead.
 - Bounce the Caddy container for config changes — use `docker exec caddy caddy reload`.
 - Touch the `web` network's bridge MTU — it's already 1400 via `/etc/docker/daemon.json`.
+- Hardcode verified custom-domain hostnames into the platform-host Caddy site block. Always go through `/srv/secrets/<name>-custom-domains` so operators can add/remove a domain without a redeploy.
 
 ## Step-by-step: deploy a new app
 
@@ -228,19 +230,243 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
     `req.ip` is `127.0.0.1` unless you `app.set('trust proxy', 1)`. Without
     it, per-IP rate-limit fails open (everyone shares one bucket) and
     brute-force protection is bypassed.
+14. **`.ts` file containing JSX does not compile** — esbuild keys JSX
+    parsing off the file extension, not the tsconfig. A hook or
+    component written as `use-auth.ts` that returns
+    `<AuthContext.Provider>...` will fail with `Expected ">" but found
+    "value"` because esbuild treats it as plain TypeScript. **Rename to
+    `.tsx` for any file with JSX.** Symptom: build fails with that
+    message at the line of the first JSX element. Same applies to
+    `route.ts`, `middleware.ts`, etc.
+15. **`.pnpm-store` must be gitignored before any `pnpm install`** —
+    When you run `pnpm install --no-frozen-lockfile` to regenerate the
+    lockfile (gotcha #10), pnpm populates `.pnpm-store/` with ~5,000
+    content-addressable files. If `.gitignore` doesn't have
+    `.pnpm-store`, a `git add -A` will try to stage them all. Add to
+    `.gitignore` BEFORE running pnpm install. If you forget, recover
+    with `git rm -r --cached .pnpm-store` and recommit.
+16. **CORS `cb(new Error(...))` bubbles to global handler → 500** —
+    In `middlewares/cors.ts`, returning `cb(new Error(...))` for a
+    disallowed origin makes Express's global error handler return
+    HTTP 500 (because the generic 500 handler catches the Error). That's
+    misleading (the request never reached a handler) and can leak info
+    if the error handler isn't generic. Use `cb(null, false)` instead —
+    cors() skips adding CORS headers, browsers see no
+    `Access-Control-Allow-Origin` and block the response. Client gets a
+    clean CORS error; server returns whatever the route returns. See
+    `references/security-hardening-patterns.md`.
+17. **CSP from multiple layers is intersected by the browser** — When
+    BOTH Caddy and nginx emit `Content-Security-Policy` headers, the
+    browser intersects them. If nginx sets `script-src 'self'` and
+    Caddy sets `script-src 'self' 'unsafe-inline'`, the effective
+    policy is `'self'` only (more restrictive wins). This silently
+    breaks Vite-built bundles that need `'unsafe-inline'` for inline
+    styles. **Either** set `unsafe-inline` in BOTH layers **or**
+    remove it from BOTH. Verify with `curl -sI` on every response type.
+18. **SPA blank-screen hardening pattern** — Three defensive moves to
+    guarantee a user never sees a blank white screen on a SPA:
+    a. Wrap the entire app in a top-level React `<ErrorBoundary>` that
+       catches unhandled render errors and shows a recovery card
+       ("Reload page" / "Clear cache & retry") with the error message.
+    b. Wrap every `localStorage.getItem/setItem/removeItem` call in
+       `try/catch`. Safari Private Mode, some browser extensions, and
+       cookie-disabled contexts throw on storage access.
+    c. When `useGetMe()` returns an error (typically 401 from a stale
+       JWT — common after `SESSION_SECRET` rotation), automatically
+       wipe `auth_token` + `must_change_password` from localStorage
+       and reset React state. Otherwise the spinner hangs forever.
+19. **Email column lookups are case-sensitive in Postgres** —
+    `eq(users.email, value)` matches only exact-case rows, so
+    `Platform@syntra.com` and `platform@syntra.com` are treated as
+    different identities. Login fails with 401 if the user types the
+    wrong case against a lowercase DB row. **Two-layer defense:**
+    (a) normalize input on the application side with
+    `normalizeEmail(v)` → `v.trim().toLowerCase()`, and (b) compare
+    with `lower(email_column) = lower($1)` on the DB side via a
+    single `emailEq(column, value)` helper. The DB-side `lower()`
+    catches legacy mixed-case rows that pre-date normalization.
+    Apply to every endpoint that matches on email: login, register,
+    forgot-password, password-reset, invitations, user create,
+    admin invite, etc. Pattern + worked example:
+    `references/case-insensitive-email.md`.
+20. **Echo-once plaintext + form.reset() trap** — When a flow
+    generates a transient value (a temp password, a share token,
+    a one-time code) that the UI must display for the operator to
+    copy, the API MUST echo that plaintext once in the 201 response
+    (e.g. `tempPassword` in the body) — because the UI's success-state
+    panel runs AFTER `form.reset()` wipes the form values that held
+    the plaintext. Reading from form state leaves the eye-toggle and
+    copy button blank. **Pair this with:** never re-serve the
+    plaintext from any GET endpoint (it must be bcrypt-hashed in the
+    DB), and keep the copy function tolerant of clipboard-permission
+    denials (fall back to `document.execCommand('copy')` on
+    non-secure contexts, surface a toast on failure rather than
+    failing silently, add `select-all` to the display so manual
+    selection works).
+21. **`git stash` + `git stash drop` can silently lose working-tree
+    edits** — If you stash a subset of changes to "clean the diff"
+    before committing, then drop the stash without `git stash pop`,
+    any file you edited OUTSIDE that subset ALSO disappears if the
+    stash happened to record a non-obvious dependency (e.g. an
+    import + a mount line that were in different commits of your
+    stashed chunk). Symptom: commit lands, build/typecheck pass
+    locally, but the route is missing at runtime. **Defensive habit:**
+    before `git stash drop`, run `git stash show -p stash@{0} --stat`
+    and `git diff HEAD -- <suspect-file>` to confirm everything you
+    need is either in the working tree OR staged. For multi-file
+    edits where you really need a partial stash, prefer
+    `git stash push -- <files>` with explicit paths so the stash
+    contains only what you intend to set aside.
+22. **"Bundle imports the file but the route is missing at runtime"
+    is a router-mount bug, not a build bug** — When esbuild bundles
+    a server, an imported-but-unmounted module is still present in
+    the output JS as long as something references it. So you cannot
+    tell "is this route registered?" by grepping for the file name.
+    **Verify with the mount-pattern grep:**
+    ```bash
+    docker exec <api> sh -c "grep -oE 'use\\(\\s*[\"\\'][^\"\\']+[\"\\'],\\s*[a-zA-Z_]+' /app/dist/index.mjs | sort -u"
+    ```
+    Every line should correspond to a `router.use(...)` in your
+    source. If a new route is missing from this list, the bug is
+    upstream (mount line never made it into the source you pushed —
+    usually a git stash / rebase / amend mishap), NOT in esbuild.
+23. **`docker compose build` is incremental — use `--no-cache` when
+    the prior build succeeded but source changed and you need a
+    guaranteed fresh bundle** — esbuild and pnpm caches survive
+    rebuilds. If you pushed a fix to the bundle source and
+    `docker compose up -d --build` reports `DONE 0.1s` (no actual
+    work), the running container still has the old bundle. Force
+    a clean rebuild with `--no-cache`. Pair with
+    `docker compose up -d --force-recreate` to ensure the container
+    is restarted with the new image, not just the same image relabeled.
+24. **Local `vite build` / `tsc` OOM-throttled on this host — skip
+    and trust the VPS Docker pipeline** — the local dev VM runs under
+    a memory cgroup that throttles high-memory processes into
+    `D` (uninterruptible disk-wait) state on `mem_cgroup_handle_over_high`
+    (visible in `/proc/<pid>/wchan`). Symptom: `npx vite build` or
+    `npx tsc --noEmit` hangs indefinitely with no stdout output and
+    cannot be cleanly SIGKILL'd. **Don't waste a tool-call budget
+    fighting it.** Trust that the project's `build.mjs` (esbuild) and
+    the Docker-in-VPS build pipeline will catch any real compile error.
+    Validate by pushing to the webhook and watching
+    `docker compose logs --build`.
+25. **Custom-domain routing requires THREE coordinated fixes — and "the
+    skill says it was done" ≠ "the code matches the skill"** — bug
+    reports of the form "my custom domain doesn't work / users are
+    served from the platform URL" almost always have all three layers
+    broken at once:
+    (a) **Caddy vhost missing** — `/srv/caddy/sites/<name>.caddy` only
+        declares the platform host. No site block for the custom
+        hostname → Caddy can't issue a cert, request hangs.
+    (b) **API auth response has no `redirectTo`** — even with (a)
+        fixed, users entering via the platform URL never get bounced
+        to their company's own URL because the API never tells the
+        client to.
+    (c) **CORS allowlist is hardcoded** — `middlewares/cors.ts` only
+        allows the platform origin. Browsers calling from the custom
+        origin fail CORS preflight even if (a) and (b) are fixed.
+    Diagnose with one curl per layer, then patch all three. See
+    `references/custom-domain-routing.md` for the full pattern and
+    the SYNTRA fix walkthrough.
+    **Drift warning (Jul 2026):** the SYNTRA v1 deploy (2026-07-15)
+    shipped with layer (a) wired and the documentation claiming all
+    three layers were live — but the code for (b) and (c) had never
+    landed (the doc was written before the implementation). When a
+    custom-domain bug is reported on a project where the docs say
+    "fixed", still run the per-layer curl probe. `cat
+    /srv/caddy/sites/<name>-extra-hosts.caddy` for (a), `curl -X POST
+    /api/auth/login` for (b) (look for `redirectTo` in the response),
+    and `curl -X OPTIONS -H "Origin: https://<host>"` for (c). Trust
+    the runtime, not the docs.
+26. **`deploy/<name>_dev.sh` ≠ `/srv/scripts/<name>_dev.sh`** — the
+    deploy helper script lives in TWO places. The repo has
+    `deploy/<name>_dev.sh` (or `deploy/syntra_dev.sh`) which is the
+    source-controlled version. The webhook daemon calls
+    `/srv/scripts/<name>_dev.sh` on the VPS, which was placed there
+    once via `sudo cp deploy/<name>_dev.sh /srv/scripts/` (see
+    `VPS_DEPLOYMENT.md`). **Editing and pushing the repo copy has
+    zero effect on the live webhook.** Symptoms: you add a new
+    function, push, the redeploy runs the old script, the new
+    function never executes. Fix: `scp deploy/<name>_dev.sh
+    dev-vps:/srv/scripts/<name>_dev.sh && ssh dev-vps 'chmod +x
+    /srv/scripts/<name>_dev.sh'` AFTER every change to the repo
+    copy. Same applies to any other file in `/srv/scripts/`. **Until
+    the deploy helper itself is also bind-mounted or git-tracked at
+    `/srv/scripts/`, this is a manual propagation step.** Verify
+    after by `ssh dev-vps 'grep -c <your-new-fn>
+    /srv/scripts/<name>_dev.sh'` returning >0.
+27. **`/srv/secrets/<name>.env` IS the source of truth for env vars,
+    NOT `docker-compose.yml`'s `env_file:` declaration** — Compose's
+    `env_file:` key bind-mounts that host file into the container;
+    the `environment:` block can override individual keys but the
+    base set of variables the container sees comes from the file.
+    **Adding a new env var requires editing `/srv/secrets/<name>.env`
+    on the VPS, not just the compose file in the repo.** The deploy
+    script copies this file to `/srv/projects/<name>/.env` only on
+    first deploy (subsequent deploys reuse the existing `.env` so
+    manual secrets tweaks survive). Symptom: you push a code change
+    that reads `process.env.NEW_VAR`, redeploy, the container still
+    has no `NEW_VAR` because the `.env` was never refreshed. Three
+    fixes, in order of preference:
+    (a) `echo 'NEW_VAR=value' >> /srv/secrets/<name>.env && rm -f
+        /srv/projects/<name>/.env && bash /srv/scripts/<name>_dev.sh
+        redeploy` — removes `.env` so the next deploy re-materialises
+        it from the updated secrets file.
+    (b) `bash /srv/scripts/<name>_dev.sh redeploy` after editing
+        secrets — but ONLY if you ALSO `rm .env` first, otherwise
+        the cp is skipped.
+    (c) Drop a temporary marker into `.env` yourself (`ssh dev-vps
+        'echo NEW_VAR=value >> /srv/projects/<name>/.env'`) — quick
+        but it gets clobbered on next first-deploy.
+    Verify with `ssh dev-vps 'docker exec <api> env | grep NEW_VAR'`.
+28. **Kernel-scheduler overload — recognise it, stop fighting it, hand
+    off via a STATUS doc** — on the local dev VM (not the VPS), every
+    shell command can hang for 2–5 minutes because the host is in a
+    swap-thrash state from many LSP `tsserver.js` processes each
+    holding ~600 MB resident + heavy compile output in /proc's swap
+    pressure. Signature: `free -h` shows swap fully consumed (2.0/2.0
+    GB), `ps --sort=-%mem` shows 5+ `tsserver.js` entries at the top,
+    and `uptime` reports load average > 10. Even `echo $$`, `git log
+    -1`, and a single `git add <file>` time out.
+    When this happens: **don't burn more tool calls trying to push**.
+    Verify file-on-disk (every edited path's `os.path.getsize()`
+    matches the expected post-edit size — proves the writes landed in
+    BOTH `source/` and the deploy-mirror worktree), then write a
+    STATUS doc with: (a) every file modified + a one-line description
+    of the change, (b) the exact `git add` and `git commit -m ...`
+    commands to run from a healthy shell, (c) the live-verification
+    curl one-liners. Use `templates/ship-handoff.md` as the
+    template. The next session (or Chris from a healthier shell) can
+    pick up the docs and finish the ship in under a minute. **Never
+    fabricate the success report** ("pushed ✓") when the underlying
+    command actually timed out.
 
 ## Verification checklist before declaring done
 
 - [ ] `https://<name>.<domain>/` returns 200
 - [ ] `https://<name>.<domain>/api/healthz` returns `{"status":"ok"}`
+- [ ] Every verified custom-domain host returns 200 (HTTPS via ACME-issued cert)
 - [ ] All seed users can log in and reach their role-appropriate UI
 - [ ] `validate_app.sh` returns 0 FAIL
-- [ ] Custom-domain (if applicable) round-trip works:
+- [ ] Custom-domain round-trip works:
   PUT domain → status:pending → POST verify → status:verified
+- [ ] Post-login cross-origin redirect works: a user with a verified
+  custom domain, logging in via `https://<name>.<domain>/login`, lands
+  on `https://<custom-domain>/dashboard` after submit (and the
+  API response includes `redirectTo`).
 - [ ] SMTP test endpoint returns 2xx
 - [ ] Role-based access denials return 403 (staff can't create workplaces, etc.)
 - [ ] GitHub webhook end-to-end: no-op commit → webhook log shows
   "triggered" + "executing" → `.baymax-last-deploy` updates
+- [ ] After editing `deploy/<name>_dev.sh` in the repo, ALSO
+  `scp` it to `/srv/scripts/<name>_dev.sh` on the VPS — the two
+  files drift otherwise (gotcha #26). Verify with `ssh dev-vps
+  'grep -c <new-fn> /srv/scripts/<name>_dev.sh'`.
+- [ ] After adding a new env var to compose `environment:`, ALSO
+  append it to `/srv/secrets/<name>.env` on the VPS and `rm -f
+  /srv/projects/<name>/.env` so the next deploy re-materialises it
+  (gotcha #27). Verify with `ssh dev-vps 'docker exec <api> env |
+  grep <NEW_VAR>'`.
 - [ ] Neighbour projects (payntra, etc.) still return 200 — daemon MTU
   restart or compose recreation shouldn't disturb them
 - [ ] Security headers present on every response type (root, /api/*, static):
@@ -264,5 +490,32 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
 - **Reference: `references/security-hardening-patterns.md`** — full pattern
   for Caddy + nginx + Express security headers, wildcard CORS removal,
   Caddy site-block template, and the curl checks to verify hardening.
+- **Reference: `references/case-insensitive-email.md`** — `normalizeEmail`
+  + `emailEq` helpers, the two-layer defense rationale, and a
+  retrofit checklist for every endpoint that matches on email.
 - **Script: `scripts/validate_app.sh`** — 80-assertion validation template
   covering every API group. Copy and adapt the path/method/payload lines.
+- **Script: `scripts/protocol-verify.sh`** — wire-protocol verification
+  for non-JSON endpoints (calendar feeds, RSS, webhooks, CSV exports).
+  Asserts Content-Type / Content-Disposition / body markers / CRLF line
+  endings / revocation lifecycle. Use for any endpoint that returns
+  structured text/binary instead of JSON.
+- **Reference: `references/custom-domain-routing.md`** — the three-layer
+  white-label pattern (Caddy sidecar + post-auth cross-origin redirect +
+  CORS allowlist driven by a single source-of-truth helper). **Required
+  reading before adding custom-domain / per-tenant hostname support to
+  any app on this VPS.**
+- **Template: `templates/extra_hosts_caddy_snippet.sh`** — drop-in shell
+  snippet for `<name>_dev.sh` that materialises the per-host sidecar
+  from `/srv/secrets/<name>-custom-domains`. Pairs with the new
+  reference above.
+- **Script: `scripts/verify-custom-domain.sh`** — 8-step live verification
+  (DNS CNAME → Caddy vhost → HTTPS → API branding → login-bounce →
+  login-no-bounce → platform-admin-no-bounce → CORS preflight). Run
+  after every new custom-domain addition. Adapt the env vars at the
+  top, then `bash scripts/verify-custom-domain.sh` against the VPS.
+- **Template: `templates/ship-handoff.md`** — copy-paste skeleton for the
+  STATUS doc you write when the local VM is in kernel-scheduler overload
+  and you can't push. Captures the "what was edited", "how to ship
+  when the host recovers", and "live verification" sections. See
+  gotcha #28 for when to use this.

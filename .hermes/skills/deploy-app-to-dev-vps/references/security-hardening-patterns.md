@@ -118,7 +118,12 @@ export function buildCors(): ReturnType<typeof cors> {
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);                // same-origin / curl
       if (allowed.includes(origin)) return cb(null, true);
-      return cb(new Error(`Origin ${origin} not allowed by CORS`));
+      // cb(null, false) — NOT cb(new Error(...)). Throwing bubbles to the
+      // global error handler and returns HTTP 500 (misleading: the request
+      // never reached a handler). Returning false skips the CORS headers
+      // so the browser sees no Access-Control-Allow-Origin and blocks the
+      // response cleanly. Server still returns whatever the route returns.
+      return cb(null, false);
     },
     credentials: false,                                  // we use Bearer tokens
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -241,6 +246,36 @@ docker run --rm -v "$PWD:/workspace" -w /workspace node:20-bookworm-slim \
 
 # 4. Commit and push (webhook redeploys)
 ```
+
+## CSP Intersection Across Multiple Layers (Subtle Trap)
+
+When both Caddy AND nginx emit `Content-Security-Policy` headers, the
+browser does NOT pick one — it INTERSECTS the policies. Per CSP spec,
+all CSP headers in a response are enforced simultaneously, and the
+effective policy is the conjunction (more restrictive wins per directive).
+
+This means: if Caddy sets `script-src 'self' 'unsafe-inline'` and nginx
+sets `script-src 'self'` (which it does for the SPA's static responses
+in some configs), the effective policy is `script-src 'self'` — inline
+scripts blocked. Vite-built bundles inject inline `<style>` tags; those
+will silently fail to apply, with no console error. Page LOOKS broken
+but no exception fires.
+
+**Mitigation:**
+
+1. Always verify the actual `content-security-policy` header on every
+   response type with `curl -sI`. Don't assume — inspect.
+2. Set the same directives in both layers. Either keep `unsafe-inline`
+   in BOTH (Vite-friendly) or remove from BOTH (strict CSP, requires
+   Vite to externalize inline styles).
+3. For nginx `location / {}` (SPA static), use the same permissive
+   policy as Caddy:
+   `Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"`
+4. For nginx `location /api/ {}` (proxied API), keep the strict policy:
+   `Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"`
+5. For Caddy `header {}` block (TLS-terminating layer), set the union
+   of the above — the browser will intersect with each layer's policy
+   on its way through.
 
 ## Verification Commands
 

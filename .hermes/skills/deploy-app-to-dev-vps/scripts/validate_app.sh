@@ -19,8 +19,8 @@ green()  { printf '\033[0;32m%s\033[0m\n' "$*"; }
 yellow() { printf '\033[1;33m%s\033[0m\n' "$*"; }
 blue()   { printf '\033[0;34m%s\033[0m\n' "$*"; }
 
-# IMPORTANT: $BODY=$(cat ...) inside req() runs in a subshell because req()
-# is invoked via `code=$(req ...)` — the subshell capture means BODY written
+# IMPORTANT: $BODY=$(cat ...) inside req() runs in a subshell because req() is
+# invoked via `code=$(req ...)` — the subshell capture means BODY written
 # inside req() never propagates. So we persist to a side-channel file and
 # read it back via body_get(). Same trick applies to ANY helper called via
 # command-substitution that wants to communicate state to the caller.
@@ -56,25 +56,76 @@ assert() {
   return 1
 }
 
-# jq_get <field> — extract a field from the most recent req()'s body
+# jq_get <field> — extract a field from the most recent req()'s body.
+# IMPORTANT: passing the body via `BODY=$(body_get)` then reading it with
+# `os.environ.get('BODY')` from inside a heredoc DOES NOT WORK — the heredoc
+# starts a fresh Python subprocess that does NOT inherit parent shell
+# variables. Pass body as argv instead.
 jq_get() {
   local field="$1"
-  BODY=$(body_get)
-  python3 <<EOF
-import json, os
+  local body
+  body=$(body_get)
+  python3 -c "
+import json, sys
 try:
-    d = json.loads(os.environ.get('BODY',''))
-    print(d.get('$field', ''))
+    d = json.loads(sys.argv[1])
+    print(d.get(sys.argv[2], ''))
 except Exception:
     print('')
-EOF
+" "$body" "$field"
 }
 
+# Token cache. Rate-limited login endpoints (e.g. 5/email/15min) make
+# repeated login attempts in one script run painful and across-runs fatal
+# until the window resets. Cache successful tokens to disk; validate each
+# cached token with /api/auth/me before trusting it (server may have
+# rotated SESSION_SECRET, in which case we re-login).
+TOKENS_CACHE="${TOKENS_CACHE:-/tmp/$(basename "$0")_tokens.json}"
+
+# Load cached tokens at script start
+if [ -f "$TOKENS_CACHE" ]; then
+  while IFS='=' read -r k v; do
+    [ -n "$k" ] && [ -n "$v" ] && eval "CACHED_${k}='$v'"
+  done < <(python3 -c "
+import json
+try:
+  d = json.load(open('$TOKENS_CACHE'))
+  for em, tok in d.items():
+    h = em.replace('@','_').replace('.','_').upper()
+    print(f'{h}={tok}')
+except: pass
+")
+fi
+
 login() {
-  curl -sS -X POST "$BASE/api/auth/login" \
+  local email="$1"
+  local cached_var="CACHED_${email//@/_}"; cached_var="${cached_var//./_}"; cached_var="${cached_var^^}"
+  local cached="${!cached_var:-}"
+  if [ -n "$cached" ]; then
+    local code=$(curl -sS -o /dev/null -w "%{http_code}" \
+      -H "Authorization: Bearer $cached" "$BASE/api/auth/me")
+    if [ "$code" = "200" ]; then printf '%s' "$cached"; return 0; fi
+  fi
+  local resp=$(curl -sS -X POST "$BASE/api/auth/login" \
     -H "Content-Type: application/json" \
-    --data "{\"email\":\"$1\",\"password\":\"Test123!\"}" \
-    --max-time 15 | python3 -c "import json,sys;print(json.load(sys.stdin).get('token',''))"
+    --data "{\"email\":\"$email\",\"password\":\"Test123!\"}" \
+    --max-time 15)
+  local tok=$(printf '%s' "$resp" | python3 -c "
+import json, sys
+try: print(json.load(sys.stdin).get('token',''))
+except: print('')
+" 2>/dev/null)
+  if [ -n "$tok" ]; then
+    python3 - "$email" "$tok" "$TOKENS_CACHE" <<'PY'
+import json, sys
+em, tok, path = sys.argv[1], sys.argv[2], sys.argv[3]
+try: d = json.load(open(path))
+except: d = {}
+d[em] = tok
+json.dump(d, open(path, 'w'))
+PY
+  fi
+  printf '%s' "$tok"
 }
 
 # ─── Edit below per app. The section names below are SYNTRA-shaped — adapt

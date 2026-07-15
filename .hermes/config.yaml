@@ -561,6 +561,7 @@ command_allowlist:
   - delete in root path
   - overwrite project env/config via redirection
   - shell command via -c/-lc flag
+  - git force push (rewrites remote history)
   - overwrite system file via tee
   - stop/restart system service
   - recursive delete
@@ -572,6 +573,7 @@ command_allowlist:
   - copy/move file into system config path
   - kill process via pgrep/pidof expansion (self-termination)
   - overwrite system config
+  - git clean with force (deletes untracked files)
   - script execution via -e/-c flag
   - shell execution via heredoc
   - docker compose restart/stop/kill/down (container lifecycle)
