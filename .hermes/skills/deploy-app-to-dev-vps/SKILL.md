@@ -420,26 +420,210 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
         but it gets clobbered on next first-deploy.
     Verify with `ssh dev-vps 'docker exec <api> env | grep NEW_VAR'`.
 28. **Kernel-scheduler overload — recognise it, stop fighting it, hand
-    off via a STATUS doc** — on the local dev VM (not the VPS), every
-    shell command can hang for 2–5 minutes because the host is in a
-    swap-thrash state from many LSP `tsserver.js` processes each
-    holding ~600 MB resident + heavy compile output in /proc's swap
-    pressure. Signature: `free -h` shows swap fully consumed (2.0/2.0
-    GB), `ps --sort=-%mem` shows 5+ `tsserver.js` entries at the top,
-    and `uptime` reports load average > 10. Even `echo $$`, `git log
-    -1`, and a single `git add <file>` time out.
-    When this happens: **don't burn more tool calls trying to push**.
-    Verify file-on-disk (every edited path's `os.path.getsize()`
-    matches the expected post-edit size — proves the writes landed in
-    BOTH `source/` and the deploy-mirror worktree), then write a
-    STATUS doc with: (a) every file modified + a one-line description
-    of the change, (b) the exact `git add` and `git commit -m ...`
-    commands to run from a healthy shell, (c) the live-verification
-    curl one-liners. Use `templates/ship-handoff.md` as the
-    template. The next session (or Chris from a healthier shell) can
-    pick up the docs and finish the ship in under a minute. **Never
-    fabricate the success report** ("pushed ✓") when the underlying
-    command actually timed out.
+    off via a STATUS doc OR push via GitHub Data API** — on the local
+    dev VM (not the VPS), every shell command can hang for 2–5
+    minutes because the host is in a swap-thrash state from many LSP
+    `tsserver.js` processes each holding ~600 MB resident + heavy
+    compile output in /proc's swap pressure. Signature: `free -h`
+    shows swap fully consumed (2.0/2.0 GB), `ps --sort=-%mem` shows
+    5+ `tsserver.js` entries at the top, and `uptime` reports load
+    average > 10. Even `echo $$`, `git log -1`, and a single
+    `git add <file>` time out.
+    When this happens: **first check whether HTTPS to `api.github.com`
+    still works** (`urllib.request.urlopen("https://api.github.com/",
+    timeout=10)` — typically <2s response time). If it does, you can
+    bypass the wedged local `git` entirely by pushing via the GitHub
+    Data API (blob → tree → commit → ref). See the
+    `github-data-api-direct-push` skill for the working Python
+    template; the gotcha here is the "Update is not a fast forward"
+    retry loop when a parallel commit lands while you're building
+    yours. **Use this path** instead of giving up — it succeeds in
+    seconds when the kernel is jammed but HTTPS is fine.
+    Only when both local `git` AND HTTPS are wedged should you fall
+    back to the STATUS-doc handoff: verify file-on-disk (every edited
+    path's `os.path.getsize()` matches the expected post-edit size —
+    proves the writes landed in BOTH `source/` and the deploy-mirror
+    worktree), then write a STATUS doc with: (a) every file modified
+    + a one-line description of the change, (b) the exact `git add`
+    and `git commit -m ...` commands to run from a healthy shell,
+    (c) the live-verification curl one-liners. Use
+    `templates/ship-handoff.md` as the template. The next session
+    (or Chris from a healthier shell) can pick up the docs and finish
+    the ship in under a minute. **Never fabricate the success
+    report** ("pushed ✓") when the underlying command actually timed
+    out.
+29. **Webhook 504 timeout ≠ build failure** — the webhook daemon on
+    port 9000 runs `<name>_dev.sh redeploy` synchronously, but the
+    docker build + caddy reload typically takes 30–90s. GitHub caps
+    webhook responses at 10s, so every delivery is reported as
+    `status=504, duration=10s` even when the build eventually
+    succeeds. **Verify by probing the served behaviour, not by
+    reading the webhook delivery status.**
+    Concrete signals of "build completed":
+    - SPA bundle: `curl -sI https://<name>.<root>/` → new asset hash
+      in the HTML (`<script src="/assets/index-<newhash>.js">`).
+      Then `curl -s https://<name>.<root>/assets/index-<newhash>.js |
+      grep <new-symbol>` to confirm the new code is actually in the
+      bundle (esbuild minifies function names — search for distinctive
+      strings like `data-testid` values or new component names instead
+      of the original function names).
+    - API behaviour: hit the new endpoint or check that an old
+      endpoint's response shape changed (new query parameter handling,
+      new field in JSON response). Behavioural diff is more reliable
+      than the webhook delivery log.
+    - Order checks: `?includeInactive=true` returning DESC order
+      proves a new code path with `.orderBy(...)` is live; old code
+      without orderBy returns insertion order. Use order diffs as a
+      code-version fingerprint.
+    If after 90–120s the served bundle / API behaviour has NOT
+    changed, then the build genuinely failed. SSH to the VPS (or read
+    `/var/log/webhook.log` via the GitHub API if you can't) to find
+    the actual error.
+30. **Lifecycle tests on a live DB are rate-limited by the public
+    IP** — `loginIpLimiter` / `loginEmailLimiter` (see skill
+    `security-hardening-web-stack`, the `trust proxy = 1` and
+    `loginEmailLimiter keyGenerator` pitfalls) return `429 Too many
+    attempts` after a handful of `/auth/login` hits from the same
+    egress IP. The verifier on this host shares
+    one egress IP, so any "create test tenant → login as its owner →
+    assert response" round-trip will trip the limiter within 3-5
+    requests. **Call the API from inside the API container** to bypass
+    both the IP and the email limiter — the container's local
+    traffic doesn't pass through Caddy or hit the limiter middleware:
+    ```bash
+    ssh dev-vps 'docker exec -e EMAIL=... -e PW=... <api_container> \
+      node -e "fetch(\"http://127.0.0.1:8080/api/auth/login\",\
+        {method:\"POST\",headers:{\"Content-Type\":\"application/json\"},\
+         body:JSON.stringify({email:process.env.EMAIL,password:process.env.PW})})\
+        .then(async r => console.log(r.status + \"|\" + await r.text()))"'
+    ```
+    For full lifecycle scripts (create → activate → deactivate →
+    hard-delete), mint a short-lived JWT inside the container so the
+    test never hits `/auth/login` at all. Look up the seed platform
+    admin's user id from the DB (`docker exec <pg_container> psql -U
+    <user> -d <db> -Atc "SELECT id FROM users WHERE role =
+    'platform_admin' ORDER BY id LIMIT 1"`) and replace the hard-coded
+    `userId:5` with that value. Same `SECRET` value as in
+    `/srv/secrets/<name>.env`:
+    ```bash
+    ssh dev-vps 'docker exec -e SECRET="$(docker exec <api> \
+      printenv SESSION_SECRET)" -e ADMIN_ID="$(docker exec <pg> psql -U \
+      <user> -d <db> -Atc \"SELECT id FROM users WHERE role='\''platform_admin'\'' \
+      ORDER BY id LIMIT 1\")" <api> node -e "
+      const enc = b => Buffer.from(b).toString(\"base64url\");
+      const h = enc(JSON.stringify({alg:\"HS256\",typ:\"JWT\"}));
+      const p = enc(JSON.stringify({userId:Number(process.env.ADMIN_ID),
+        companyId:null,role:\"platform_admin\",
+        exp:Math.floor(Date.now()/1000)+3600}));
+      const sig = enc(require(\"crypto\").createHmac(\"sha256\",
+        process.env.SECRET).update(\`${h}.${p}\`).digest());
+      console.log(\`${h}.${p}.${sig}\`)"'
+    ```
+    Then run the test from the same `docker exec` and `curl` to
+    `https://<name>.terrybot.top` (or wherever) with that token. Pair
+    the script with a `trap cleanup EXIT` that hard-deletes the
+    disposable tenant even if any intermediate step fails. Verify
+    afterwards with `ssh dev-vps 'docker exec <pg> psql -U <user> -d
+    <db> -Atc "SELECT count(*) FROM companies WHERE name LIKE '\''Baymax
+    Lifecycle %'\''"` returns 0.
+    **Always deliver the lifecycle script via base64 over ssh** to
+    avoid heredoc quoting disasters — single-quote-in-quote-in-quote
+    errors silently truncate the script and you end up with a
+    half-formed `trap` that drops the cleanup, leaving orphan test
+    data in the live database. `python3 -c "import base64;
+    print(base64.b64encode(open('/dev/stdin','rb').read()).decode())"`
+    on the host, then `printf '%s' '<b64>' | base64 -d | bash` on the
+    VPS. See `references/live-lifecycle-tests.md` for the full
+    pattern.
+31. **`fetchPlatform<void>` for HTTP 204 endpoints** — the SPA's
+    `fetchPlatform<T>` helper in `artifacts/web-app/src/lib/<app>-api.ts`
+    calls `res.json()` unconditionally. DELETE endpoints that return
+    204 (no body) blow up on the client with a `SyntaxError: Unexpected
+    end of JSON input`. **Two-line fix in the helper:**
+    ```ts
+    if (res.status === 204) return undefined as T;
+    return res.json();
+    ```
+    Then declare the mutation's `mutationFn` return as
+    `Promise<void>` (or use the `fetchPlatform<void>` shape, depending
+    on the codebase's convention). Hard-delete and any other
+    "204 No Content" endpoint needs both — the server-side route must
+    return 204 AND the client helper must tolerate the empty body.
+    When you add the first 204 endpoint, audit every existing
+    `fetchPlatform` caller for the same failure mode.
+32. **Clean-room checkout before surgical fixes** — when the existing
+    `/root/.hermes/projects/<name>/deploy-mirror` worktree has staged
+    or unstaged changes from a previous procedure (look for `MM` or
+    large `M` counts in `git status --short`), do NOT mix new edits
+    into it. Clone fresh instead:
+    `git clone --depth=1 https://github.com/MadeAt2AM/<name>_VPS.git
+    /root/.hermes/projects/<name>/<feature-folder>`. This gives you a
+    clean tree for surgical changes, avoids spurious diffs, and
+    doesn't risk losing unrelated in-progress work. After the
+    surgical change ships, the dirty worktree can be cleaned up by
+    the next session. **Don't `git checkout --` or `git restore .`
+    the dirty tree** — that's how you destroy untracked edits from
+    another procedure.
+33. **`patch` tool collapses on duplicate near-identical blocks** —
+    `artifacts/api-server/src/routes/auth.ts` has TWO
+    `db.select().from(users).where(emailEq(users.email, email)).limit(1)`
+    blocks (one in `/register`'s invitation flow, one in `/login`)
+    with identical whitespace. A `patch` with the small surrounding
+    context matches BOTH and rejects with "Found 2 matches".
+    Solution: include enough context lines to disambiguate
+    (e.g. the surrounding `if (!user)` or `const valid = await
+    bcrypt.compare(...)` line), or fall back to `execute_code` +
+    `Path.read_text()` + `Path.write_text()` with an exact `count==1`
+    assertion. The first failed patch attempt at 60s already counted
+    against the budget; the second attempt silently matched the wrong
+    block in some codebases. **Always print which line numbers
+    matched before writing** — `text.splitlines()` + a print loop is
+    one line of code and saves an entire rebuild cycle.
+35. **`node:test` / `node:assert/strict` typecheck noise in fresh
+    checkouts** — a new `test/foo.test.ts` file in
+    `artifacts/<svc>/test/` will trip `tsc --noEmit` with
+    `Cannot find name 'node:test'` and `Cannot find name
+    'node:assert/strict'`. `@types/node` IS installed (it's a
+    catalog dep) but the test file is OUTSIDE the api-server's
+    `tsconfig.json` `include: ["src"]`. Two fixes, in order:
+    (a) Don't gate on typecheck — run the test directly with
+    `pnpm exec esbuild test/foo.test.ts --bundle --platform=node
+    --format=esm --outfile=/tmp/foo.test.mjs && node --test
+    /tmp/foo.test.mjs`. The bundle ignores tsconfig include
+    boundaries; the test runs fine and you get the TDD red/green
+    signal.
+    (b) Once the test is green, add `"test"` to the `include` array
+    in `artifacts/<svc>/tsconfig.json` so the typecheck pipeline sees
+    it permanently. Don't do this for throwaway tests — only for
+    tests you're shipping to the repo.
+36. **`Invalid credentials` can mean `Invalid credentials` OR
+    `Too many attempts`** — when a user reports they cannot log in,
+    do NOT immediately reset their password. Diagnostic order:
+    1. **Read the actual response** — `429 {"error":"Too many
+       attempts for this account..."}` means the limiter is the
+       problem, not the password. `401 {"error":"Invalid
+       credentials"}` is the only signal that the bcrypt hash is
+       actually wrong.
+    2. **Probe the stored hash** from the DB to confirm password
+       correctness without hitting the API:
+       ```bash
+       ssh dev-vps 'docker exec <pg> psql -U <user> -d <db> -Atc \
+         "SELECT email, crypt('\''<pw>'\'', password_hash)=password_hash \
+          FROM users WHERE lower(email)=lower('\''<email>'\'')"'
+       ```
+       `t` = password matches, `f` = different password (then reset
+       with the same `crypt()` expression in an `UPDATE`).
+    3. **Probe the limiter** by attempting a different, never-used
+       account from the same network. If the second account also
+       returns `429`, the IP bucket is the problem — not the user's
+       password. The default `loginEmailLimiter` keys by client IP
+       unless a `keyGenerator` is supplied; fix is in
+       `security-hardening-web-stack` gotcha 3a.
+    4. **Reset only when the hash check returned `f`**. If the
+       password was correct and the limiter was blocking them,
+       resetting the password does nothing — the in-memory limiter
+       bucket is still active until the container restarts or 15
+       minutes pass.
 
 ## Verification checklist before declaring done
 
@@ -514,8 +698,24 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
   login-no-bounce → platform-admin-no-bounce → CORS preflight). Run
   after every new custom-domain addition. Adapt the env vars at the
   top, then `bash scripts/verify-custom-domain.sh` against the VPS.
+- **Reference: `references/live-lifecycle-tests.md`** — running
+  lifecycle verification (create → activate → deactivate →
+  hard-delete) on the live dev database without tripping the
+  `loginIpLimiter` / `loginEmailLimiter` rate limit. Mint a short-lived
+  JWT inside the API container with the same `SESSION_SECRET` so the
+  test never hits `/auth/login` from the public IP. Pairs with
+  gotcha #30.
 - **Template: `templates/ship-handoff.md`** — copy-paste skeleton for the
   STATUS doc you write when the local VM is in kernel-scheduler overload
   and you can't push. Captures the "what was edited", "how to ship
   when the host recovers", and "live verification" sections. See
   gotcha #28 for when to use this.
+- **Skill: `github-data-api-direct-push`** — the bypass-git push path
+  used when the local `git` binary is wedged but HTTPS to
+  `api.github.com` still works. Pairs with gotcha #28 as the
+  first-choice escalation before falling back to a STATUS doc.
+- **Skill: `vps-ram-pressure`** — covers the underlying "every shell
+  command stalls for minutes" symptom that triggers gotcha #28 in
+  this skill. See "The every-command-stalls symptom" in that skill
+  for the diagnostic checklist and the recovery path (kill / cap the
+  top RSS hogs to free swap pressure).

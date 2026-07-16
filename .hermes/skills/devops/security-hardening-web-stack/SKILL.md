@@ -63,6 +63,21 @@ should be `default-src 'none'; frame-ancestors 'none'` (no scripts at all).
    the allowlist pattern. HIGH severity for any public API.
 3. **No `app.set('trust proxy', 1)`** behind a proxy → rate-limit per-IP
    fails open (everyone shares one bucket).
+3a. **`loginEmailLimiter` defaults to IP-keyed buckets** if no
+   `keyGenerator` is supplied. The `max: 5` reads as "5 attempts per
+   account" but is in fact "5 attempts per IP for that account's IP" —
+   and worse, a different account's 6th failure from the same IP will
+   cause this account to be locked out by the limiter that's supposed
+   to be protecting that account. Always pass a `keyGenerator` that
+   reads from the request body (normalized) and falls back to the IP
+   only when the identifier is unavailable:
+   ```ts
+   keyGenerator: (req) => loginRateLimitKey(req.body?.email, req.ip || "unknown")
+   ```
+   Symptom: "users can't log in from the base URL after a few attempts,
+   even with the right password." Verify with two consecutive bad logins
+   for different accounts from the same egress IP — only the IP-shared
+   limiter is wrong if the second account's failure 429s the first.
 4. **`express.json()` with no limit** is a DoS surface. 256 KB is generous
    for normal payloads.
 5. **Generic 500 messages** — never echo `err.message`. Can include DB

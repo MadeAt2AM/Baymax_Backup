@@ -26,6 +26,35 @@ Trigger on any of:
 - OOM kills in `dmesg` or `journalctl`
 - A specific service is suspected of leaking (`journalctl -u <svc>` shows restarts with memory growth)
 - User reports "VPS is slow" / "everything is sluggish" / "X is using too much RAM"
+- **Every shell command takes 2–5 minutes to return** even `echo $$` or `git log -1`. This is the kernel scheduler thrashing on swap-in (see "The every-command-stalls symptom" below).
+
+## The every-command-stalls symptom (scheduler-jammed, not just RAM-full)
+
+**Distinct from "host is slow because of memory pressure."** When the host enters this state, every fresh process has to wait for its working set to be swapped back in before it can run. Symptoms:
+
+- `uptime` reports load average > 10 (often > 20)
+- `free -h` shows swap at or near 100% used (e.g. `2.0/2.0 GB`)
+- `ps aux --sort=-%mem` shows many heavy processes (`tsserver.js`, `chromium`, `node` workers) each holding 200–800 MB resident
+- Even trivial commands like `echo hello`, `date`, `git log -1`, `git add <file>` time out at 30s, 60s, or 300s — the kernel is taking that long just to schedule the new process
+- BUT HTTPS to `api.github.com` typically still works in <2s (network is fine; it's the local syscall path that's jammed)
+
+This is **swap-thrash**, not memory exhaustion. The processes have their working set partly in swap, and the kernel is spending all its time moving pages around.
+
+**What works:**
+- Killing or capping the top RSS hogs immediately frees up swap-in pressure. The `ps aux --sort=-%mem` top 5 are usually the culprit — multiple `tsserver.js` from LSP clients, accumulated browser instances, etc. See the orphan-detection pitfall for which are safe to kill.
+- After reclaiming ~1 GB RSS (caps alone help; kills are faster), the scheduler will recover within 30–60s and shell latency returns to <1s.
+
+**What doesn't work:**
+- `systemctl restart <service>` from inside the wedged shell — the restart command itself stalls for minutes.
+- `pkill` from inside the wedged shell — same issue.
+- Hoping it will self-heal — once in swap-thrash, only freeing memory recovers it.
+
+**The escape hatch for an agent session that's wedged:**
+1. Check if the host you need to push to is **also wedged**, or just local. Often `ssh dev-vps 'free -h'` will respond (different host, different scheduler state) even when the local shell is jammed.
+2. If the push host is reachable but local `git` is wedged, push via the **GitHub Data API** (blob → tree → commit → ref). This bypasses local git entirely. See the `github-data-api-direct-push` skill.
+3. If even that path is wedged (HTTPS timeouts too), write a STATUS handoff doc with the file edits + the exact commands to run from a healthy shell, and report honestly. Never fabricate the success signal.
+
+**Avoid** running `vite build`, `tsc --noEmit`, or `pnpm install` from this state — they'll OOM-throttle into `D` state and you can't SIGKILL them cleanly. Push via the data API and let the VPS Docker pipeline do the build.
 
 ## The four-step loop
 
@@ -274,8 +303,14 @@ If the parent is `node /root/.hermes/lsp/bin/typescript-language-server --stdio`
 
 - `templates/memory-cap-dropin.conf` — ready-to-use `[Service]` block with MemoryHigh/MemoryMax
 
+## Related
+
+- `deploy-app-to-dev-vps` gotcha #24 ("Local `vite build` / `tsc` OOM-throttled on this host") — same root cause from a different angle. Gotcha #28 in that skill ("Kernel-scheduler overload") is the user-facing symptom; the recovery path is the same.
+- `github-data-api-direct-push` — the bypass-git push path used when local git is wedged but HTTPS to GitHub still works. Pairs with "The every-command-stalls symptom" above as the escape hatch for an agent session.
+
 ## Verified
 
 - First deployed: 2026-07-04 on cyberslide.terrybot.top
 - Diagnosed: 6.8 GB used → 5.2 GB used, 1 GB → 2.6 GB available, swap added (2 GB), 1.3 GB journal reclaimed, dead container removed
 - Patterns validated: orphan-detection (caught LSP false positive + a true positive for orphan Chrome from a 4-day-old session), singleton-browser architecture (LinkedIn MCP), systemd drop-in caps, swap file recipe, on-demand VNC stack (200 MB idle → ~1.5 GB reclaim when up + browser)
+- "Every-command-stalls" symptom confirmed on 2026-07-15: local VM with 6× `tsserver.js` @ 600 MB each, swap fully consumed, `git log -1` timing out at 30s, while `urllib.request.urlopen("https://api.github.com/", timeout=10)` returned in <2s — confirmed the swap-thrash diagnosis and validated the GitHub Data API escape hatch.
