@@ -1,48 +1,50 @@
 {
-  "date": "2026-07-16",
+  "date": "2026-07-17",
   "analysis": {
     "active_projects": [
-      "Syntra (dev VPS at syntra.terrybot.top) — workforce scheduling app; codebase in /root/.hermes/projects/syntra/source, deployed via GitHub webhook to MadeAt2AM/SYNTRA_VPS",
-      "Payntra (payntra.terrybot.top) — on Hetzner VPS 147.79.18.32; React/Vite/TS/Tailwind + Fastify/Postgres on custom docker network payntra-net (MTU 1400)",
-      "MadeAt2Am content pipeline — Remotion workspace at /root/claude-code-reel (compositions: 4DayClaude, claude-code-reel) plus HyperFrames projects under /root/.hermes/projects (147-agents-video, hermes-skills-reel-v2)",
-      "Hermes voice pipeline — gateway TTS text_to_speech + Kokoro bm_fable voice routing, several debugging cycles logged in MEMORY.md (2026-07-01 / 2026-07-02 voice-misroute + voice-mode lessons)"
+      "SYNTRA — multi-tenant SaaS at syntra.terrybot.top (VPS 147.79.18.32): just landed two commits on main today — 'fix(auth): key account login limiter by email' (c4c62b79) and 'feat(platform-admin): enforce tenant login and hard delete companies' (11527145). Both deployed via the GitHub→VPS webhook, typecheck/build/tests/regression-tests all green.",
+      "SYNTRA Feature B (Delete + Restore + Include inactive) — shipped 2026-07-15 SGT and live-verified end-to-end. Platform admin can now hard-delete companies (cascade), restore them, toggle inactive visibility.",
+      "Payntra — neighbour app on the same VPS at payntra.terrybot.top. No active dev work in the last 48h, but health is green and the cookie/auth/JWT plumbing from MEMORY.md remains the canonical reference.",
+      "Hermes voice-pipeline hardening (voice-fix-verify project) — recurring work; the gateway native TTS path is the only supported delivery for Chris. Today's session has not surfaced new voice regressions but the memory note from 2026-07-02 (voice-mode default = 'off', gateway must not use send_voice.py for Chris) is still load-bearing.",
+      "Baymax_Backup repo (MadeAt2AM) — pushed cleanly at 2026-07-18 00:00 SGT (commit 97ed9bd2, 303 files). RESTORATION_GUIDE refreshed. Healthy.",
+      "Hermes Agent self (Nous Research Hermes) — updated today at 16:00 SGT via the bi-daily cron: 659 new commits pulled, dashboard + gateway verified green."
     ],
     "upcoming_deadlines": [
-      "Google OAuth refresh token for madeat2am.ai@gmail.com is INVALID (invalid_grant: Bad Request) — calendar API call today failed; Morning Brief cannot read GCal until re-auth runs"
+      "No confirmed deadlines found — Google Calendar token expired (invalid_grant: Bad Request) so the live API call failed; needs a re-auth round-trip on the madeat2am.ai@gmail.com account before the 8 AM Morning Brief can pull events.",
+      "SYNTRA: implicit next step is to manually verify the new tenant-bound login behaviour on at least one live custom-domain company account before declaring the hard-delete feature closed for stakeholders."
     ],
     "outstanding_items": [
-      "Syntra Bug A — cross-origin session loss after custom-domain login redirect: the deep Caddy+API+SPA fix on 2026-07-14 included window.location.assign() to skip wouter setLocation; need live confirmation in a private-tab flow (login on syntra.terrybot.top as CYBERSLIDE user → land on syntra.cyberslide.net/dashboard still authenticated)",
-      "Syntra Feature B — platform admin Delete company button + 'Include inactive' toggle was pushed as commit 48f7c8eedb5a on 2026-07-15; live-verified for company #4 but Chris hasn't clicked it in the dashboard yet to confirm UI chrome and confirmation dialog",
-      "HyperFrames bug report still pending manual filing at github.com/NousResearch/hyperframes/issues/new (pre-written in /root/.hermes/projects/hermes-skills-reel/HYPERFRAMES_BUG_REPORT.md)",
-      "System monitor cron sends to Telegram home (-1003825565541) rather than the intended chat — needs /root/.hermes/scripts/system_monitor.sh patched if this is still desired behaviour",
-      "GitHub PAT for chrisvincodes account ready in memory but github-auth skill not yet wired up into the agent's runtime"
+      "Google Workspace OAuth refresh token is dead — reauth needed for madeat2am.ai@gmail.com. Blocks calendar/drive/gmail reads across every Morning Brief until fixed.",
+      "SYNTRA repo history has two orphan commits from the 2026-07-15 push (1d447844…, a93c18a…) — unreachable from main, cosmetic only, but a 'git reflog expire --expire=now --all && git gc --prune=now' on a fresh clone would clean them when convenient.",
+      "Voice-mode registry (`~/.hermes/gateway_voice_mode.json`) — memory note from 2026-07-02 requires default = 'off' for all chats; not re-checked this morning.",
+      "Baymax-Backup script's reported issue: `.hermes/.venv` is empty (pip list returns nothing). Documented in the skill as a known issue; harmless until a restore is attempted."
     ],
-    "recent_context": "Mid-week pause after a heavy two-day Syntra feature push. In the last 24 hours Chris shipped two verified-live changes to Syntra: cross-origin auth redirect via custom domains (commit ce183258 + d5415c8b) and platform-admin Delete+Restore companies with 'Include inactive' toggle (commit 48f7c8e). Earlier in the week the iCal subscription feature shipped (b22aea63) and the past couple of sessions show Chris iterating on the Syntra dev stack. The Dreaming Sequence calendar query failed with invalid_grant — the GWS refresh token has expired and needs re-auth. WhatsApp/voice threads are quiet; the Telegram topic 57217 for voice is the active comms lane."
+    "recent_context": "Chris spent most of 15–16 July deep inside SYNTRA — driving two parallel features (cross-domain auth bounce + platform-admin delete/restore) from his Telegram topic, using the dev-VPS deploy pipeline (GitHub webhook → VPS port 9000 → project_dev.sh → Caddy reload). The session closed green with both commits on main, regression tests passing, and a 200 from every neighbour app (syntra / cyberslide / payntra). Calendar auth has since lapsed, which will mute the Morning Brief unless refreshed; backup + Hermes update ran cleanly overnight."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Re-auth the Google Workspace OAuth token before 8 AM SGT",
-      "reason": "The Morning Brief consumer at 8 AM reads GCal to populate 'today's meetings' — this morning's calendar list call returned invalid_grant, so the brief will land without calendar context. Same token gates Gmail for inbox-triage. Two hours of working time is enough to fix; without it, both daily briefs will degrade.",
-      "action": "Open a terminal, cd /root/.hermes && . .venv/bin/activate, then run python3 skills/productivity/google-workspace/scripts/google_workspace_auth.py --reauth (or call gws auth login). Authorise as madeat2am.ai@gmail.com in the browser, confirm 200 from calendar list. If that fails, regenerate the token at https://console.cloud.google.com/apis/credentials → OAuth 2.0 Client → download new JSON → re-run the auth script with --credentials."
+      "title": "Re-auth the Google Workspace OAuth token before the 8 AM Morning Brief fires",
+      "reason": "The Calendar call returned invalid_grant (refresh token expired). The Morning Brief downstream consumer will silently skip calendar for the day — leaving the brief with no meeting context. A 60-second `google-workspace-auth` reauth round-trip now keeps the brief whole.",
+      "action": "Load the google-workspace-auth skill, run the reauth flow for madeat2am.ai@gmail.com, then re-run `python /root/.hermes/skills/productivity/google-workspace/scripts/google_api.py calendar list --start <today> --end <today>` to confirm an events array (or a clean empty array) is returned. Token path: /root/.hermes/google_token.json."
     },
     {
       "priority": 2,
-      "title": "Click through the Syntra dashboard custom-domain login in a private tab to verify the live UX",
-      "reason": "Code is live and curl-verified (redirectTo present, CORS open, company id=19 verified), but cross-origin auth flows are the bug class that hides behind cookies/CSRF/samesite — a full browser round-trip is the only signal that proves 'session survives the bounce'. Chris hasn't done the live verification yet, only the API-layer smoke tests.",
-      "action": "Open a private/incognito window → visit https://syntra.cyberslide.net/login → log in as admin@demo.com or manager@demo.com (Test123!) → confirm the URL bar lands on https://syntra.cyberslide.net/dashboard (not syntra.terrybot.top) AND that the page is still authenticated (no bounce back to /login). Then click the new Delete button on a test company in the platform admin view to confirm the confirmation dialog and Restore flow."
+      "title": "Live-verify SYNTRA's new tenant-bound login on at least one real custom-domain company",
+      "reason": "Commit 11527145 just shipped enforce-tenant-login and hard-delete; the rate-limiter fix (c4c62b79) was live-verified, but the tenant-bound branch was only verified on the base platform login, not on a cross-origin request from a company's custom domain. This is the exact failure class the original brief flagged — confirming it now closes the loop without waiting for Chris's first demo.",
+      "action": "Pick one company with a configured custom domain (e.g. CYBERSLIDE), POST credentials for a non-member account → expect generic 'Invalid user' 401, then POST credentials for a member account → expect 200 + redirectTo to the custom-domain host. Capture both responses for the changelog."
     },
     {
       "priority": 3,
-      "title": "Decide on the long-pending HyperFrames bug report and system monitor chat_id",
-      "reason": "Both items have been parked across multiple sessions — the HyperFrames bug doc is fully written, just needs to be pasted into the issue form; the system monitor's chat_id bug means Chris's Telegram home is being pinged every 15 min with something that should go elsewhere. Both are 5-minute fixes.",
-      "action": "Open /root/.hermes/projects/hermes-skills-reel/HYPERFRAMES_BUG_REPORT.md, copy contents, paste into https://github.com/NousResearch/hyperframes/issues/new (title: 'Bug: blank render when sub-composition referenced before main timeline registers'). Then sudo sed -i 's/-1003825565541/-1003300736345/g' /root/.hermes/scripts/system_monitor.sh (verify the intended chat_id first) and reload the cron via crontab -e."
+      "title": "Lock the SYNTRA release notes + share a one-paragraph status with stakeholders",
+      "reason": "Two related SYNTRA features shipped in 48h and live-verified, but there is no written 'what changed' digest. Without one, Chris will end up re-explaining the new delete/restore UX, the tenant-bound auth, and the rate-limiter fix in every conversation.",
+      "action": "Append a 'Release 2026-07-17' entry to /root/.hermes/projects/syntra/IMPLEMENTATION_PLAN.md covering: (1) hard-delete cascade + restore + include-inactive toggle, (2) cross-domain post-login redirect, (3) account-rate-limiter keyed by normalised email. Three bullets, commit hashes, and one screenshot of the platform-admin dashboard with the new Delete button."
     }
   ],
   "non_negotiable": {
-    "title": "Re-auth the GWS OAuth token this morning",
-    "reason": "Without a working token, the 8 AM Morning Brief runs without calendar data, and the daily inbox-triage job that catches new client emails also dies. Both are daily-cadence automations — a single missed morning compounds into a week of catch-up. This is the one task that, if skipped, meaningfully delays the rest of the pipeline for the day.",
-    "action": "cd /root/.hermes && . .venv/bin/activate && python3 skills/productivity/google-workspace/scripts/google_workspace_auth.py --reauth madeat2am.ai@gmail.com → follow the OAuth consent screen → save the new token to /root/.hermes/google_token.json → verify with python3 skills/productivity/google-workspace/scripts/google_api.py calendar list. Should return 200, not invalid_grant."
+    "title": "Re-auth the Google Workspace refresh token before 07:30 SGT",
+    "reason": "The 8 AM Morning Brief reads today's calendar; without a valid token it ships with zero meeting context. Re-auth is a 60-second `google-workspace-auth` flow and unblocks every downstream morning signal (brief, calendar-driven recommendations, conflict detection). Skipping it means the brief is blind to today's schedule for the entire day.",
+    "action": "Load `google-workspace-auth`, run the OAuth reauth dance for madeat2am.ai@gmail.com, validate the new token with a single `calendar list` call, then let the Morning Brief cron run at 08:00 SGT as designed."
   },
-  "mood_check": "Energy reads steady-operational, not frantic. Two-day Syntra push (custom-domain session preservation + delete-company admin) ended with green curls and live DB verification. No active voice/pipeline drama in the last 24 hours (voice-fix-verify project sits quiet). The token-expired error is the one ambient risk; otherwise Chris has cleared the queue and can spend today verifying rather than building."
+  "mood_check": "Operational and focused — Chris drove two non-trivial SYNTRA features to green in 48 hours and signed off cleanly. The session close was concrete (commit hashes, live curl outputs, neighbour-app 200s), not vague. The single drag factor is infrastructure hygiene: a dead OAuth token and a couple of cosmetic repo orphans. Energy reads as 'ship-and-move-on', not 'stuck'. Dad would've cocked an eyebrow at the orphaned commits and said 'sort it on a quiet Sunday'."
 }
