@@ -1,50 +1,50 @@
 {
-  "date": "2026-07-17",
+  "date": "2026-07-18",
   "analysis": {
     "active_projects": [
-      "SYNTRA — multi-tenant SaaS at syntra.terrybot.top (VPS 147.79.18.32): just landed two commits on main today — 'fix(auth): key account login limiter by email' (c4c62b79) and 'feat(platform-admin): enforce tenant login and hard delete companies' (11527145). Both deployed via the GitHub→VPS webhook, typecheck/build/tests/regression-tests all green.",
-      "SYNTRA Feature B (Delete + Restore + Include inactive) — shipped 2026-07-15 SGT and live-verified end-to-end. Platform admin can now hard-delete companies (cascade), restore them, toggle inactive visibility.",
-      "Payntra — neighbour app on the same VPS at payntra.terrybot.top. No active dev work in the last 48h, but health is green and the cookie/auth/JWT plumbing from MEMORY.md remains the canonical reference.",
-      "Hermes voice-pipeline hardening (voice-fix-verify project) — recurring work; the gateway native TTS path is the only supported delivery for Chris. Today's session has not surfaced new voice regressions but the memory note from 2026-07-02 (voice-mode default = 'off', gateway must not use send_voice.py for Chris) is still load-bearing.",
-      "Baymax_Backup repo (MadeAt2AM) — pushed cleanly at 2026-07-18 00:00 SGT (commit 97ed9bd2, 303 files). RESTORATION_GUIDE refreshed. Healthy.",
-      "Hermes Agent self (Nous Research Hermes) — updated today at 16:00 SGT via the bi-daily cron: 659 new commits pulled, dashboard + gateway verified green."
+      "SYNTRA — the latest product work is deployed on the dev VPS. Commit 11527145 added tenant-bound custom-domain login plus true company hard delete/deactivate/reactivate behaviour; commit c4c62b79 fixed the account login limiter. The repository is clean and synced with origin/main.",
+      "Dreaming Sequence → Morning Brief automation — functioning, but observed execution times do not match the documented 06:00/08:00 SGT pipeline. Dreaming ran at 22:00 SGT, Morning Brief at 00:01 SGT, and Baymax Backup at 16:01 SGT, showing that UTC-offset schedules were entered into a scheduler operating in SGT.",
+      "Google Workspace integration — calendar retrieval is blocked by an invalid_grant refresh-token failure for madeat2am.ai@gmail.com. Today's schedule and deadlines therefore could not be verified from the source calendar.",
+      "LLM Wiki / daily activity archive — sync health is current, but the 15–18 July daily logs contain either 'No session data captured' or only a sync-health line despite substantial SYNTRA work. The archive is not yet a reliable activity source for the Dreaming Sequence.",
+      "Payntra — no recent development thread was found in the last seven days. It was last verified healthy alongside SYNTRA during the 15 July deployment checks, so it remains a maintained neighbour rather than today's active build."
     ],
     "upcoming_deadlines": [
-      "No confirmed deadlines found — Google Calendar token expired (invalid_grant: Bad Request) so the live API call failed; needs a re-auth round-trip on the madeat2am.ai@gmail.com account before the 8 AM Morning Brief can pull events.",
-      "SYNTRA: implicit next step is to manually verify the new tenant-bound login behaviour on at least one live custom-domain company account before declaring the hard-delete feature closed for stakeholders."
+      "No confirmed calendar deadlines could be retrieved — Google Calendar returned invalid_grant, so absence of events must not be interpreted as an empty schedule.",
+      "Before the next intended morning cycle: correct the Dreaming Sequence and Morning Brief routine times if Chris still wants analysis at 06:00 SGT and delivery at 08:00 SGT."
     ],
     "outstanding_items": [
-      "Google Workspace OAuth refresh token is dead — reauth needed for madeat2am.ai@gmail.com. Blocks calendar/drive/gmail reads across every Morning Brief until fixed.",
-      "SYNTRA repo history has two orphan commits from the 2026-07-15 push (1d447844…, a93c18a…) — unreachable from main, cosmetic only, but a 'git reflog expire --expire=now --all && git gc --prune=now' on a fresh clone would clean them when convenient.",
-      "Voice-mode registry (`~/.hermes/gateway_voice_mode.json`) — memory note from 2026-07-02 requires default = 'off' for all chats; not re-checked this morning.",
-      "Baymax-Backup script's reported issue: `.hermes/.venv` is empty (pip list returns nothing). Documented in the skill as a known issue; harmless until a restore is attempted."
+      "Google Workspace OAuth re-authentication is still required for madeat2am.ai@gmail.com; calendar is confirmed blocked, and other utilities sharing the same token should be validated after re-authentication.",
+      "Routine timezone drift: Dreaming currently executes at 22:00 SGT instead of 06:00 SGT, Morning Brief at 00:00 SGT instead of 08:00 SGT, and Baymax Backup at 16:00 SGT instead of 00:00 SGT. Daily Email Briefing at 03:00 SGT is already aligned.",
+      "SYNTRA is technically verified end to end, including live custom-domain rejection, deactivate/reactivate, hard-delete cascade, and neighbour health. It still needs Chris's operator-level UI acceptance before the user-visible change is considered fully closed.",
+      "The LLM Wiki daily-log generator is not capturing substantive session activity, weakening the archive used by future context analysis.",
+      "No substantive inbox items were reported by the 18 July Daily Email Briefing; its run ended silently."
     ],
-    "recent_context": "Chris spent most of 15–16 July deep inside SYNTRA — driving two parallel features (cross-domain auth bounce + platform-admin delete/restore) from his Telegram topic, using the dev-VPS deploy pipeline (GitHub webhook → VPS port 9000 → project_dev.sh → Caddy reload). The session closed green with both commits on main, regression tests passing, and a 200 from every neighbour app (syntra / cyberslide / payntra). Calendar auth has since lapsed, which will mute the Morning Brief unless refreshed; backup + Hermes update ran cleanly overnight."
+    "recent_context": "The last substantial operator session was SYNTRA: tenant-bound login, inactive-company controls, permanent cascade deletion, and an email-keyed login limiter were deployed and verified against the live dev VPS. Since then the host has been quiet and routine-driven: the 18 July backup pushed successfully, the email briefing was silent, and health/wiki/resource routines reported no alert output at 22:00 SGT. The main unresolved risk is now the morning context infrastructure itself — Google Calendar is blind and several routine schedules are shifted eight hours from their documented SGT intent."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Re-auth the Google Workspace OAuth token before the 8 AM Morning Brief fires",
-      "reason": "The Calendar call returned invalid_grant (refresh token expired). The Morning Brief downstream consumer will silently skip calendar for the day — leaving the brief with no meeting context. A 60-second `google-workspace-auth` reauth round-trip now keeps the brief whole.",
-      "action": "Load the google-workspace-auth skill, run the reauth flow for madeat2am.ai@gmail.com, then re-run `python /root/.hermes/skills/productivity/google-workspace/scripts/google_api.py calendar list --start <today> --end <today>` to confirm an events array (or a clean empty array) is returned. Token path: /root/.hermes/google_token.json."
+      "title": "Correct the eight-hour routine schedule drift",
+      "reason": "The observed timestamps prove that the scheduler is using the host's Asia/Singapore timezone while several playbook entries were configured as if cron were UTC. As a result, the Dreaming Sequence runs at 22:00 SGT and the Morning Brief arrives at midnight, not at the documented 06:00 and 08:00 SGT times.",
+      "action": "After explicit operator approval, change Dreaming Sequence from `0 22 * * *` to `0 6 * * *`, Morning Brief from `0 0 * * *` to `0 8 * * *`, and Baymax Daily Backup from `0 16 * * *` to `0 0 * * *`; leave Daily Email Briefing at `0 3 * * *`. Then manually run Dreaming followed by Morning Brief once and verify the file date plus delivered timestamp in SGT."
     },
     {
       "priority": 2,
-      "title": "Live-verify SYNTRA's new tenant-bound login on at least one real custom-domain company",
-      "reason": "Commit 11527145 just shipped enforce-tenant-login and hard-delete; the rate-limiter fix (c4c62b79) was live-verified, but the tenant-bound branch was only verified on the base platform login, not on a cross-origin request from a company's custom domain. This is the exact failure class the original brief flagged — confirming it now closes the loop without waiting for Chris's first demo.",
-      "action": "Pick one company with a configured custom domain (e.g. CYBERSLIDE), POST credentials for a non-member account → expect generic 'Invalid user' 401, then POST credentials for a member account → expect 200 + redirectTo to the custom-domain host. Capture both responses for the changelog."
+      "title": "Re-authenticate Google Workspace and validate the shared token",
+      "reason": "Today's live Calendar call failed with `invalid_grant: Bad Request`, so the Dreaming Sequence cannot distinguish a free day from a day full of meetings. This has persisted across multiple morning cycles and makes schedule-based recommendations unreliable.",
+      "action": "Use the `google-workspace-auth` playbook entry for madeat2am.ai@gmail.com, replace `/root/.hermes/google_token.json` through the OAuth callback flow, then run one SGT-day `calendar list` request. Also run a read-only Gmail check because the email procedure may use the same credential; record a clean events array or empty array rather than assuming success."
     },
     {
       "priority": 3,
-      "title": "Lock the SYNTRA release notes + share a one-paragraph status with stakeholders",
-      "reason": "Two related SYNTRA features shipped in 48h and live-verified, but there is no written 'what changed' digest. Without one, Chris will end up re-explaining the new delete/restore UX, the tenant-bound auth, and the rate-limiter fix in every conversation.",
-      "action": "Append a 'Release 2026-07-17' entry to /root/.hermes/projects/syntra/IMPLEMENTATION_PLAN.md covering: (1) hard-delete cascade + restore + include-inactive toggle, (2) cross-domain post-login redirect, (3) account-rate-limiter keyed by normalised email. Three bullets, commit hashes, and one screenshot of the platform-admin dashboard with the new Delete button."
+      "title": "Get Chris's final UI acceptance on the SYNTRA company lifecycle release",
+      "reason": "The API contract and disposable-company lifecycle passed live, but technical verification is not the same as operator acceptance. The requested visual behaviour — inactive companies greyed out with Deactivate/Reactivate controls and a clearly destructive permanent-delete confirmation — should be checked in the actual dashboard before the release is treated as closed.",
+      "action": "Spend one 10-minute acceptance pass in the platform dashboard: confirm inactive rows are greyed out, inspect the Deactivate/Reactivate controls, open and cancel the permanent-delete confirmation without deleting real data, then test the CYBERSLIDE custom-domain login with one known member and one non-member. Record Chris's confirmation that the visible symptom is gone."
     }
   ],
   "non_negotiable": {
-    "title": "Re-auth the Google Workspace refresh token before 07:30 SGT",
-    "reason": "The 8 AM Morning Brief reads today's calendar; without a valid token it ships with zero meeting context. Re-auth is a 60-second `google-workspace-auth` flow and unblocks every downstream morning signal (brief, calendar-driven recommendations, conflict detection). Skipping it means the brief is blind to today's schedule for the entire day.",
-    "action": "Load `google-workspace-auth`, run the OAuth reauth dance for madeat2am.ai@gmail.com, validate the new token with a single `calendar list` call, then let the Morning Brief cron run at 08:00 SGT as designed."
+    "title": "Restore the Morning Brief to its intended 06:00 → 08:00 SGT pipeline",
+    "reason": "This is a structural daily failure, not a one-off inconvenience: every future Dreaming Sequence and Morning Brief will continue to run eight hours earlier than documented until the schedules are corrected. It reduces the value of the entire context system and also mis-times the backup routine.",
+    "action": "Obtain operator approval for the routine changes, update the three schedules to 06:00, 08:00, and 00:00 in Asia/Singapore respectively, and verify one complete Dreaming-to-Brief handoff with SGT timestamps before declaring the pipeline corrected."
   },
-  "mood_check": "Operational and focused — Chris drove two non-trivial SYNTRA features to green in 48 hours and signed off cleanly. The session close was concrete (commit hashes, live curl outputs, neighbour-app 200s), not vague. The single drag factor is infrastructure hygiene: a dead OAuth token and a couple of cosmetic repo orphans. Energy reads as 'ship-and-move-on', not 'stuck'. Dad would've cocked an eyebrow at the orphaned commits and said 'sort it on a quiet Sunday'."
+  "mood_check": "Calm after a heavy shipping burst. SYNTRA is technically green and the host's routine checks are quiet, so the risk is no longer frantic product debugging; it is allowing small automation defects to become permanent background noise. Chris's best move is one controlled maintenance pass, then back to product or content output rather than reopening already-verified code."
 }
