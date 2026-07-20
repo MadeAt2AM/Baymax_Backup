@@ -491,12 +491,23 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
     both the IP and the email limiter — the container's local
     traffic doesn't pass through Caddy or hit the limiter middleware:
     ```bash
-    ssh dev-vps 'docker exec -e EMAIL=... -e PW=... <api_container> \
-      node -e "fetch(\"http://127.0.0.1:8080/api/auth/login\",\
-        {method:\"POST\",headers:{\"Content-Type\":\"application/json\"},\
-         body:JSON.stringify({email:process.env.EMAIL,password:process.env.PW})})\
-        .then(async r => console.log(r.status + \"|\" + await r.text()))"'
+    # Canonical form — works every time. `Host` header passthrough
+    # lets you test custom-domain redirects; the `-e EM=`/`-e PW=`
+    # env-var passthrough avoids shell-escape disasters in the JSON
+    # body. Always print `r.status|body` so a script can parse it.
+    ssh dev-vps 'docker exec -e EM=tenant@example.com -e PW=Test123! \
+      <api_container> node -e "fetch(\"http://127.0.0.1:8080/api/auth/login\",\
+        {method:\"POST\",headers:{\"Content-Type\":\"application/json\",\
+         \"Host\":\"syntra.cyberslide.net\"},\
+         body:JSON.stringify({email:process.env.EM,password:process.env.PW})})\
+        .then(async r=>{const t=await r.text();let j=null;try{j=JSON.parse(t);}catch(_){}console.log(r.status+\"|\"+(j&&j.user?j.user.role+\" cid=\"+j.user.companyId+\" rd=\"+(j.redirectTo||\"null\"):\"ERR \"+t));})"'
     ```
+    For just verifying "this email can log in at all", drop the
+    `Host` header and the JSON.parse — the `r.status+"|"+await r.text()`
+    shape is enough. For multi-account login-matrix probes, loop the
+    one-liner with a fresh `EM=` per iteration; the limiter buckets
+    are scoped per account once the `keyGenerator` fix from
+    `security-hardening-web-stack` gotcha 3a is in place.
     For full lifecycle scripts (create → activate → deactivate →
     hard-delete), mint a short-lived JWT inside the container so the
     test never hits `/auth/login` at all. Look up the seed platform
@@ -624,6 +635,69 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
        resetting the password does nothing — the in-memory limiter
        bucket is still active until the container restarts or 15
        minutes pass.
+37. **`UPDATE ... RETURNING N` lies when the SQL was silently
+    truncated by a bad heredoc / base64-over-ssh pipe** — if you
+    bulk-rewrite password hashes (or any other column) with
+    `UPDATE users SET password_hash = crypt('Test123!', gen_salt('bf', 12))
+     WHERE status = 'active' RETURNING id, email, ...`, do NOT
+    trust the `UPDATE N` count as proof that every active row was
+    rewritten. If the heredoc / base64 pipe truncated the SQL
+    mid-execution, postgres runs a *partial* statement that
+    touches only the rows whose WHERE-clause happens to match the
+    truncated form, and `UPDATE N` reports a count that reflects
+    only that partial statement — not your intent. **Always verify
+    the actual stored bytes post-write** with a real
+    `bcrypt.compare()` through the API container, not a
+    `crypt(...) = password_hash` SQL round-trip (which always
+    returns `t` because it's comparing the hash against its own
+    re-encryption):
+    ```bash
+    # Wrong — looks green but says nothing:
+    docker exec <pg> psql -At -c "SELECT crypt('Test123!',password_hash)=password_hash FROM users WHERE status='active'"
+    # → always 't' for every row regardless of stored hash, because
+    #   postgres re-encrypts with the stored hash as the salt.
+
+    # Right — actually verifies bcrypt compatibility:
+    ssh dev-vps 'docker exec -e EM=admin@demo.com -e PW=Test123! <api> \
+      node -e "fetch(\"http://127.0.0.1:8080/api/auth/login\",\
+        {method:\"POST\",headers:{\"Content-Type\":\"application/json\"},\
+         body:JSON.stringify({email:process.env.EM,password:process.env.PW})})\
+        .then(async r=>{const t=await r.text();console.log(r.status+\"|\"+t);})"'
+    # → 200|{"token":"...","user":{...}} means the hash matches.
+    # → 401|{"error":"Invalid credentials"} means the SQL was truncated.
+    ```
+    The root cause of the truncation is usually: stray `]]` in a
+    heredoc, `psql -c "..."` running with `-A` against a query that
+    contains unescaped single quotes, or shell pipes that swallow
+    the trailing bytes of the SQL string. **Defensive habit:** after
+    any bulk write against the live database, immediately read back
+    the affected rows and confirm at least one explicit value
+    changed. The 5-second read-back is cheap insurance against the
+    30-minute "why didn't the reset work" debugging session.
+38. **SPA login must wipe the entire auth cache, not just set the
+    new token** — see `references/spa-auth-state-hygiene.md`. The
+    classic symptom: user A logs in as `platform@syntra.com`,
+    navigates to `/platform`. User B logs out, then user C logs in
+    as `chrisspeakseh@gmail.com` (a CYBERSLIDE tenant). Because
+    `localStorage.auth_token` was overwritten but the React Query
+    cache for `getGetMeQueryKey()` was NOT cleared, the SPA briefly
+    hydrates with user A's cached profile (the platform admin)
+    before `/auth/me` resolves with user C's profile. The router
+    redirects based on the stale profile (`role === "platform_admin"`
+    → `/platform`), and the user C login appears to land on the
+    platform dashboard from a customer-company login. The fix is
+    three lines in the `login()` hook:
+    ```ts
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("must_change_password");
+    queryClient.removeQueries({ queryKey: getGetMeQueryKey() });
+    // then set the new token and navigate based on the new response
+    ```
+    Without the `queryClient.removeQueries()` line, the stale cached
+    user can survive across role-distinct logins in the same
+    browser tab for as long as `staleTime` allows. Apply this in
+    every SPA that has multiple user roles on a shared browser
+    (platform admin + tenant users in the same deploy = always).
 
 ## Verification checklist before declaring done
 
@@ -705,6 +779,15 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
   JWT inside the API container with the same `SESSION_SECRET` so the
   test never hits `/auth/login` from the public IP. Pairs with
   gotcha #30.
+- **Reference: `references/spa-auth-state-hygiene.md`** — the
+  recipe for wiping stale auth state on every SPA login so a prior
+  user's profile doesn't survive into the next user's UI. Pairs with
+  gotcha #38.
+- **Script: `scripts/verify-bcrypt-bulk.py`** — re-runnable audit
+  that posts a known password to every active user via the API
+  container and reports who can / cannot log in. Use after any bulk
+  password reset to verify the SQL actually rewrote every row (gotcha
+  #37), not just the rows that survived a truncated heredoc.
 - **Template: `templates/ship-handoff.md`** — copy-paste skeleton for the
   STATUS doc you write when the local VM is in kernel-scheduler overload
   and you can't push. Captures the "what was edited", "how to ship
