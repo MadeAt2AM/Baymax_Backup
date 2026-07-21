@@ -160,12 +160,12 @@
     "created_at": "2026-06-27T14:44:50.615048+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-15T08:54:41.201723+00:00",
-    "last_used_at": "2026-07-20T08:00:25.476857+00:00",
+    "last_used_at": "2026-07-21T08:00:07.895353+00:00",
     "last_viewed_at": "2026-07-16T08:00:25.789607+00:00",
     "patch_count": 6,
     "pinned": false,
     "state": "active",
-    "use_count": 34,
+    "use_count": 35,
     "view_count": 10
   },
   "baymax-voice": {
@@ -232,6 +232,19 @@
     "state": "active",
     "use_count": 0,
     "view_count": 0
+  },
+  "carousel-copy": {
+    "archived_at": null,
+    "created_at": "2026-07-21T06:29:55.728613+00:00",
+    "created_by": null,
+    "last_patched_at": null,
+    "last_used_at": "2026-07-21T07:48:45.620154+00:00",
+    "last_viewed_at": "2026-07-21T07:48:45.585942+00:00",
+    "patch_count": 0,
+    "pinned": false,
+    "state": "active",
+    "use_count": 2,
+    "view_count": 2
   },
   "claude-code": {
     "archived_at": null,
@@ -420,12 +433,12 @@
     "created_at": "2026-06-27T13:08:35.089250+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-01T20:22:27.948636+00:00",
-    "last_used_at": "2026-07-19T14:00:41.701423+00:00",
+    "last_used_at": "2026-07-20T14:00:36.491178+00:00",
     "last_viewed_at": "2026-07-01T20:22:34.177968+00:00",
     "patch_count": 2,
     "pinned": false,
     "state": "active",
-    "use_count": 29,
+    "use_count": 30,
     "view_count": 4
   },
   "dspy": {
@@ -628,26 +641,26 @@
     "created_at": "2026-06-21T05:43:27.133476+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-02T18:13:19.900444+00:00",
-    "last_viewed_at": "2026-07-02T18:13:19.892404+00:00",
+    "last_used_at": "2026-07-21T06:46:53.234627+00:00",
+    "last_viewed_at": "2026-07-21T06:46:53.230169+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 12,
-    "view_count": 12
+    "use_count": 14,
+    "view_count": 14
   },
   "hermes-agent-skill-authoring": {
     "archived_at": null,
     "created_at": "2026-06-21T05:43:27.136278+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-14T17:12:27.296928+00:00",
-    "last_viewed_at": "2026-07-14T17:12:27.271275+00:00",
+    "last_used_at": "2026-07-21T07:47:52.580941+00:00",
+    "last_viewed_at": "2026-07-21T07:47:52.556290+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 4,
-    "view_count": 4
+    "use_count": 5,
+    "view_count": 5
   },
   "hermes-chat-delivery-diagnostics": {
     "archived_at": null,
@@ -836,12 +849,12 @@
     "created_at": "2026-07-02T14:00:02.855879+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-02T14:05:42.501884+00:00",
-    "last_used_at": "2026-07-19T19:00:54.021884+00:00",
+    "last_used_at": "2026-07-20T19:00:12.586680+00:00",
     "last_viewed_at": "2026-07-02T14:05:34.828195+00:00",
     "patch_count": 5,
     "pinned": false,
     "state": "active",
-    "use_count": 22,
+    "use_count": 23,
     "view_count": 3
   },
   "jupyter-live-kernel": {
@@ -1018,12 +1031,12 @@
     "created_at": "2026-06-27T13:12:54.077124+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-19T16:00:46.105050+00:00",
+    "last_used_at": "2026-07-20T16:00:01.821433+00:00",
     "last_viewed_at": null,
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 25,
+    "use_count": 26,
     "view_count": 0
   },
   "nano-pdf": {

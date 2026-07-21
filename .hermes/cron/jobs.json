@@ -27,7 +27,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-01T19:28:37.310031+08:00",
-      "next_run_at": "2026-07-21T16:00:00+08:00",
+      "next_run_at": "2026-07-23T16:00:00+08:00",
       "last_run_at": "2026-07-19T16:06:53.150020+08:00",
       "last_status": "error",
       "last_error": "Gateway shutdown (final-cleanup) killed the job's tool subprocess before the run finished.",
@@ -65,15 +65,15 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 26
+        "completed": 27
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
-      "next_run_at": "2026-07-21T03:00:00+08:00",
-      "last_run_at": "2026-07-20T03:01:24.981802+08:00",
+      "next_run_at": "2026-07-22T03:00:00+08:00",
+      "last_run_at": "2026-07-21T03:00:33.171474+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -109,15 +109,15 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 25
+        "completed": 26
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
-      "next_run_at": "2026-07-20T22:00:00+08:00",
-      "last_run_at": "2026-07-19T22:02:45.298241+08:00",
+      "next_run_at": "2026-07-21T22:00:00+08:00",
+      "last_run_at": "2026-07-20T22:03:00.473757+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -157,15 +157,15 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 25
+        "completed": 26
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
-      "next_run_at": "2026-07-21T00:00:00+08:00",
-      "last_run_at": "2026-07-20T00:01:37.294713+08:00",
+      "next_run_at": "2026-07-22T00:00:00+08:00",
+      "last_run_at": "2026-07-21T00:01:00.130240+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -205,15 +205,15 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 23
+        "completed": 24
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-07-21T16:00:00+08:00",
-      "last_run_at": "2026-07-19T16:00:58.414785+08:00",
+      "next_run_at": "2026-07-22T16:00:00+08:00",
+      "last_run_at": "2026-07-20T16:00:57.949882+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -251,15 +251,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2177
+        "completed": 2273
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-07-20T16:15:00+08:00",
-      "last_run_at": "2026-07-20T16:00:25.470417+08:00",
+      "next_run_at": "2026-07-21T16:15:00+08:00",
+      "last_run_at": "2026-07-21T16:00:07.488250+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -297,15 +297,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2168
+        "completed": 2264
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-07-20T16:15:00+08:00",
-      "last_run_at": "2026-07-20T16:00:25.458057+08:00",
+      "next_run_at": "2026-07-21T16:15:00+08:00",
+      "last_run_at": "2026-07-21T16:00:07.501328+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -337,15 +337,15 @@
       "schedule_display": "0 14 * * *",
       "repeat": {
         "times": null,
-        "completed": 23
+        "completed": 24
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:13.667449+08:00",
-      "next_run_at": "2026-07-21T14:00:00+08:00",
-      "last_run_at": "2026-07-20T14:00:24.759213+08:00",
+      "next_run_at": "2026-07-22T14:00:00+08:00",
+      "last_run_at": "2026-07-21T14:00:56.790379+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -377,15 +377,15 @@
       "schedule_display": "55 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 22
+        "completed": 23
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:21.732043+08:00",
-      "next_run_at": "2026-07-20T23:55:00+08:00",
-      "last_run_at": "2026-07-19T23:55:45.272284+08:00",
+      "next_run_at": "2026-07-21T23:55:00+08:00",
+      "last_run_at": "2026-07-20T23:55:01.679209+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -417,15 +417,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 6385
+        "completed": 6674
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-07-20T16:05:00+08:00",
-      "last_run_at": "2026-07-20T16:00:25.483116+08:00",
+      "next_run_at": "2026-07-21T16:05:00+08:00",
+      "last_run_at": "2026-07-21T16:00:07.510444+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -434,7 +434,56 @@
       "enabled_toolsets": null,
       "workdir": null,
       "fire_claim": null
+    },
+    {
+      "id": "8681b0e3a53e",
+      "name": "verify-carousel-menu-loaded",
+      "prompt": "You are a verification cron that runs in a fresh session 2 minutes after the user manually cycles the Hermes gateway service to pick up config + commands.py changes. Confirm the gateway came back healthy and that the new carousel_copy command made it into the Telegram menu.\n\nTasks:\n1. Run `systemctl is-active hermes-gateway` and `systemctl status hermes-gateway --no-pager | head -10`.\n2. Run `tail -40 /root/.hermes/logs/gateway.log` and look for the line that registers bot commands (should contain `setMyCommands` or `BotCommand`). Report the count it registered if visible.\n3. Run `python3 -c \"import sys; sys.path.insert(0, '/usr/local/lib/hermes-agent'); from hermes_cli.commands import telegram_menu_commands; cmds, hidden = telegram_menu_commands(max_commands=100); print(f'Shown: {len(cmds)}, Hidden: {hidden}'); print('carousel_copy visible:', any('carousel' in n for n,_ in cmds))\"` and report.\n4. Report back in one concise message: gateway active (yes/no)? carousel_copy in menu (yes/no)? any errors in tail?",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "provider_snapshot": "minimax",
+      "model_snapshot": "MiniMax-M3",
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "once",
+        "run_at": "2026-07-21T16:00:00+08:00",
+        "display": "once at 2026-07-21 16:00"
+      },
+      "schedule_display": "once at 2026-07-21 16:00",
+      "repeat": {
+        "times": 1,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-07-21T15:57:45.137877+08:00",
+      "next_run_at": "2026-07-21T16:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "telegram:1283992553",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "1283992553",
+        "chat_name": "Chris Kal",
+        "thread_id": "64619",
+        "user_id": "1283992553"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "run_claim": {
+        "at": "2026-07-21T16:00:06.753736+08:00",
+        "by": "cyberslide:93572"
+      }
     }
   ],
-  "updated_at": "2026-07-20T16:00:25.483548+08:00"
+  "updated_at": "2026-07-21T16:00:07.511038+08:00"
 }
