@@ -20,7 +20,7 @@
       "schedule_display": "0 16 */2 * *",
       "repeat": {
         "times": null,
-        "completed": 11
+        "completed": 13
       },
       "enabled": true,
       "state": "scheduled",
@@ -28,7 +28,7 @@
       "paused_reason": null,
       "created_at": "2026-06-01T19:28:37.310031+08:00",
       "next_run_at": "2026-07-23T16:00:00+08:00",
-      "last_run_at": "2026-07-19T16:06:53.150020+08:00",
+      "last_run_at": "2026-07-21T16:04:59.585243+08:00",
       "last_status": "error",
       "last_error": "Gateway shutdown (final-cleanup) killed the job's tool subprocess before the run finished.",
       "last_delivery_error": null,
@@ -65,15 +65,15 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 27
+        "completed": 28
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
-      "next_run_at": "2026-07-22T03:00:00+08:00",
-      "last_run_at": "2026-07-21T03:00:33.171474+08:00",
+      "next_run_at": "2026-07-23T03:00:00+08:00",
+      "last_run_at": "2026-07-22T03:01:37.808146+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -88,7 +88,7 @@
     {
       "id": "fab47f7704ba",
       "name": "Dreaming Sequence",
-      "prompt": "You are running the Dreaming Sequence \u2014 a deep morning context analysis that prepares Chris's day.\n\n## Your Task\n\nRun a comprehensive context analysis and save the output to `~/.hermes/cron/output/dreaming_sequence.json`.\n\n### Step 1 \u2014 Session History (last 7 days)\nCall: `session_search(query=\"\", limit=10, sort=\"newest\")`\nLook for: unfinished tasks, project kick-offs, recent decisions, follow-up items, active work.\n\n### Step 2 \u2014 Honcho Context\nCall: `honcho_context(peer=\"user\")`\nCall: `honcho_profile(peer=\"user\")`\nPull: goals, current projects, priorities, communication preferences.\n\n### Step 3 \u2014 Today's Calendar (Google Workspace)\n```bash\nGAPI=\"python ${HERMES_HOME:-$HOME/.hermes}/skills/productivity/google-workspace/scripts/google_api.py\"\n$GAPI calendar list --start \"$(date -u +%Y-%m-%dT00:00:00Z)\" --end \"$(date -u +%Y-%m-%dT23:59:59Z)\"\n```\n\n### Step 4 \u2014 Project Files Scan\nCall: `search_files(pattern=\"*\", target=\"files\", path=\"/root/.hermes/projects\")`\nRead brief/README files from active project folders.\n\n### Step 5 \u2014 Generate Analysis Output\n\nBased on ALL gathered data, produce a JSON object and save it:\n\n```bash\nmkdir -p ~/.hermes/cron/output\ncat > ~/.hermes/cron/output/dreaming_sequence.json << 'EOF'\n{\n  \"date\": \"$(date +%Y-%m-%d)\",\n  \"analysis\": {\n    \"active_projects\": [\"...\"],\n    \"upcoming_deadlines\": [\"...\"],\n    \"outstanding_items\": [\"...\"],\n    \"recent_context\": \"2-3 sentence summary of what's been happening\"\n  },\n  \"recommendations\": [\n    {\n      \"priority\": 1,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    },\n    {\n      \"priority\": 2,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    },\n    {\n      \"priority\": 3,\n      \"title\": \"...\",\n      \"reason\": \"...\",\n      \"action\": \"...\"\n    }\n  ],\n  \"non_negotiable\": {\n    \"title\": \"...\",\n    \"reason\": \"...\",\n    \"action\": \"...\"\n  },\n  \"mood_check\": \"Brief note on energy/tone based on recent context\"\n}\nEOF\n```\n\n### Key Guidelines\n- Always be honest and direct in recommendations \u2014 no generic advice\n- Recommendations must tie to SPECIFIC ongoing projects or goals mentioned in the context\n- The non-negotiable should be ONE thing that if skipped, meaningfully delays progress\n- `recent_context` should synthesise what you found across session history + honcho + files\n- Date must be today's date in YYYY-MM-DD format (use `date +%Y-%m-%d`)\n\n### Save and Exit\nSave the complete JSON to `~/.hermes/cron/output/dreaming_sequence.json` then end the session silently (no message to any channel \u2014 deliver is local).",
+      "prompt": "You are running the Dreaming Sequence for Chris. Follow the loaded `dreaming-sequence` skill exactly: analyse recent context, calendar, projects, and priorities; generate three recommendations plus one non-negotiable action; and save valid JSON to `/root/.hermes/cron/output/dreaming_sequence.json` for the 08:00 SGT Morning Brief. This is a local preparation run \u2014 do not send a Telegram message. Validate the JSON before finishing.",
       "skills": [
         "dreaming-sequence"
       ],
@@ -103,21 +103,21 @@
       "context_from": null,
       "schedule": {
         "kind": "cron",
-        "expr": "0 22 * * *",
-        "display": "0 22 * * *"
+        "expr": "0 6 * * *",
+        "display": "0 6 * * *"
       },
-      "schedule_display": "0 22 * * *",
+      "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 26
+        "completed": 27
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
-      "next_run_at": "2026-07-21T22:00:00+08:00",
-      "last_run_at": "2026-07-20T22:03:00.473757+08:00",
+      "next_run_at": "2026-07-23T06:00:00+08:00",
+      "last_run_at": "2026-07-22T06:02:33.394469+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -157,15 +157,15 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 26
+        "completed": 27
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
-      "next_run_at": "2026-07-22T00:00:00+08:00",
-      "last_run_at": "2026-07-21T00:01:00.130240+08:00",
+      "next_run_at": "2026-07-23T00:00:00+08:00",
+      "last_run_at": "2026-07-22T00:02:03.170014+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -205,15 +205,15 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 24
+        "completed": 25
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-07-22T16:00:00+08:00",
-      "last_run_at": "2026-07-20T16:00:57.949882+08:00",
+      "next_run_at": "2026-07-23T16:00:00+08:00",
+      "last_run_at": "2026-07-21T16:00:32.134829+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -251,15 +251,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2273
+        "completed": 2369
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-07-21T16:15:00+08:00",
-      "last_run_at": "2026-07-21T16:00:07.488250+08:00",
+      "next_run_at": "2026-07-22T16:15:00+08:00",
+      "last_run_at": "2026-07-22T16:00:38.172869+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -297,15 +297,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2264
+        "completed": 2360
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-07-21T16:15:00+08:00",
-      "last_run_at": "2026-07-21T16:00:07.501328+08:00",
+      "next_run_at": "2026-07-22T16:15:00+08:00",
+      "last_run_at": "2026-07-22T16:00:38.163289+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -337,15 +337,15 @@
       "schedule_display": "0 14 * * *",
       "repeat": {
         "times": null,
-        "completed": 24
+        "completed": 25
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:13.667449+08:00",
-      "next_run_at": "2026-07-22T14:00:00+08:00",
-      "last_run_at": "2026-07-21T14:00:56.790379+08:00",
+      "next_run_at": "2026-07-23T14:00:00+08:00",
+      "last_run_at": "2026-07-22T14:00:21.437186+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -377,15 +377,15 @@
       "schedule_display": "55 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 23
+        "completed": 24
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:21.732043+08:00",
-      "next_run_at": "2026-07-21T23:55:00+08:00",
-      "last_run_at": "2026-07-20T23:55:01.679209+08:00",
+      "next_run_at": "2026-07-22T23:55:00+08:00",
+      "last_run_at": "2026-07-21T23:55:53.017077+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -417,15 +417,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 6674
+        "completed": 6962
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-07-21T16:05:00+08:00",
-      "last_run_at": "2026-07-21T16:00:07.510444+08:00",
+      "next_run_at": "2026-07-22T16:05:00+08:00",
+      "last_run_at": "2026-07-22T16:00:38.232961+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -434,56 +434,7 @@
       "enabled_toolsets": null,
       "workdir": null,
       "fire_claim": null
-    },
-    {
-      "id": "8681b0e3a53e",
-      "name": "verify-carousel-menu-loaded",
-      "prompt": "You are a verification cron that runs in a fresh session 2 minutes after the user manually cycles the Hermes gateway service to pick up config + commands.py changes. Confirm the gateway came back healthy and that the new carousel_copy command made it into the Telegram menu.\n\nTasks:\n1. Run `systemctl is-active hermes-gateway` and `systemctl status hermes-gateway --no-pager | head -10`.\n2. Run `tail -40 /root/.hermes/logs/gateway.log` and look for the line that registers bot commands (should contain `setMyCommands` or `BotCommand`). Report the count it registered if visible.\n3. Run `python3 -c \"import sys; sys.path.insert(0, '/usr/local/lib/hermes-agent'); from hermes_cli.commands import telegram_menu_commands; cmds, hidden = telegram_menu_commands(max_commands=100); print(f'Shown: {len(cmds)}, Hidden: {hidden}'); print('carousel_copy visible:', any('carousel' in n for n,_ in cmds))\"` and report.\n4. Report back in one concise message: gateway active (yes/no)? carousel_copy in menu (yes/no)? any errors in tail?",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "provider_snapshot": "minimax",
-      "model_snapshot": "MiniMax-M3",
-      "base_url": null,
-      "script": null,
-      "no_agent": false,
-      "context_from": null,
-      "schedule": {
-        "kind": "once",
-        "run_at": "2026-07-21T16:00:00+08:00",
-        "display": "once at 2026-07-21 16:00"
-      },
-      "schedule_display": "once at 2026-07-21 16:00",
-      "repeat": {
-        "times": 1,
-        "completed": 1
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-07-21T15:57:45.137877+08:00",
-      "next_run_at": "2026-07-21T16:00:00+08:00",
-      "last_run_at": null,
-      "last_status": null,
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "telegram:1283992553",
-      "origin": {
-        "platform": "telegram",
-        "chat_id": "1283992553",
-        "chat_name": "Chris Kal",
-        "thread_id": "64619",
-        "user_id": "1283992553"
-      },
-      "enabled_toolsets": null,
-      "workdir": null,
-      "run_claim": {
-        "at": "2026-07-21T16:00:06.753736+08:00",
-        "by": "cyberslide:93572"
-      }
     }
   ],
-  "updated_at": "2026-07-21T16:00:07.511038+08:00"
+  "updated_at": "2026-07-22T16:00:38.234402+08:00"
 }
