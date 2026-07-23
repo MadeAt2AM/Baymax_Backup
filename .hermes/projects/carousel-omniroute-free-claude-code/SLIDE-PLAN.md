@@ -1,9 +1,10 @@
 # Carousel — Free Claude Code, Forever
 
 **Source:** @nick_saraev reel `Da8ZthUPK98` (transcribed via faster-whisper)
-**Platform:** Instagram
-**CTA:** Comment "CLAUDE"
-**Slide count:** 7
+**Platform:** Instagram (4:5 portrait carousel, 1080×1350)
+**CTA:** Comment "CLAUDE" → DM the GitHub link
+**Slide count:** 7 (1 hook + 5 value + 1 CTA)
+**Design system:** Premium Editorial (Bebas Neue / Anton headlines, warm off-white `#F7F5F1` ground, obsidian `#111111` type, crimson `#DC143C` accent only)
 
 ---
 
@@ -14,7 +15,7 @@ Run Claude Code for free. Forever.
 
 Comment "CLAUDE" and I'll send you the free GitHub tool 👇
 
-Saves this so you don't lose it — limits are the worst.
+Save this so you don't lose it — limits are the worst.
 
 #claudecode #Claudeai #omniroute #vibecoding #aicoding
 ```
@@ -24,161 +25,331 @@ Saves this so you don't lose it — limits are the worst.
 ## Slide plan
 
 ### SLIDE 1 — HOOK
-- **TITLE:** 1.6B FREE TOKENS
-- **Body:** Every month. From one free tool.
-- **Visual:** Number-as-hero — massive "1.6B" filling ~70% of the frame, "FREE TOKENS" stamped below in all caps. Off-black `#111111` ground, crimson `#D32F2F` accent, warm cream `#FDFBF7` type. No diagram, no setup.
-- **Word count:** 7
-
-### SLIDE 2 — STEP 01
-- **TITLE:** MEET OMNIROUTE
-- **Body:** A free GitHub tool. Plugs Claude Code into 200+ free AI models.
-- **Visual:** Annotated GitHub repo screenshot — repo name "OmniRoute" circled in crimson, "Public" badge and star count called out with arrows.
-- **Word count:** 12
-
-### SLIDE 3 — STEP 02
-- **TITLE:** 200+ FREE MODELS
-- **Body:** Not one. Two hundred. All routed through Claude Code.
-- **Visual:** Stacked list card — a column of 200+ tiny model-name chips (anonymised as coloured dots) inside a single dark card, "200+" stamped as overlay.
-- **Word count:** 8
-
-### SLIDE 4 — STEP 03
-- **TITLE:** AUTO-PILOT MODE
-- **Body:** Hit a limit? It reroutes to the next best model. Mid-session.
-- **Visual:** Flow arrows — `YOU → CLAUDE [⚠ LIMIT] → MODEL B → continues`, the limit-hit moment highlighted in crimson.
-- **Word count:** 11
-
-### SLIDE 5 — STEP 04 — screenshot line
-- **TITLE:** 90% LESS. SAME OUTPUT.
-- **Body:** Compresses your prompts before they hit the model.
-- **Visual:** Quote-mark frame — oversized `"` quotation marks as the visual, the body line as the only text, dark card, centred. This is the standalone-save slide.
-- **Word count:** 8
-
-### SLIDE 6 — STEP 05
-- **TITLE:** SESSIONS THAT DON'T DIE
-- **Body:** Build for hours. Never see "limit reached" again.
-- **Visual:** Before/after split — left card shows a red "LIMIT REACHED" modal mock-up; right card shows a green session timer reading "4h 22m" with "still going" caption.
+- **Top label:** none (hook convention)
+- **HEADLINE:** STOP PAYING FOR CLAUDE.
+- **Crimson rectangle highlight:** on the word `CLAUDE` (one keyword, in `#DC143C`)
+- **Body:** 1.6B free tokens. Every month. From one free tool.
+- **Hero visual:** Cinematic 3D render of an obsidian credit card shattering mid-air — fragments exploding outward toward the viewer, motion blur, premium matte material, strong studio shadows. Occupies ~45% of slide.
+- **Footer:** Swipe → (small obsidian `#8B8B8B` indicator, lower right)
 - **Word count:** 9
 
+### SLIDE 2 — STEP 01
+- **Top-left label:** `STEP 01` (small all-caps crimson `#DC143C`)
+- **Headline (`/` prefix):** `/OMNIROUTE`
+- **Body:**
+  A free GitHub tool.  
+  Plugs Claude Code into 200+ free AI models.  
+  One install. Zero config.
+- **Supporting visual:** Lower-half annotated mock-up of the OmniRoute GitHub repo — obsidian card on `#F7F5F1` paper, repo name "OmniRoute" in bold obsidian, a thin crimson arrow circling the "Public" badge with a tiny crimson tag "FREE". Corner crop marks, plus symbols at the four corners.
+- **Word count:** 16
+
+### SLIDE 3 — STEP 02
+- **Top-left label:** `STEP 02`
+- **Headline:** `/SCALE`
+- **Body:**
+  Not one model. Two hundred.  
+  All routed through Claude Code.  
+  Pick any. Switch any time.
+- **Supporting visual:** Lower-half stacked list card — single obsidian `#111111` card containing ~20 rows of tiny coloured dots (anonymised model chips, no real brand names), a giant crimson `200+` overlapping the top of the card. Thin crimson divider above the headline.
+- **Word count:** 13
+
+### SLIDE 4 — STEP 03
+- **Top-left label:** `STEP 03`
+- **Headline:** `/AUTOPILOT`
+- **Body:**
+  Hit a limit?  
+  It reroutes mid-session.  
+  You keep building.
+- **Supporting visual:** Lower-half horizontal flow diagram across an obsidian strip — four obsidian pills (`YOU → CLAUDE → MODEL B → DONE`) connected by thin crimson arrows. The middle pill "CLAUDE" has a crimson lightning-bolt tag `LIMIT HIT`. One crimson arrow pierces through, implying the reroute.
+- **Word count:** 10
+
+### SLIDE 5 — STEP 04 — screenshot line
+- **Top-left label:** `STEP 04`
+- **Headline:** `/COMPRESS`
+- **Body (screenshot / saveable quote):**
+  90% LESS PROMPT.  
+  SAME OUTPUT.
+- **Supporting visual:** Lower-half oversized typographic `"` quotation glyph (obsidian `#111111`, ~50% of slide width) on the warm off-white paper. The body lines sit inside / next to the quote. Thin crimson divider across the top. No mock-ups — pure typography. This is the standalone-save slide.
+- **Sub-line (small, beneath body):** Compresses prompts before they hit the model.
+- **Word count headline + body:** 5
+
+### SLIDE 6 — STEP 05
+- **Top-left label:** `STEP 05`
+- **Headline:** `/ENDURANCE`
+- **Body:**
+  Build for hours.  
+  Never see "limit reached" again.
+- **Supporting visual:** Lower-half before/after split — two cards, thin obsidian hairline between them. Left card (obsidian ground, crimson `#DC143C` type): a tiny error-modal mock-up reading `LIMIT REACHED` with sub-line `Session ended at 12 min`. Right card (warm off-white ground, obsidian type): a session timer reading `4h 22m` in giant condensed type, sub-line `still going` with a single crimson checkmark. Thin crimson arrows point from left card to right card.
+- **Word count:** 10
+
 ### SLIDE 7 — CTA
-- **TITLE:** TRY IT FREE
-- **Body:** Comment "CLAUDE" below. I'll send the link.
-- **Visual:** Big bold "CLAUDE" rendered as a quote-mark frame, with a downward arrow pointing to the comment input. Single action — no second option.
-- **Word count:** 7
+- **Top label:** none (CTA convention)
+- **HEADLINE:** WANT IT FREE?
+- **Body:**
+  Comment  
+  `"CLAUDE"`  
+  I'll send the link.
+- **Supporting visual:** Lower-half large comment-box mock-up — obsidian `#111111` rounded-rectangle pill with a tiny avatar dot at the left and the text `CLAUDE` typed inside in obsidian on `#E9E9E9`. Thin crimson arrow pointing down from headline to the box, implying "below in the comments". No second action, no secondary link.
+- **Word count:** 6
 
 ---
 
-## Rule checks
+## Rule checks (carousel-copy)
 
 | Rule | Status |
 |---|---|
-| Hook = pain/claim, zero setup | ✓ — 1.6B does all the work |
-| No framework/overview slide | ✓ — slide 2 lands "what is OmniRoute" as first payoff |
-| One idea per slide | ✓ — each value slide is one verb: meet / scale / route / compress / run |
-| Image-gen-safe word counts | ✓ — all under 13 words |
-| Every slide has a visual | ✓ — each has a distinct screenshottable metaphor |
-| Screenshot line exists | ✓ — slide 5, "90% LESS. SAME OUTPUT." |
-| CTA = hook treatment | ✓ — single action, same craft as slide 1 |
+| Hook = pain point, zero setup | ✓ — "STOP PAYING FOR CLAUDE" lands the pain in 4 words, no subtitle |
+| No framework/overview slide | ✓ — slide 2 lands first payoff (what is OmniRoute) |
+| One idea per slide | ✓ — each value slide is one verb: /OMNIROUTE /SCALE /AUTOPILOT /COMPRESS /ENDURANCE |
+| Image-gen-safe word counts | ✓ — every slide ≤ 16 body words, well under IG's 20-word ceiling |
+| Every slide specifies its visual | ✓ — each slide has a screenshottable visual metaphor |
+| Screenshot line exists | ✓ — slide 5, `90% LESS PROMPT. SAME OUTPUT.` |
+| CTA = hook treatment | ✓ — single action, same craft as hook, matches hook's all-caps pattern |
+
+---
+
+## Design consistency checklist (premium-editorial-carousel-designer)
+
+| Check | Status |
+|---|---|
+| Warm paper background `#F7F5F1` | ✓ — every educational + CTA slide |
+| Crimson accents only — `#DC143C`, no other bright color | ✓ — yellow/orange fully removed from prior plan |
+| Giant condensed headline (Bebas Neue / Anton / Druk) | ✓ — all headlines ALL CAPS condensed |
+| Minimal body copy (≤ 30 words body, no big blocks) | ✓ — max 16 words on any slide |
+| Premium whitespace (60–80 px margins) | ✓ |
+| Editorial alignment (invisible 12-col grid) | ✓ |
+| Thin crimson divider present | ✓ — slides 3, 4, 5, 7 |
+| Corner crop marks present | ✓ — slides 2, 3, 4, 6, 7 |
+| Tiny plus symbols present | ✓ — slide 2 corners |
+| Supporting visual present on educational slides | ✓ — every slide 2–6 |
+| Premium shadows, matte 3D rendering where used | ✓ — hook slide (credit card shatter) |
+| One core idea per slide | ✓ |
+| Easy to understand within one second | ✓ |
+
+**Color audit:** only `#111111`, `#F7F5F1`, `#DC143C`, `#8B8B8B`, `#E9E9E9` referenced. No `#FFC107`, no `#FDFBF7`, no orange, no gradients.
 
 ---
 
 ## Per-slide image-gen prompts
 
-Each prompt is ready to paste into your image model (Imagen / Midjourney / Flux). Brand palette is enforced: cream `#FDFBF7` ground, obsidian `#111111` type, crimson `#D32F2F` accent, yellow `#FFC107` highlights. 1080×1350 portrait, 4:5 IG ratio.
+Every prompt is ready to paste into Imagen / Midjourney / Flux. 1080×1350 portrait. Brand palette enforced.
 
 ### Slide 1 — HOOK
 ```
-Minimalist Instagram carousel slide, 1080x1350 portrait. Solid obsidian #111111 ground.
-Center-frame: oversized number "1.6B" in warm cream #FDFBF7, ultra-bold sans-serif
-(SF Pro Display Bold or equivalent), filling ~70% of frame height. Below the number, a
-single line "FREE TOKENS" in the same cream, all caps, tight tracking, ~40% of number
-size. A single crimson #D32F2F horizontal hairline above the number as accent. No
-images, no icons, no logos, no decoration beyond the hairline and the type. Editorial,
-poster-style, high contrast.
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients.
+
+Center-frame: cinematic 3D hero illustration occupying ~45% of slide.
+Obsidian #111111 credit card shattering mid-air, premium matte 3D
+material, soft studio lighting, strong shadows, fragments and
+particles exploding outward toward the viewer, motion blur,
+perspective depth. Pieces drifting off-frame.
+
+Top of slide: ultra-bold condensed ALL CAPS obsidian #111111 type
+(Bebas Neue / Anton / Druk), ~40% of slide height, reading
+"STOP PAYING FOR CLAUDE." — the word "CLAUDE" highlighted inside a
+crimson #DC143C rectangle inside the headline.
+
+Bottom of slide: one short teaser line in obsidian, "1.6B free tokens.
+Every month. From one free tool." Lower right: small obsidian
+#8B8B8B swipe indicator "→".
+
+Corner crop marks at all four corners. Plus symbols. Editorial,
+magazine-meets-product-launch. No flat illustrations, no orange,
+no gradients, no cartoon.
 ```
 
-### Slide 2 — STEP 01 — Meet OmniRoute
+### Slide 2 — STEP 01 — /OMNIROUTE
 ```
-Instagram carousel slide, 1080x1350. Warm cream #FDFBF7 ground. Realistic GitHub
-repository page screenshot as the visual: repo header showing name "OmniRoute", a
-green "Public" badge, star count, fork count, all rendered with crisp UI typography.
-A thick crimson #D32F2F hand-drawn circle around the "OmniRoute" repo name, plus a
-crimson arrow pointing to the Public badge with a yellow #FFC107 sticky-note label
-"FREE". Slight paper grain texture. At the top in all-caps bold obsidian type: "STEP
-01" and "MEET OMNIROUTE". At the bottom, a single line of body copy in obsidian:
-"A free GitHub tool. Plugs Claude Code into 200+ free AI models."
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins, invisible 12-column grid.
+
+Top-left: small all-caps crimson #DC143C label reading "STEP 01".
+Headline: ultra-bold condensed sans-serif (Bebas Neue / Anton / Druk),
+ALL CAPS, occupying upper 35–45% of the slide, reading "/OMNIROUTE".
+
+Body: modern sans-serif (Inter / SF Pro Display), regular/medium weight,
+obsidian #111111, three short paragraphs:
+"A free GitHub tool. Plugs Claude Code into 200+ free AI models.
+One install. Zero config."
+
+Visual: lower-half annotated mock-up of the OmniRoute GitHub repo on an
+obsidian #111111 card. Repo name "OmniRoute" in bold obsidian type on
+warm off-white, a thin crimson #DC143C arrow circling the "Public" badge
+with a tiny crimson tag "FREE". Corner crop marks at all four corners
+of the card. Tiny plus symbols at the four corners of the slide.
+Thin crimson divider across the top beneath the label.
+
+Editorial, magazine-meets-product-launch feel. No cartoon, no flat
+illustrations, no orange, no colorful gradients.
 ```
 
-### Slide 3 — STEP 02 — 200+ Free Models
+### Slide 3 — STEP 02 — /SCALE
 ```
-Instagram carousel slide, 1080x1350. Obsidian #111111 ground. A single dark
-slightly-lighter-than-background card centered on the slide. Inside the card: a
-vertical stack of ~20 rows of tiny model-name chips (anonymised as colored dots —
-no real brand names). Each row is a dot, a dot, a dot, etc., in a grid. Atop the
-grid, a giant "200+" in crimson #D32F2F, ultra-bold, overlapping the card. At the
-very top of the slide in cream #FDFBF7 all-caps: "STEP 02" and "200+ FREE MODELS".
-Bottom body line in cream: "Not one. Two hundred. All routed through Claude Code."
-Modern, dense, almost like a contact-sheet.
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins.
+
+Top-left: small all-caps crimson #DC143C label reading "STEP 02".
+Headline: ultra-bold condensed sans-serif ALL CAPS, reading "/SCALE",
+occupying upper 35–45% of slide.
+
+Body in obsidian #111111:
+"Not one model. Two hundred. All routed through Claude Code.
+Pick any. Switch any time."
+
+Visual: lower-half stacked list card — single obsidian #111111 rounded
+card containing ~20 rows of tiny colored dots (anonymised model chips,
+no real brand names, only obsidian + crimson + light gray #E9E9E9).
+A giant crimson #DC143C "200+" overlapping the top edge of the card,
+ultra-bold condensed.
+
+Thin crimson divider above the headline. Corner crop marks. Editorial,
+matte 3D feel on the card, soft shadows. No cartoon, no orange.
 ```
 
-### Slide 4 — STEP 03 — Auto-Pilot Mode
+### Slide 4 — STEP 03 — /AUTOPILOT
 ```
-Instagram carousel slide, 1080x1350. Warm cream #FDFBF7 ground. A horizontal flow
-diagram across the middle: four nodes connected by thick obsidian #111111 arrows.
-Nodes from left to right: "YOU" (cream pill with obsidian text), "CLAUDE" (cream
-pill), then a node marked with a yellow #FFC107 lightning bolt and crimson
-#D32F2F label "LIMIT HIT", then "MODEL B" (cream pill), then a final arrow to the
-text "KEEPS GOING". The "LIMIT HIT" node glows crimson. Top of slide in all-caps
-obsidian: "STEP 03" and "AUTO-PILOT MODE". Bottom body line in obsidian: "Hit a
-limit? It reroutes to the next best model. Mid-session."
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins.
+
+Top-left: small all-caps crimson #DC143C label reading "STEP 03".
+Headline: ultra-bold condensed sans-serif ALL CAPS, reading "/AUTOPILOT",
+occupying upper 35–45% of slide.
+
+Body in obsidian #111111:
+"Hit a limit? It reroutes mid-session. You keep building."
+
+Visual: lower-half horizontal flow diagram across a thin obsidian strip.
+Four obsidian #111111 pills reading YOU → CLAUDE → MODEL B → DONE,
+connected by thin crimson #DC143C arrows. The middle "CLAUDE" pill has
+a crimson lightning-bolt tag "LIMIT HIT" above it. One thin crimson
+arrow pierces from CLAUDE to MODEL B, implying reroute.
+
+Corner crop marks at the slide corners. Tiny plus symbols. Editorial
+alignment. No cartoon, no orange, no gradients.
 ```
 
-### Slide 5 — STEP 04 — 90% Less. Same Output.
+### Slide 5 — STEP 04 — /COMPRESS (screenshot line)
 ```
-Instagram carousel slide, 1080x1350. Solid obsidian #111111 ground. An oversized
-cream #FDFBF7 quotation mark (the typographic " glyph) sits off-center top-left as
-the dominant visual, ~60% of frame height. Centered to the right of and below the
-quotation mark, in ultra-bold cream type, two lines: "90% LESS." and below it
-"SAME OUTPUT." — second line in crimson #D32F2F for contrast. Top of slide small
-all-caps cream: "STEP 04". Bottom body line in cream: "Compresses your prompts
-before they hit the model." No images, no icons, poster-style.
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins.
+
+Top-left: small all-caps crimson #DC143C label reading "STEP 04".
+Headline: ultra-bold condensed sans-serif ALL CAPS, reading "/COMPRESS",
+occupying upper 35–40% of slide.
+
+Body in obsidian #111111, two short lines, dominant:
+"90% LESS PROMPT.
+SAME OUTPUT."
+Sub-line in medium gray #8B8B8B, smaller:
+"Compresses prompts before they hit the model."
+
+Visual: lower-half oversized typographic " quotation glyph in obsidian
+#111111, ~50% of slide width, sitting off-center as the dominant visual.
+No mock-ups, no icons — pure editorial typography.
+
+Thin crimson #DC143C divider across the top beneath the label. Corner
+crop marks at all four corners. Tiny plus symbols. This slide must
+work as a standalone saved quote.
 ```
 
-### Slide 6 — STEP 05 — Sessions That Don't Die
+### Slide 6 — STEP 05 — /ENDURANCE
 ```
-Instagram carousel slide, 1080x1350. Warm cream #FDFBF7 ground. Before/after split
-into two equal cards with a thin obsidian #111111 hairline between them. Left card
-(obsidian ground, crimson #D32F2F text): a mock-up of an error modal reading
-"LIMIT REACHED" in bold, with a small sub-line "Session ended at 12 min". Right
-card (cream ground, obsidian text): a session timer reading "4h 22m" in
-ultra-large type, with sub-line "still going" in green checkmark accent. Top of
-slide in all-caps obsidian: "STEP 05" and "SESSIONS THAT DON'T DIE". Bottom body
-line in obsidian: "Build for hours. Never see 'limit reached' again."
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins.
+
+Top-left: small all-caps crimson #DC143C label reading "STEP 05".
+Headline: ultra-bold condensed sans-serif ALL CAPS, reading "/ENDURANCE",
+occupying upper 35–45% of slide.
+
+Body in obsidian #111111:
+"Build for hours. Never see 'limit reached' again."
+
+Visual: lower-half before/after split — two equal cards with a thin
+obsidian #111111 hairline between them.
+Left card (obsidian #111111 ground, crimson #DC143C type): tiny
+error-modal mock-up reading "LIMIT REACHED" with sub-line "Session
+ended at 12 min".
+Right card (warm off-white #F7F5F1 ground, obsidian type): giant
+condensed session timer reading "4h 22m", sub-line "still going"
+with a single crimson checkmark.
+Thin crimson arrows point from the left card to the right card.
+
+Corner crop marks. Tiny plus symbols. Editorial alignment. Premium
+shadows on both cards. No cartoon.
 ```
 
-### Slide 7 — CTA — Try It Free
+### Slide 7 — CTA — WANT IT FREE?
 ```
-Instagram carousel slide, 1080x1350. Solid obsidian #111111 ground. Center frame:
-the word "CLAUDE" in massive ultra-bold cream #FDFBF7 type, all caps, ~50% of
-frame width. Behind the word, a faint oversized quotation-mark glyph as a
-ghosted watermark. Below "CLAUDE", a single thick crimson #D32F2F arrow pointing
-straight down toward the bottom edge of the slide — implying "in the comments
-below". Small all-caps cream top: "TRY IT FREE". Body line in cream below the
-word: "Comment 'CLAUDE' below. I'll send the link." No other elements.
+Premium editorial Instagram carousel slide, 1080x1350 portrait.
+Warm off-white paper background #F7F5F1 with very subtle grain texture,
+no gradients. 60–80 px margins.
+
+Headline: ultra-bold condensed sans-serif (Bebas Neue / Anton / Druk),
+ALL CAPS, obsidian #111111, occupying upper 35–45% of slide, reading
+"WANT IT FREE?".
+
+Body, three short lines centered below the headline:
+"Comment
+"CLAUDE"
+I'll send the link."
+The word CLAUDE on the middle line rendered in crimson #DC143C.
+
+Visual: lower-half large comment-box mock-up — obsidian #111111 rounded
+pill, ~70% slide width, containing a tiny avatar dot at the left and
+the text "CLAUDE" typed inside in obsidian on light gray #E9E9E9.
+A thin crimson #DC143C arrow points straight down from the headline
+to the box, implying "in the comments below".
+
+Corner crop marks at all four corners. Tiny plus symbols. No second
+action, no secondary link, no logo. Editorial, single action only.
 ```
 
 ---
 
 ## Screenshot line
 
-**Slide 5 — "90% LESS. SAME OUTPUT."**
-This is the one people save as a standalone quote. Stays strong even out of carousel context.
+**Slide 5 — "90% LESS PROMPT. SAME OUTPUT."**
+
+The body lines land as a standalone quote. Stays strong even out of carousel context — works as a single-image post, story, or thread header.
+
+---
+
+## Brand palette (locked)
+
+| Role | Hex | Notes |
+|---|---|---|
+| Primary | `#111111` | Obsidian — body type, dark cards |
+| Background | `#F7F5F1` | Warm off-white paper (every slide) |
+| Accent | `#DC143C` | Crimson — labels, dividers, arrows, keyword highlights |
+| Secondary | `#8B8B8B` | Medium gray — sub-lines, swipe indicator |
+| Tertiary | `#E9E9E9` | Light gray — comment-box text, model chip dots |
+
+Banned: orange, yellow (`#FFC107`), warm cream (`#FDFBF7`), gradients of any kind.
+
+---
+
+## Typography (locked)
+
+- **Headline:** Bebas Neue → Anton → Druk Condensed → Tungsten → Impact (ALL CAPS, ultra-bold condensed, tight tracking)
+- **Body:** Inter → SF Pro Display → Helvetica Neue → Arial (Regular or Medium)
+- **Labels:** Inter SemiBold ALL CAPS, crimson `#DC143C`, small
 
 ---
 
 ## Handoff notes
 
 - File saved at `/root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md`.
-- Per-slide image prompts are above, ready to paste.
-- Brand palette enforced throughout: `#FDFBF7` cream, `#111111` obsidian, `#D32F2F` crimson, `#FFC107` yellow.
-- All slides ≤ 13 body words — image-gen safe.
-- No slide needs a subtitle explaining the carousel. Each slide lands its own value.
+- Plan follows `carousel-copy` 7-rule check + `premium-editorial-carousel-designer` 13-point consistency checklist.
+- Hook format chosen: **The Number Drop** ("STOP PAYING FOR CLAUDE." with `1.6B FREE TOKENS` body) — concrete-odd-specific claim that interrupts the scroll.
+- Screenshot line: slide 5 (`/COMPRESS`) — strong enough to save standalone.
+- Old brand palette fully removed — no `#FDFBF7`, no `#FFC107`. New palette is `#F7F5F1` background with `#DC143C` as the only accent.
+- Per-slide image prompts above, ready to paste into Imagen / Midjourney / Flux / Nano Banana.
+- Body word counts well under all platform ceilings (IG: ≤20 body words; max actual = 16).
+- 7 slides sits inside the IG sweet spot of 7–10, with hook → 5 value → CTA structure.

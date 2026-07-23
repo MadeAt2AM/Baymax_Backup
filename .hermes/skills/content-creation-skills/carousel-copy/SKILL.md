@@ -1,6 +1,6 @@
 ---
 name: carousel-copy
-description: "/carousel-copy — Plans and writes copy for Instagram/LinkedIn carousels. Use whenever the user has a carousel idea and needs slide count, per-slide text, and visual direction before any image generation. Enforces a strict structure (visual hook → value slides → CTA), one idea per slide, and image-gen-safe word counts. Copy always comes before design. Two modes: Plan (idea → full slide plan) and Audit (existing copy → scorecard + rewrites). Triggers: /carousel-copy, carousel, carousel copy, carousel idea, plan a carousel, write carousel, audit carousel, IG carousel, LinkedIn carousel, slide copy, carousel post, carousel structure."
+description: "/carousel-copy — Plans and writes copy for Instagram/LinkedIn/X carousels. Use whenever the user has a carousel idea and needs slide count, per-slide text, and visual direction before any image generation. Enforces a strict structure (visual hook → value slides → CTA), one idea per slide, and image-gen-safe word counts. Copy always comes before design. Pair with the premium-editorial-carousel-designer skill for the visual system (palette, typography, layout, image prompts). Two modes: Plan (idea → full slide plan) and Audit (existing copy → scorecard + rewrites). Triggers: /carousel-copy, carousel, carousel copy, carousel idea, plan a carousel, write carousel, audit carousel, IG carousel, LinkedIn carousel, X carousel, slide copy, carousel post, carousel structure."
 ---
 
 # Carousel Copy
@@ -85,6 +85,12 @@ CHECK: Is there exactly one action? Is the CTA line as tight as the hook?
 - Word-count check (confirm every slide ≤ 25 body words)
 
 When auditing, output a seven-row scorecard (one per rule: pass/fail + specific fix), then the rewritten plan.
+
+## Visual system — always pair with premium-editorial-carousel-designer
+
+This skill owns copy and structure only. The visual system (palette, typography, canvas, layout rules, hero illustration direction, image-gen prompts, consistency checklist) lives in the `premium-editorial-carousel-designer` skill. Load it whenever you produce or audit a carousel — its rules apply to every slide's `Visual:` line and any image prompt you generate.
+
+When delivering a final carousel, ship the two together: this skill's slide plan + the designer's image prompts and visual checks, interleaved per slide. Do not produce a slide plan without a visual direction per slide; do not produce image prompts without running the designer's consistency checklist.
 
 ## Customize this skill (non-input knobs only)
 

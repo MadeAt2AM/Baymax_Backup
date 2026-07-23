@@ -1,50 +1,49 @@
 {
-  "date": "2026-07-22",
+  "date": "2026-07-23",
   "analysis": {
     "active_projects": [
-      "carousel-omniroute-free-claude-code — the 7-slide IG carousel plan for 'Free Claude Code, Forever' (OmniRoute free-tool reel by @nick_saraev) is DONE. SLIDE-PLAN.md saved at /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md with hook, 5 value slides, CTA, full image-gen prompts per slide, brand-palette enforced. Ready to hand to image model or designer.",
-      "syntra (multi-tenant workforce SaaS) at syntra.terrybot.top on dev VPS 147.79.18.32 — last big push was 2026-07-15 (Feature B: Delete + Restore + Include inactive) and 2026-07-17 (rate-limiter + tenant-bound login + hard-delete). Live-verified green. No active commits in the last 4 days, but infrastructure debt (Caddy on_demand_tls migration when tenant count > ~30) is on the radar.",
-      "Payntra at payntra.terrybot.top — neighbour app, no dev work in last 48h, health green. The reverse-proxy / cookie-domain / Set-Cookie issue from early-July is still the canonical reference in MEMORY.md (workaround = upstream Caddy config on control VPS, not on dev VPS).",
-      "baymax-backup / Hermes Agent self — baymax-backup cron ran clean yesterday 16:00 SGT. Hermes update bi-daily cron ran clean. Wiki sync daemon still ticking along. .hermes/.venv is empty (known/harmless per skill notes).",
-      "voice-fix-verify / Hermes voice pipeline — currently stable. text_to_speech tool routes natively through gateway. voice_mode default = 'off' for all chats. send_voice.py is NOT a fallback for gateway-down (Chris's hard rule from 2026-07-01). No new voice regressions in recent sessions."
+      "Carousel — Free Claude Code, Forever: full 7-slide IG plan drafted at 03:46 SGT in /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md. Premium Editorial system, new Crimson #DC143C palette applied, per-slide image prompts ready to fire into Imagen / Midjourney / Flux / Nano Banana. Still at the plan stage — no rendered PNGs or MP4 yet.",
+      "Syntra: deploy-mirror at syntra.terrybot.top plus custom domain syntra.cyberslide.net. PROGRESS.md last updated 2026-07-08; the 2026-07-15 plan (custom-domain redirect + platform-admin delete company) has a STATUS file with verification curls, but live end-to-end check (login on cyberslide.net, soft-delete + restore) is not yet recorded as passed.",
+      "Payntra: live at payntra.terrybot.top on Hetzner VPS 147.79.18.32. No recent incident — quiet, deployed via GitHub webhook → project_dev.sh.",
+      "Voice / gateway: 2026-07-02 voice-mode and thread-routing issues closed. No open voice bugs in the latest sessions. Default gateway_voice_mode must stay 'off' unless debugging.",
+      "LLM Wiki / Obsidian vault sync: 15-min cron + systemd, repo MadeAt2AM/Obsidian-Vaults — running clean."
     ],
     "upcoming_deadlines": [
-      "No confirmed deadlines found — Google Calendar returned an empty array for 2026-07-22 SGT (the madeat2am.ai@gmail.com token was refreshed on 2026-07-21 per the dreaming-sequence record; the empty result is real, not an auth failure).",
-      "OmniRoute carousel has no fixed publish-by date. The plan file is ready to ship, but no date has been set. Treat as 'ship when image assets are ready' rather than a deadline.",
-      "Caddy on_demand_tls migration for SYNTRA: still deferred — only needed at ~30 tenants. Current count: low single digits. Not urgent."
+      "No confirmed deadlines found — calendar returned empty for 2026-07-23.",
+      "Self-imposed: ship the Free Claude Code carousel this week (plan is ready, only render + caption posting remain)."
     ],
     "outstanding_items": [
-      "OmniRoute carousel is at the 'copy done, design pending' gate. SLIDE-PLAN.md is ready; next step is either (a) run the image-gen prompts through Flux/Imagen yourself, (b) hand prompts to a designer, or (c) ask Baymax to drive the image-gen pipeline. Yesterday's session closed with the question: 'Want me to queue this for image gen next, or are you handing the prompts to a designer?' — no answer received yet.",
-      "SYNTRA custom-domain rollout is functionally complete (custom-domain login, branding, redirect), but the release notes / implementation plan have not been updated with the 2026-07-15 + 2026-07-17 work. Worth a 10-min commit to the implementation log so the project handoff doc stays current.",
-      "baymax-backup known issue: .hermes/.venv is empty (pip list returns nothing). Documented as harmless until a restore is attempted, but worth fixing on a quiet hour — `python -m venv .hermes/.venv && source .hermes/.venv/bin/activate && pip install -r .hermes/requirements.txt` if a requirements file exists.",
-      "Voice-mode registry ~/.hermes/gateway_voice_mode.json — not re-checked this morning. Per memory rule, default must be 'off' for all chats. Verify when convenient, but no recent session has reported a regression."
+      "Carousel: generate the 7 hero / supporting visuals from the prompts in SLIDE-PLAN.md, assemble into 1080x1350 PNGs, then publish to @made.at.2am with the drafted caption and 'CLAUDE' comment-to-DM flow.",
+      "Carousel: update MEMORY.md brand-palette line so '#F7F5F1 / #DC143C' is the canonical MadeAt2Am palette (currently it lists '#FDFBF7 / #FFC107'). One line, prevents future drift.",
+      "Syntra: execute the three verification curls in STATUS-2026-07-15 against syntra.cyberslide.net and either pass or close the plan.",
+      "Syntra: PROGRESS.md has not been touched since 2026-07-08 — bump it with this week's status before it goes stale."
     ],
-    "recent_context": "Chris closed out a long carousel-copy session yesterday (2026-07-21 17:12–22:43 SGT) on Telegram: transcribed @nick_saraev's OmniRoute reel via faster-whisper, extracted the gold detail (1.6B free tokens/month, NOT in the caption), and shipped a complete 7-slide IG carousel plan with per-slide image-gen prompts and brand-palette enforcement. Session ended with the design-handoff question still open. Calendar empty for today, system healthy, no in-flight incidents — first 'boring' morning in a while, which usually means it's a good day to push the carousel through to publish."
+    "recent_context": "Chris worked late into the night on a fresh Instagram carousel about OmniRoute / Free Claude Code, regenerating the entire SLIDE-PLAN.md under the new Premium Editorial system and crimson accent. Syntra has a half-finished soft-delete + custom-domain plan from a week ago that has not been closed out. Calendar is empty for Thursday, infrastructure (dashboard, system monitor, LLM Wiki sync) is green and quiet. No active voice or gateway incidents."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Decide the OmniRoute carousel's next move: image-gen yourself, hand to designer, or queue Baymax to drive it",
-      "reason": "The carousel is the only thing in the queue that's actually at the 'ship today' gate. Copy is locked (7 slides, 1 hook + 5 value + 1 CTA, all under 13 body words, screenshot line on slide 5, image-gen-safe prompts per slide, brand palette enforced). Without a clear next step, it sits at 95% and ages out — viral hooks have a shelf life. Yesterday's session closed with this exact question still open; today's 8 AM brief should land an answer.",
-      "action": "Pick one of three paths in the first 5 minutes of the day: (1) Open your image-gen tool of choice (Flux / Imagen / Midjourney) and run the 7 prompts in SLIDE-PLAN.md — fastest, ~20 min if prompts hold. (2) Send the SLIDE-PLAN.md to your designer with a one-line 'brand palette + word counts are locked, do not change copy' note. (3) Tell Baymax: 'queue carousel-omniroute for image-gen' and let the carousel-imagegen pipeline handle it. Whatever you pick, write it as a 1-line decision in the morning brief reply so the question stops dangling."
+      "title": "Render and ship the Free Claude Code carousel today",
+      "reason": "The 7-slide plan is complete and quality-checked — copy is under the IG word ceiling, palette is locked, image prompts are paste-ready. Every day this sits as a markdown file is a day it is not earning reach on @made.at.2am during a moment when 'Claude Code for free' is trending.",
+      "action": "Run the 7 image prompts through your preferred image generator (Imagen / Midjourney / Flux / Nano Banana), drop the PNGs into /root/.hermes/projects/carousel-omniroute-free-claude-code/, compose into 1080x1350 slides, post to Instagram with the drafted caption and a 'Comment CLAUDE' reply trigger. If you want me to drive, ask and I will script the render plus caption posting."
     },
     {
       "priority": 2,
-      "title": "Lock the OmniRoute slide-5 'screenshot line' as a standalone IG post",
-      "reason": "Slide 5 ('90% LESS. SAME OUTPUT.') is explicitly the standalone-save slide per the plan. It will travel further as a single-image quote post than as slide 5/7 of the carousel. Even if the carousel ships, the screenshot line deserves its own publish slot — this is the Rule 6 (one screenshot line per carousel) payoff, and most creators under-use it.",
-      "action": "When the carousel assets are ready, take slide 5's image, crop to 1:1, swap the 'STEP 04' tag for a self-contained quote caption (e.g. '90% less. Same output. That's the prompt-compressor trick.'), and queue it as a separate IG post 24h after the carousel drops. Two posts, one idea, double the surface area."
+      "title": "Close out the Syntra 2026-07-15 plan — run the verification curls",
+      "reason": "Soft-delete plus custom-domain redirect for syntra.cyberslide.net has an open STATUS file with three concrete verification curls. It has been sitting a week; either it passes and we mark it done, or it fails and we fix it. Open plans are how Syntra's stack accumulates silent debt.",
+      "action": "Run the three curls from STATUS-2026-07-15-custom-domain-redirect-and-delete-company.md against syntra.cyberslide.net (login redirect, platform-admin DELETE plus includeInactive plus PUT restore), record results back into the STATUS file, update PROGRESS.md, then mark the plan closed."
     },
     {
       "priority": 3,
-      "title": "Spend 10 minutes updating the SYNTRA implementation log with the 2026-07-15 + 2026-07-17 work",
-      "reason": "Two non-trivial features shipped to SYNTRA main in the last week (Delete + Restore + Include inactive; tenant-bound login + rate-limiter + hard-delete). The implementation plan doc has not been updated to reflect them. Without an updated log, the next time someone (you, a contractor, future-you) opens /root/.hermes/projects/syntra, the 'what's already done' picture is stale by a week. This is the kind of hygiene that compounds — 10 minutes today saves 30 minutes in two weeks.",
-      "action": "Append a 'Release 2026-07-15 to 2026-07-17' entry to /root/.hermes/projects/syntra/IMPLEMENTATION_PLAN.md (or whichever file currently serves that role) covering: (1) hard-delete cascade + restore + include-inactive toggle, (2) cross-domain post-login redirect for custom-domain tenants, (3) account-rate-limiter keyed by normalised email. Three bullets, commit hashes, and one screenshot of the platform-admin dashboard with the new Delete button. Total time: 10 min."
+      "title": "Promote the new palette in MEMORY.md before it drifts",
+      "reason": "SLIDE-PLAN.md now uses #F7F5F1 / #DC143C, but MEMORY.md still lists the old #FDFBF7 / #FFC107. The carousel-copy and editorial-designer skills have already moved — memory is the only artifact left out of date. One line edit now prevents the next brand asset getting produced in the old palette.",
+      "action": "Patch the MEMORY.md brand line to '#F7F5F1 / #DC143C (current) — old: #FDFBF7 / #FFC107' so future projects know which is canonical."
     }
   ],
   "non_negotiable": {
-    "title": "Decide the OmniRoute carousel's next move in the first 5 minutes of the day",
-    "reason": "The carousel is the only deliverable currently at the 'ship today' gate, and the design-handoff question has been open for 12+ hours since yesterday's session closed. Every day the decision stays open, the hook's viral potential ages — 1.6B-free-tokens-per-month is a strong number-drop today, less so in a week when 10 other AI tool posts have buried it. This is a 5-minute decision that unblocks 2 hours of work (image gen + ship). Skipping it means the carousel silently ages out and the next MadeAt2Am content slot goes to something else.",
-    "action": "Open the Telegram thread from 2026-07-21 22:43 SGT (carousel-omniroute session), read Baymax's last question ('Want me to queue this for image gen next, or are you handing the prompts to a designer?'), and reply with one of three short answers: 'I'll do image gen' / 'Sending to designer' / 'Baymax, queue it.' Then move on. Total: 60 seconds. If you can't decide in 5 min, default to 'Baymax, queue it' — the carousel-imagegen pipeline is built for exactly this."
+    "title": "Render and ship the Free Claude Code carousel today",
+    "reason": "A finished, quality-checked 7-slide plan sitting on disk is wasted inventory — IG reach compounds with posting cadence, and 'Claude Code for free' is a peak-trend topic right now. Skipping today means either it gets buried under other work or we re-do the prompts because the trend window closes. Everything else (Syntra verification, memory patch) can wait a day; this cannot.",
+    "action": "Block 90 minutes on the morning brief: 60 min to render the 7 visuals plus assemble PNGs, 30 min to draft the posting schedule and queue the 'CLAUDE' DM reply flow. If you do not want to render yourself, hand me the prompts and I will drive image generation plus assembly into the project folder."
   },
-  "mood_check": "Calm and shipping-mode. Yesterday's session was a satisfying close (carousel copy done, brand-palette locked, all rule checks green, file saved) rather than a stressful one. No in-flight incidents, no broken cron jobs, no firefighting. First 'boring' morning in a while, which usually means it's a good day to push one thing through to publish. The OmniRoute carousel is sitting at the gate waiting for a one-line decision — that's the only thing with any real urgency today. Energy reads as 'ready to ship', not 'behind on everything'. Dad would've said 'get the carousel out the door, then have a cup of tea'."
+  "mood_check": "Late-night creative energy — Chris rebuilt a full carousel plan between roughly 22:00 and 03:46 SGT, then signed off. Infrastructure is quiet and green, no fires burning. Calendar is open: this is a clean execution day, not a triage day. Tired-but-productive."
 }
