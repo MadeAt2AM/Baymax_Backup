@@ -92,7 +92,7 @@ agent-reach install --env=auto --dry-run  # preview
 - **Twitter/X** — `opencli twitter search "..."` or `twitter search "..."` — auth_token + ct0 extracted via `agent-reach configure --from-browser chrome`
 - **Reddit** — `opencli reddit search "..."` — reddit_session via same Chrome extraction
 - **Facebook** — `opencli facebook whoami`, `profile`, `search`, `feed` — cookies via OpenCLI bridge (c_user, xs, fr, datr, sb)
-- **Instagram** — `opencli instagram whoami`, `search`, `user` — sessionid + csrftoken via OpenCLI bridge (account: `alligator.6949242`)
+- **Instagram** — `opencli instagram whoami`, `search`, `user`, `download` — sessionid + csrftoken via OpenCLI bridge (account: `alligator.6949242`). See "OpenCLI Instagram command surface" below for the persistent-site-session invocation pattern.
 
 **⚠️ GitHub — use `gh` CLI, NOT OpenCLI `opencli github`:**
 - `gh auth status` → ✅ shows `chrisvincodes` logged in via HTTPS
@@ -118,7 +118,7 @@ After installation, use upstream tools directly. Agent Reach is the installer/ro
 | YouTube | `yt-dlp` | `yt-dlp --dump-json URL` |
 | Bilibili | `bili` | `bili search "query" --type video` |
 | Reddit | OpenCLI (`opencli reddit ...`) | `opencli reddit search "..."` — via CDP browser bridge |
-| Instagram | OpenCLI (`opencli instagram ...`) | `opencli instagram whoami` — session via CDP browser bridge, NOT browser_cookie3. See `references/opencli-cookies.md` for the extraction technique. |
+| Instagram | OpenCLI (`opencli instagram ...`) | See "OpenCLI Instagram command surface" below — session via CDP browser bridge, NOT browser_cookie3. See `references/opencli-cookies.md` for the extraction technique. |
 | Facebook | OpenCLI | `opencli facebook whoami`, `search`, `profile`, `feed` — cookies via CDP browser bridge |
 | GitHub | `gh` | `gh search repos "query"` |
 | Web | Jina Reader | `curl -s "https://r.jina.ai/URL"` |
@@ -131,7 +131,51 @@ After installation, use upstream tools directly. Agent Reach is the installer/ro
 
 ---
 
-## Pitfalls
+### OpenCLI Instagram command surface
+
+Top-level help: `opencli instagram --help`. Read-only commands relevant for scraping:
+
+| Command | Purpose | Notes |
+|---|---|---|
+| `whoami` | Confirm which Instagram account the CDP session is logged in as | First call on any host — if `logged_in: false` or the wrong account, stop. |
+| `user <username>` | Fetch recent posts for an account (mixed media + reels) | Use `--limit N` for cap, `-f json` for parsing, `--window background` to avoid blocking, `--site-session persistent` to reuse the cookie session across calls. |
+| `download <url>` | Download images/videos for a post or reel | Use `--path <dir>` to scope into a staging directory, `-f json` for the saved-path response, `--window background --site-session persistent`. |
+| `search <query>` | Find accounts | Useful for discovering handles before tracking. |
+
+**Preferred invocation shape (mirror this exactly when replicating on another host):**
+
+```bash
+# Auth check — no cookies, no session IDs in output
+opencli instagram whoami -f json --window background --site-session persistent
+
+# Pull recent reels for an account
+opencli instagram user <username> --limit <N> -f json \
+  --window background --site-session persistent
+
+# Download one reel's media
+opencli instagram download <reel-url> --path <staging-dir> -f json \
+  --window background --site-session persistent
+```
+
+**Why `--window background --site-session persistent` matters:**
+
+- `--window background` keeps the call non-blocking and doesn't depend on an interactive desktop session.
+- `--site-session persistent` keeps the authenticated browser session alive between invocations, so a periodic scraper doesn't re-authenticate on every run.
+
+Both flags are required to reproduce the Hermes-VPS scraping pattern on a fresh host. Do not change them silently when porting.
+
+### Replicating the Instagram method to another host
+
+When a different host (e.g. dev VPS) needs the same scraping capability — **characterize before replicating**, never invent a parallel method:
+
+1. Record on the proven host: `opencli instagram --help`, `which opencli`, the package install method (`pip show opencli` / `npm ls -g @jackwener/opencli`), browser daemon state, persistent site-session location, Chrome/Chromium version, and the exact `user`/`download` argv shape you rely on.
+2. On the target host, install the same package version and reproduce the same daemon + persistent-session layout. Don't modify command args, JSON output, or flags.
+3. Test with `whoami` first. If the wrong account or a checkpoint appears, halt for operator re-authentication rather than bypassing.
+4. Always pair OpenCLI scraping with a **local** speech-to-text path (Faster-Whisper + FFmpeg). Never wire a paid transcription API into the same pipeline just because it's easier.
+
+**Cookie hygiene:** the OpenCLI profile/session directory IS a credential. Mount it only into the scraper component — never into a web/API/database container. Never commit it, copy it into Docker images, or print it. Use a secondary Instagram account, not the operator's primary.
+
+### Pitfalls
 
 ### VNC browser session — htpasswd permission (CRITICAL)
 
@@ -274,13 +318,32 @@ xiaohongshu-mcp may already have a valid session baked into the binary (check th
 cd ~/.agent-reach/tools/xiaohongshu && ./xiaohongshu-mcp-linux-amd64 &
 sleep 5
 curl -s http://localhost:18060/health
-```
+### Groq API — free key, no credit card
 
-If the response shows `"account":"ai-report"` with `"status":"healthy"`, the session is already authenticated — no QR scan needed. Wire it into mcporter:
+Get a free Groq API key at https://console.groq.com — no credit card needed. Configure with:
 
 ```bash
-mcporter config add xiaohongshu http://localhost:18060/mcp
+agent-reach configure groq-key gsk_xxxxx
 ```
+
+### Local Faster-Whisper — no API, no key, already installed
+
+The Hermes host already has Faster-Whisper + CTranslate2 + FFmpeg in its default Python environment, so ad-hoc transcription is always available with zero setup:
+
+```bash
+python3 -c "import faster_whisper, ctranslate2; print(faster_whisper.__version__, ctranslate2.__version__)"
+ffmpeg -version | head -1
+# Expected (as of 2026-07): faster_whisper 1.2.1, ctranslate2 4.8.0, ffmpeg 6.1.1+
+```
+
+Use this path whenever a downstream pipeline needs to transcribe audio/video locally — reel scrapers, podcast imports, downloaded media. Pair with FFmpeg normalization to mono 16 kHz PCM for the fastest, most accurate results.
+
+**When to prefer Faster-Whisper over Groq:**
+
+- Default to Faster-Whisper. It removes per-minute cost, keeps audio on-host, and works offline.
+- Reach for Groq only when Faster-Whisper fails to load its model (corrupt cache, GPU/CPU mismatch) and a quick remote fallback is needed — never as the first choice for any new pipeline.
+
+**Pin the model + revision before any production pipeline runs:** Faster-Whisper downloads `~75MB–~3GB` per model on first use and there is no cost gate. Pre-download the approved model into a dedicated cache, record its identifier/revision, and verify the service loads it with outbound network disabled so you can prove there is no remote fallback.
 
 If no pre-auth session exists, the daemon will return `warn` status and you need to call `get_login_qrcode` via the MCP interface to get a QR code for the user to scan.
 
@@ -362,6 +425,20 @@ opencli instagram whoami -f yaml
 # Test a search
 opencli instagram search "madeat2am" -f yaml
 ```
+
+**For the persistent-session scraping pattern (reels analysis pipelines, periodic trackers):**
+
+```bash
+# Pull N recent posts (mix of media + reels) for an account — JSON for parsing
+opencli instagram user <username> --limit <N> -f json \
+  --window background --site-session persistent
+
+# Download the media for a reel URL into a staging directory
+opencli instagram download <reel-url> --path <staging-dir> -f json \
+  --window background --site-session persistent
+```
+
+Filter the JSON to `type == "reel"` (or whichever key OpenCLI uses), extract `shortcode` from the post URL, and pass to `download`. See "OpenCLI Instagram command surface" above for the full pattern and the "Replicating the Instagram method to another host" steps.
 
 ### Cookie-based auth — use a secondary account
 

@@ -1,0 +1,56 @@
+# Logs
+logs/
+*.log
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+**/cookies*
+**/*cookie*
+**/session*
+**/*session*
+**/*profile*
+**/browser-traces/
+**/private/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+dist/
+playwright-report/
+test-results/
+
+# Data and media
+data/staging/
+data/notes/
+data/exports/
+data/videos/
+data/whisper-cache/
+*.mp4
+*.mp3
+*.wav
+*.webm
+*.mkv
+*.jsonl
+
+# Hermes temporary state
+.hermes/cache/
+.hermes/tmp/
+
+# Editors and OS
+.DS_Store
+.vscode/
+.idea/
+*.swp

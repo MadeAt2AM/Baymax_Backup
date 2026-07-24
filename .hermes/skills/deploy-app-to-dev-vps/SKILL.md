@@ -339,6 +339,54 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
     a clean rebuild with `--no-cache`. Pair with
     `docker compose up -d --force-recreate` to ensure the container
     is restarted with the new image, not just the same image relabeled.
+
+    **Two cases need `--no-cache` even when the live tree is fresh:**
+    (a) Bumping a version inside a `RUN echo "{"name":...,"dependencies":{...}}"`
+       block in the `FROM ... AS deps` runtime-installer stage (e.g.
+       changing `nodemailer` from `^9.0.3` to `^6.9.16` in a small
+       inline package.json). The layer cache keys on the literal text
+       passed to `RUN`, so a content change DOES bust — but if the
+       npm `node_modules` layer is cached from a prior build, you may
+       also need `docker builder prune --filter until=1m` to clear
+       stale intermediate layers or run `docker compose build --pull
+       --no-cache`. Symptom: container ships with the OLD package
+       even though `cat /srv/projects/<name>/Dockerfile.api` shows
+       the new version. Verify with `docker run --rm <image>
+       sh -lc "cat /app/node_modules/<pkg>/package.json | head -3"`
+       post-build.
+    (b) Editing `pnpm-workspace.yaml` overrides (`rollup>@rollup/...`).
+       pnpm re-reads the workspace config but the offline-tarball
+       cache in pnpm's content-addressable store is keyed on the
+       previous resolution. `--no-cache` plus a fresh
+       `pnpm install --no-frozen-lockfile` outside the container
+       first recovers this.
+    (c) Editing `alpine` (or `bookworm-slim`) base image tag. Use
+       `--pull` so Docker hits the registry cache TTL.
+
+    **Two-Dockerfile trap (Jul 2026 — burned the baymax twice):**
+    A repo that mirrors from a Replit template can have TWO
+    Dockerfiles for the same service:
+    - `/Dockerfile.api` (root) — the Replit / dev-local target.
+      Edited naturally because it's at the top level.
+    - `/deploy/docker/Dockerfile.api` — the actual dev-VPS target,
+      bind-mounted into compose via `dockerfile: deploy/docker/Dockerfile.api`.
+
+    Editing `/Dockerfile.api` and pushing has **zero effect** on
+    the dev VPS — `docker compose build` reads
+    `deploy/docker/Dockerfile.api`. **Always edit the `deploy/docker/`
+    one** for any VPS-targeted change. Symptom: you push three
+    commits, the webhook redeploys each time, but the running
+    container still has the old bundle / old dep version. Confirm
+    with `ssh dev-vps 'md5sum /srv/projects/<name>/Dockerfile.api'`
+    matching the just-committed file. Then:
+    ```bash
+    # Verify both files exist:
+    ssh dev-vps 'ls /srv/projects/<name>/Dockerfile*.{api,web,migrate}'
+    # Verify which one compose reads:
+    ssh dev-vps 'grep -E "dockerfile:" /srv/projects/<name>/docker-compose.yml'
+    ```
+    Repeat the same warning for `Dockerfile.web` and `Dockerfile.migrate`
+    in the same repo — they all live in both locations.
 24. **Local `vite build` / `tsc` OOM-throttled on this host — skip
     and trust the VPS Docker pipeline** — the local dev VM runs under
     a memory cgroup that throttles high-memory processes into
@@ -779,10 +827,25 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
   JWT inside the API container with the same `SESSION_SECRET` so the
   test never hits `/auth/login` from the public IP. Pairs with
   gotcha #30.
+- **Reference: `references/email-delivery-verification.md`** — the
+  end-to-end "did the email actually arrive and did the link in it
+  work" recipe: trigger the reset → check wire trace → read the
+  recipient inbox via `gws`/`himalaya`/mailhog → POST the link to
+  verify it works → restore the DB to pre-test state → scrub any
+  debug env vars. Pairs with `references/smtp-provider-traps.md`
+  (sender-side) and `references/live-lifecycle-tests.md` (DB-side).
 - **Reference: `references/spa-auth-state-hygiene.md`** — the
   recipe for wiping stale auth state on every SPA login so a prior
   user's profile doesn't survive into the next user's UI. Pairs with
   gotcha #38.
+- **Reference: `references/smtp-provider-traps.md`** — debugging
+  `550 Missing From header at envelope` and
+  `550 You are not allowed to send emails as <x> while logged as <y>`
+  on providers that validate MIME `From:` against the SMTP envelope.
+  Covers the nodemailer 9 → 6 pin, the `MailComposer` workaround,
+  the `SYNRA_SMTP_DEBUG=1` wire-trace pattern, and the multi-tenant
+  per-company vs platform-admin SMTP routing. Pairs with the new
+  `cache-bust on runtime-deps semver pin` bullet under gotcha #23.
 - **Script: `scripts/verify-bcrypt-bulk.py`** — re-runnable audit
   that posts a known password to every active user via the API
   container and reports who can / cannot log in. Use after any bulk

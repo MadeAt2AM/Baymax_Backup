@@ -1,49 +1,50 @@
 {
-  "date": "2026-07-23",
+  "date": "2026-07-24",
   "analysis": {
     "active_projects": [
-      "Carousel — Free Claude Code, Forever: full 7-slide IG plan drafted at 03:46 SGT in /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md. Premium Editorial system, new Crimson #DC143C palette applied, per-slide image prompts ready to fire into Imagen / Midjourney / Flux / Nano Banana. Still at the plan stage — no rendered PNGs or MP4 yet.",
-      "Syntra: deploy-mirror at syntra.terrybot.top plus custom domain syntra.cyberslide.net. PROGRESS.md last updated 2026-07-08; the 2026-07-15 plan (custom-domain redirect + platform-admin delete company) has a STATUS file with verification curls, but live end-to-end check (login on cyberslide.net, soft-delete + restore) is not yet recorded as passed.",
-      "Payntra: live at payntra.terrybot.top on Hetzner VPS 147.79.18.32. No recent incident — quiet, deployed via GitHub webhook → project_dev.sh.",
-      "Voice / gateway: 2026-07-02 voice-mode and thread-routing issues closed. No open voice bugs in the latest sessions. Default gateway_voice_mode must stay 'off' unless debugging.",
-      "LLM Wiki / Obsidian vault sync: 15-min cron + systemd, repo MadeAt2AM/Obsidian-Vaults — running clean."
+      "Carousel — Free Claude Code, Forever: the 7-slide Instagram plan is complete at /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md. The Premium Editorial layout, crimson #DC143C palette, caption, CTA, and per-slide prompts are locked and audited; no rendered slide assets or published post are present yet.",
+      "Syntra: the custom-domain tenant routing, platform-admin company lifecycle, rate-limiter, and hard-delete work are represented in the company-access-hard-delete project. The latest commit is e80bed5c (2026-07-19 SGT), which manually composes password-reset MIME to restore the missing From header in nodemailer 9. The code was reported as deployed, but the final live SMTP round-trip was not read back and remains unverified; the local worktree also has an uncommitted pnpm-lock.yaml change.",
+      "Payntra: live at payntra.terrybot.top on VPS 147.79.18.32, with the MTU-1400 Docker network and SMTP STARTTLS configuration recorded as the known-good deployment pattern. No recent incident or active work signal was found.",
+      "Hermes infrastructure: dashboard watchdog, LLM Wiki sync, email briefing, backup, and voice-routing routines are established. Recent context contains no new gateway or voice regression; gateway voice mode must remain off unless explicitly debugging.",
+      "LLM Wiki: the vault at /root/Obsidian-Vaults/Hermes is structurally healthy and its recent daily logs only report the sync daemon running; it contains no newer project-specific decision or deadline beyond the session context."
     ],
     "upcoming_deadlines": [
-      "No confirmed deadlines found — calendar returned empty for 2026-07-23.",
-      "Self-imposed: ship the Free Claude Code carousel this week (plan is ready, only render + caption posting remain)."
+      "No confirmed deadlines found — Google Calendar returned [] for 2026-07-24 SGT.",
+      "No fixed publish date exists for the OmniRoute carousel; treat today as the practical ship window because the copy and design direction have already been waiting several days.",
+      "Syntra password-reset verification has no calendar deadline, but it is the remaining live-evidence gap on a user-facing fix shipped on 2026-07-19 SGT."
     ],
     "outstanding_items": [
-      "Carousel: generate the 7 hero / supporting visuals from the prompts in SLIDE-PLAN.md, assemble into 1080x1350 PNGs, then publish to @made.at.2am with the drafted caption and 'CLAUDE' comment-to-DM flow.",
-      "Carousel: update MEMORY.md brand-palette line so '#F7F5F1 / #DC143C' is the canonical MadeAt2Am palette (currently it lists '#FDFBF7 / #FFC107'). One line, prevents future drift.",
-      "Syntra: execute the three verification curls in STATUS-2026-07-15 against syntra.cyberslide.net and either pass or close the plan.",
-      "Syntra: PROGRESS.md has not been touched since 2026-07-08 — bump it with this week's status before it goes stale."
+      "Render the seven OmniRoute carousel slides, assemble them as 1080x1350 PNGs, and publish with the drafted caption and CLAUDE comment-to-DM workflow. The plan is ready; the asset pipeline and publishing step are still undone.",
+      "Finish Syntra's e80bed5c password-reset verification on the live deployment: trigger the platform-admin reset path, confirm the provider accepts the manually composed From header, and inspect the actual delivered message or provider acceptance. If the provider still returns 550 Missing From header, pin nodemailer to the known-compatible 6.x line; then remove or reset the temporary SMTP dashboard test row.",
+      "Update Syntra's implementation/status documentation after the SMTP verification so the handover does not continue to describe the 2026-07-15 work as merely ready-to-push. Record the live result plainly as passed or blocked.",
+      "The current durable brand-memory line still contains the older #FDFBF7 / #FFC107 palette while the carousel plan and editorial system use #F7F5F1 / #DC143C. This is a small but real source-of-truth drift to correct before the next asset is generated."
     ],
-    "recent_context": "Chris worked late into the night on a fresh Instagram carousel about OmniRoute / Free Claude Code, regenerating the entire SLIDE-PLAN.md under the new Premium Editorial system and crimson accent. Syntra has a half-finished soft-delete + custom-domain plan from a week ago that has not been closed out. Calendar is empty for Thursday, infrastructure (dashboard, system monitor, LLM Wiki sync) is green and quiet. No active voice or gateway incidents."
+    "recent_context": "The last substantive creative session finished a fully audited OmniRoute / Free Claude Code carousel plan, but no image assets have been rendered since it was saved on 2026-07-22 SGT. The most recent technical thread is Syntra: commit e80bed5c was pushed and reported deployed on 2026-07-19 SGT to fix platform-admin password-reset email headers, but the live wire-level verification was explicitly left unfinished. Today is a clean execution day with no calendar commitments and no infrastructure incident signal; the useful move is to ship one creative deliverable and close one concrete verification gap rather than start another project."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Render and ship the Free Claude Code carousel today",
-      "reason": "The 7-slide plan is complete and quality-checked — copy is under the IG word ceiling, palette is locked, image prompts are paste-ready. Every day this sits as a markdown file is a day it is not earning reach on @made.at.2am during a moment when 'Claude Code for free' is trending.",
-      "action": "Run the 7 image prompts through your preferred image generator (Imagen / Midjourney / Flux / Nano Banana), drop the PNGs into /root/.hermes/projects/carousel-omniroute-free-claude-code/, compose into 1080x1350 slides, post to Instagram with the drafted caption and a 'Comment CLAUDE' reply trigger. If you want me to drive, ask and I will script the render plus caption posting."
+      "title": "Render and publish the Free Claude Code carousel",
+      "reason": "The content is already at the ship gate: copy, slide order, visual direction, palette, caption, CTA, and image prompts are complete and audited. Keeping it as markdown for another day wastes a ready-made content slot and lets the topical hook age without generating reach for @made.at.2am.",
+      "action": "Block 90 minutes SGT: run the seven prompts from SLIDE-PLAN.md through the chosen image generator, assemble the slides at 1080x1350, quality-check typography and palette, then publish with the drafted caption. Add the CLAUDE reply/DM step immediately after posting."
     },
     {
       "priority": 2,
-      "title": "Close out the Syntra 2026-07-15 plan — run the verification curls",
-      "reason": "Soft-delete plus custom-domain redirect for syntra.cyberslide.net has an open STATUS file with three concrete verification curls. It has been sitting a week; either it passes and we mark it done, or it fails and we fix it. Open plans are how Syntra's stack accumulates silent debt.",
-      "action": "Run the three curls from STATUS-2026-07-15-custom-domain-redirect-and-delete-company.md against syntra.cyberslide.net (login redirect, platform-admin DELETE plus includeInactive plus PUT restore), record results back into the STATUS file, update PROGRESS.md, then mark the plan closed."
+      "title": "Close Syntra's password-reset SMTP verification gap",
+      "reason": "The latest fix targets a real provider rejection — the SMTP connection succeeded but nodemailer 9 omitted the message-level From header and the provider returned 550. Unit tests and deployment evidence exist, but the actual post-fix wire/delivery result was not captured, so the user-facing fix cannot honestly be called closed yet.",
+      "action": "From the Syntra deployment, trigger one platform-admin forgot-password request, read the resulting container/provider logs, and confirm acceptance plus the delivered From header. If 550 remains, pin nodemailer to 6.x and redeploy through the normal procedure; then clean the temporary SMTP settings row and update the status document with the evidence."
     },
     {
       "priority": 3,
-      "title": "Promote the new palette in MEMORY.md before it drifts",
-      "reason": "SLIDE-PLAN.md now uses #F7F5F1 / #DC143C, but MEMORY.md still lists the old #FDFBF7 / #FFC107. The carousel-copy and editorial-designer skills have already moved — memory is the only artifact left out of date. One line edit now prevents the next brand asset getting produced in the old palette.",
-      "action": "Patch the MEMORY.md brand line to '#F7F5F1 / #DC143C (current) — old: #FDFBF7 / #FFC107' so future projects know which is canonical."
+      "title": "Restore brand and handover source-of-truth consistency",
+      "reason": "The active carousel system has moved to warm off-white #F7F5F1 with crimson #DC143C, while durable MEMORY.md still advertises the previous cream/yellow combination. Syntra's handover files also lag the latest 2026-07-19 SMTP work. Two tiny documentation corrections prevent future assets and operators from following stale instructions.",
+      "action": "Update the brand line in MEMORY.md to mark #F7F5F1 / #DC143C as canonical and append the verified Syntra SMTP outcome to its implementation/status document. Do this after the live check so the record says what actually happened, not what was expected."
     }
   ],
   "non_negotiable": {
-    "title": "Render and ship the Free Claude Code carousel today",
-    "reason": "A finished, quality-checked 7-slide plan sitting on disk is wasted inventory — IG reach compounds with posting cadence, and 'Claude Code for free' is a peak-trend topic right now. Skipping today means either it gets buried under other work or we re-do the prompts because the trend window closes. Everything else (Syntra verification, memory patch) can wait a day; this cannot.",
-    "action": "Block 90 minutes on the morning brief: 60 min to render the 7 visuals plus assemble PNGs, 30 min to draft the posting schedule and queue the 'CLAUDE' DM reply flow. If you do not want to render yourself, hand me the prompts and I will drive image generation plus assembly into the project folder."
+    "title": "Publish the Free Claude Code carousel today",
+    "reason": "This is the only current deliverable that is fully specified but still has no user-visible output. The plan has already survived multiple days of planning and audit; another day of preparation will not improve it as much as putting the post in the feed. A finished post creates reach and feedback, whereas an unrendered plan creates neither.",
+    "action": "Before starting any new build, spend one focused 90-minute block in SGT rendering, assembling, checking, and publishing the seven slides from /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md. If the chosen image utility blocks, publish the strongest typographic slides as a smaller first post rather than leaving the entire deliverable idle."
   },
-  "mood_check": "Late-night creative energy — Chris rebuilt a full carousel plan between roughly 22:00 and 03:46 SGT, then signed off. Infrastructure is quiet and green, no fires burning. Calendar is open: this is a clean execution day, not a triage day. Tired-but-productive."
+  "mood_check": "Clear execution weather: calendar empty, routine infrastructure quiet, and no voice or gateway fire to fight. Chris's recent work shows strong creative momentum but a tendency for finished plans to pause at the handoff; the right tone today is decisive and shipping-focused, with one technical verification afterwards to keep Syntra honest."
 }
