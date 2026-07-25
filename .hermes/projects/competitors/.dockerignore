@@ -1,0 +1,32 @@
+# Test artifacts
+apps/api/tests/
+apps/web/src/test/
+tests/
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Cataloged data — kept on the host, never baked into the image.
+data/
+logs/
+config/secrets/
+/srv/competitors-private/
+
+# Coverage and lint
+.coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.eslintcache
+dist/
+build/
+coverage/
+
+# Project metadata
+competitors.egg-info/
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,193 @@
+/* Top-level layout styles for the dashboard. */
+
+.appRoot {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f3f3f3;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.appHeader {
+  background: #111111;
+  color: #fdfbf7;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appHeader h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.appHeader nav {
+  display: flex;
+  gap: 16px;
+}
+
+.appHeader nav a {
+  color: #fdfbf7;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.appHeader nav a:hover {
+  text-decoration: underline;
+}
+
+.appHeader button {
+  background: transparent;
+  border: 1px solid #fdfbf7;
+  color: #fdfbf7;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.appMain {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111111;
+  color: #fdfbf7;
+}
+
+.loginCard {
+  background: #fdfbf7;
+  color: #111111;
+  border-radius: 8px;
+  padding: 32px;
+  width: 360px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.loginCard h1 {
+  margin: 0 0 16px 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loginForm label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  gap: 4px;
+}
+
+.loginForm input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.loginForm .submit {
+  background: #d32f2f;
+  color: #fdfbf7;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.loginForm .submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loginForm .error {
+  color: #d32f2f;
+  font-size: 13px;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.kpiCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.kpiCard .label {
+  font-size: 12px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpiCard .value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 4px;
+  color: #111111;
+}
+
+.reelsTable {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.reelsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reelsTable th,
+.reelsTable td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.reelsTable th {
+  background: #f8f8f8;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.reelsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.reelsTable a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.reelsTable a:hover {
+  text-decoration: underline;
+}

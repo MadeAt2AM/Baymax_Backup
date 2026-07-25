@@ -1,0 +1,10 @@
+{
+  "name": "competitors-deploy-listener",
+  "host": "0.0.0.0",
+  "port": 9000,
+  "TLS": false,
+  "open_paths": [
+    "/.webhook/deploy"
+  ],
+  "auth_token_env": "DEPLOY_TOKEN"
+}

@@ -1,0 +1,15 @@
+# Cloudflare DNS configuration (Terraform-managed).
+#
+# To create the dev VPS subdomain, run:
+#   terraform apply -var-file=cloudflare.tfvars.example
+# from the Cloudflare zone root. The full Terraform config lives under
+# MadeAt2AM/infra/cloudflare/ — this example shows just the records
+# relevant to competitors.terrybot.top.
+
+competitors.terrybot.top = {
+  zone    = "terrybot.top"
+  type    = "A"
+  value   = "147.79.18.32"
+  proxied = true
+  ttl     = 1 # auto (Cloudflare proxied)
+}

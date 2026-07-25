@@ -683,7 +683,15 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
        resetting the password does nothing — the in-memory limiter
        bucket is still active until the container restarts or 15
        minutes pass.
-37. **`UPDATE ... RETURNING N` lies when the SQL was silently
+39. **`scripts/setup_dev_vps_prereqs.sh` is the template for self-hosted scraping/transcription projects on the dev VPS — use it, don't rebuild it** — the companion template (`templates/setup_dev_vps_prereqs.sh`) already covers Node 22 via NodeSource, `npm i -g @jackwener/opencli`, Google Chrome stable (with the modern signing key fetched from `dl.google.com/linux/linux_signing_key.pub` — older guides use the rotated-away `7721F63B` key and fail with `NO_PUBKEY FD533C07C264648F`), Python 3.12 venv, faster-whisper + ctranslate2 + the FastAPI/SQLAlchemy/bcrypt stack, and a 6-stage self-test. When a project lands that needs OpenCLI / Faster-Whisper / FFmpeg on the dev VPS, `cp templates/setup_dev_vps_prereqs.sh <project>/scripts/setup_dev_vps.sh` and edit `<name>-private` → `<project>-private` + any project-specific apt packages. Don't rewrite from scratch — the Chrome key rotation is the easy thing to get wrong.
+40. **Hermes host ≠ dev VPS for toolchain preflight** — the Hermes host and the dev VPS are **separate machines** with different installed software. `which opencli`, `which google-chrome`, `which ffmpeg`, `pip list`, etc. on the Hermes host return **Hermes-host state**, not dev-VPS state. When a project's preflight plan says "verify OpenCLI on the dev VPS", run the verification **via SSH on the dev VPS**, not on the Hermes host. Symptom (seen 2026-07-24 on the competitors pipeline): preflight reported "OpenCLI 1.8.5 installed on dev VPS" because `opencli --version` was run on the Hermes host, but `ssh dev-vps 'which opencli'` returned nothing — the dev VPS was a clean Ubuntu 24.04 image with Node, Chrome, FFmpeg, and OpenCLI all missing. The plan still got built, but the install step had to be added at the end. Always pair a `local_command` preflight with a matching `ssh dev-vps '<command>'` and confirm BOTH return the expected value before claiming "verified on dev VPS". See also `vps-container-deploy` gotcha on docker MTU for the same lesson applied to the container side.
+41. **Dev VPS is headless — no DISPLAY, no X11, no logged-in user** — the dev VPS at 147.79.18.32 ships with no GUI, no `DISPLAY` env var, no `WAYLAND_DISPLAY`, no `/var/run/user/<uid>` runtime dir, and no `who` entry. Tools that require an interactive display (OpenCLI's `instagram login`, Selenium, Puppeteer with `--headful`, Playwright headed mode) all fail. The OpenCLI Browser Bridge specifically requires a visible Chrome session for the login handshake, so `opencli instagram login` over plain SSH will always return `BROWSER_CONNECT`. Four escape paths, in order of preference:
+    (a) **Transfer a pre-authenticated Chrome profile** from a machine where the target account is logged in (laptop SFTP, Hermes-host `/root/.config/google-chrome/`, etc.) — copy the profile to `/srv/<name>-private/opencli-profile/` (mode 0700), point OpenCLI at it, and skip the interactive login entirely. Fastest.
+    (b) **SSH X11 forwarding** — `ssh -X dev-vps 'opencli instagram login'` from a local machine with an X server. Chrome opens on the local display, the operator completes the login, and the session is saved to the dev VPS.
+    (c) **VNC** — install a noVNC/TigerVNC server on the dev VPS, open the desktop in a browser, complete the login there. Heaviest, slowest.
+    (d) **Defer the live login** — keep the pipeline on offline fixtures; the bootstrap script stays ready on the dev VPS for whenever the operator does the login themselves later.
+    For ANY project that needs an authenticated Browser Bridge, plan for one of these four paths BEFORE the deploy step, not after.
+42. **`patch` tool + fenced SQL/code blocks sometimes silently lose path parameters** — when calling `patch` with `mode='replace'` from a tool block that fences the parameters (Python f-string, bash heredoc, JSON payload), the `path` argument can be dropped on the wire while the rest of the parameters arrive intact. Symptom: `patch` returns successfully with no diff, no error, no change to the file. The work-around is `execute_code` + `Path.read_text()` + `Path.replace(old, new, count=1)` (or Python regex `re.sub(..., count=1)`) which always applies the edit in-process. For multi-line edits, prefer `Path.write_text()` of the full rewritten section after first asserting the old block is found exactly once. The lesson: treat a successful-but-no-diff `patch` return as a failed patch; re-run with explicit `path=` and a tiny change to verify the parameter survived.
     truncated by a bad heredoc / base64-over-ssh pipe** — if you
     bulk-rewrite password hashes (or any other column) with
     `UPDATE users SET password_hash = crypt('Test123!', gen_salt('bf', 12))
@@ -748,6 +756,9 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
     (platform admin + tenant users in the same deploy = always).
 
 ## Verification checklist before declaring done
+
+44. **`ssh host bash <<'REMOTE_EOF'` is the only reliable shape for multi-line scripts sent to a remote VPS** — `ssh host 'bash -lc "cmd \"nested\""'` and any other 3+ levels of nested quoting (single → double → single, or escaped quotes inside an inline `bash -lc`) silently truncate commands or eat closing brackets. Symptom: the command exits 0 with empty stdout and no log lines you expected. The single-quoted heredoc delimiter disables ALL substitution inside the body, so multi-line scripts land verbatim on the remote shell without escape-counting. **Use it for any dev-VPS install, audit, or mutation step that needs more than one line of inline shell** — `apt-get update && apt-get install ... > /tmp/x.log 2>&1; echo APT_DONE`, `for c in node npm opencli; do command -v $c; done`, multi-stage file rewrites with `cat > /srv/.../file <<EOF`, etc. The earlier mistake pattern (chained `;` commands inside a single-quoted ssh arg) looked clean but couldn't survive a quoting collision when the install commands themselves contained escaped quotes. Always wrap non-trivial VPS shell in `<<'REMOTE_EOF' ... REMOTE_EOF` from the host side.
+
 
 - [ ] `https://<name>.<domain>/` returns 200
 - [ ] `https://<name>.<domain>/api/healthz` returns `{"status":"ok"}`
@@ -838,6 +849,11 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
   recipe for wiping stale auth state on every SPA login so a prior
   user's profile doesn't survive into the next user's UI. Pairs with
   gotcha #38.
+- **Reference: `references/port-conflict-and-image-transfer.md`** —
+  port-conflict diagnosis (`ss -tlnp`), clearing stale nginx/Caddy
+  containers, host-level Caddy restart, the local-build + `docker save`
+  + `rsync` + `docker load` image transfer pattern, and Cloudflare DNS
+  propagation wait loop.
 - **Reference: `references/smtp-provider-traps.md`** — debugging
   `550 Missing From header at envelope` and
   `550 You are not allowed to send emails as <x> while logged as <y>`
@@ -865,3 +881,10 @@ ssh dev-vps 'cat /srv/projects/<name>/.baymax-last-deploy'
   this skill. See "The every-command-stalls symptom" in that skill
   for the diagnostic checklist and the recovery path (kill / cap the
   top RSS hogs to free swap pressure).
+- **Reference: `references/protocol-based-testability.md`** — the
+  `typing.Protocol` + late-import + structural-fake pattern for
+  TDD'ing code that wraps external subsystems (CLI binaries, paid
+  APIs, subprocesses, heavy ML models). Use it whenever the unit
+  test would otherwise need the real subsystem to be present and
+  non-flaky. Pairs with gotcha #30's "call the API from inside the
+  container" pattern as the unit-test complement.

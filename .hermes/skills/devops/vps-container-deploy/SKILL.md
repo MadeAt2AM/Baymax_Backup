@@ -1,6 +1,6 @@
 ---
 name: vps-container-deploy
-description: Deploy containerised apps to a remote Docker host with per-subdomain DNS and auto-TLS. Use when you need to point a new subdomain (such as app.yourdomain.com) at a fresh app running on a separate VPS — DNS via Cloudflare API, reverse proxy via Caddy in Docker, one project per directory. Covers the GitHub-webhook auto-redeploy pipeline, Node+TS full-stack build gates, multi-container compose with shared networks, repo-name vs subdomain asymmetry, Docker daemon MTU fix for Hetzner hosts, bcrypt-via-pgcrypto user seeding, Alpine vs Debian-slim base-image gotchas, and the background-process UX rule. Trigger on "deploy app on remote VPS", "create new subdomain", "Caddy auto TLS", "Cloudflare DNS API", "push to main auto-deploy", "GitHub webhook redeploy", "vite build stuck", "MTU 1400 build fail", "apt-get fails in Docker build", "repo name different from subdomain", "bcrypt seed users".
+description: Deploy containerised apps to a remote Docker host with per-subdomain DNS and auto-TLS. Use when you need to point a new subdomain (such as app.yourdomain.com) at a fresh app running on a separate VPS. **MTU recall trigger** — if a Docker build hangs silently during `apt-get update` or `pip install`, the host eth0 MTU is almost certainly 1400 and Docker default bridge is 1500. Restart the daemon with mtu set to 1400 in /etc/docker/daemon.json BEFORE debugging the Dockerfile. Also covers Cloudflare DNS API, Caddy auto-TLS, GitHub-webhook redeploy, multi-container compose, repo-name vs subdomain asymmetry, bcrypt seed users, Alpine vs Debian-slim gotchas. Triggers on "deploy app on remote VPS", "create new subdomain", "vite build stuck", "MTU 1400 build fail", "apt-get hangs in Docker build", "apt-get fails in Docker build", "bcrypt seed users".
 category: devops
 version: 1.4.0
 ---
@@ -13,6 +13,7 @@ version: 1.4.0
 # Phase-8 lessons (silent webhook push drop, SSH alias + psql quoting, node_modules LSP noise, sibling-subagent overwrite warning) added on 2026-07-04 — see pitfalls 26–29 below.
 # Phase-11 lessons (Zod .superRefine runtime gate, button whitespace-nowrap under flex pressure, package-lock.json discipline, pre-push local-gate discipline) added on 2026-07-04 — see pitfalls T, W, X, Y below.
 # Phase-12 lessons (inline two-step confirm for destructive row ops, vite.config.{js,d.ts} emitted artefacts, sibling-subagent write_file warning handling, iOS Safari JS bundle cache as verification blocker, vite build long-lived-process heuristic workaround) added on 2026-07-04 — see pitfalls AA, AB, AC, AD, AE below.
+# Phase-13 lessons (docker save | docker load via rsync as the *primary* path when SSH-to-dev-VPS pipe is bandwidth-constrained; PYTHONPATH dual-package for multi-package Python containers; editable-install collision shadowing PYTHONPATH entries; `opencli whoami` is an external CLI, not a built-in subcommand) added on 2026-07-25 — see pitfalls AO, AP, AQ below.
 
 # Remote Container Deploy with Per-Subdomain DNS
 
@@ -1577,6 +1578,7 @@ Verified 2026-07-04 (Payntra Phase 11 across multiple iterations).
 - [Build-time hard gates — typecheck + tests as Dockerfile gates](references/build-time-hard-gates.md) (added 2026-07-04, Payntra Phase 4 pattern)
 - [Full-stack SPA deploy — Vite client + Fastify server, single webhook](references/fullstack-spa-deploy.md) (added 2026-07-04, Payntra Phase 7 — 3-stage Dockerfile, SPA fallback, FOUC prevention, browser verification protocol)
 - [SYNTRA deploy runbook — repo-name ≠ subdomain, multi-container compose, daemon MTU fix](references/syntra-deploy-runbook.md) (added 2026-07-08, SYNTRA — when the deploy repo's name doesn't match the served subdomain, and how to wire per-project deploy script + webhook hook entry)
+- [Python fat-image deploy runbook — docker save|rsync|load, multi-package PYTHONPATH, editable-install collision, OpenCLI whoami external-register](references/python-fat-image-deploy-runbook.md) (added 2026-07-25, competitors deploy — Python containers on bandwidth-constrained VPSes; pitfalls AO/AP/AQ)
 
 ## Scripts (templates)
 
