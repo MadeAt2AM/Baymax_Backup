@@ -1,46 +1,47 @@
 {
-  "date": "2026-07-25",
+  "date": "2026-07-26",
   "analysis": {
     "active_projects": [
-      "Competitors Intelligence Dashboard — active build in /root/.hermes/projects/competitors; backend, pipeline foundation, API, and Instagram authentication component are substantially implemented, with 109 automated tests passing at the last verified run.",
-      "SYNTRA — recently stabilised after the live password-reset email path was repaired and verified end-to-end; no fresh implementation request is currently open."
+      "Free Claude Code / OmniRoute carousel — Premium Editorial plan locked at /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md (7 slides, 1.6B hook, /COMPRESS screenshot line). Plan has been through one full audit pass; what is missing is the rendered images and the published post.",
+      "Competitors Intelligence Dashboard — live at competitors.terrybot.top on the dev VPS. Yesterday's session closed three blocking frontend issues (auth-context signIn/signOut, full-page auth gating, malformed sessionid cookie URL-decode). 112 tests green. Phase 7 deployment assets complete; DP-016..023 dev-VPS operations remain on the IMPLEMENTATION_CHECKLIST.md.",
+      "SYNTRA workforce scheduler — stable. Password-reset email flow verified end-to-end via Haraka SMTP on 2026-07-24; nodemailer pinned to ^6.9 across both Dockerfiles and pnpm@10 lockfile. No fresh implementation request is currently open."
     ],
     "upcoming_deadlines": [
       "No confirmed deadlines found — calendar returned empty."
     ],
     "outstanding_items": [
-      "Competitors IA-009 remains open: wire InstagramAuthBanner into the dashboard layout.",
-      "Competitors frontend phase remains incomplete: login/session bootstrap, dashboard states, KPI/reach/taxonomy views, reel list/detail, pipeline tab, accessibility fallbacks, and production build.",
-      "Competitors IA-008 remains a manual live gate: paste a real approved Instagram sessionid and ds_user_id on the dev VPS and verify whoami without exposing the cookie values.",
-      "Deployment, first-user creation, one-reel live round-trip, HTTPS validation, rollback checks, and operator browser acceptance remain after the frontend is complete.",
-      "The daily email briefing flagged a CYBERSLIDE password-reset email for confirmation; recent session evidence indicates this was generated during the SYNTRA end-to-end reset test, but Chris should still confirm it was expected before archiving."
+      "Free Claude Code carousel — render the seven slides from the Premium Editorial plan, assemble, quality-check, and publish. Two prior Dreaming Sequences have already named this as the non-negotiable and it has not yet shipped.",
+      "Competitors DP-016..023 — build API/web images on dev VPS, docker compose up, alembic migrate, Caddy reload, Cloudflare DNS, and live smoke test. The implementation checklist was last updated 2026-07-25 09:42 SGT.",
+      "Competitors IA-008 — manual live gate that requires Chris to paste a real approved secondary-account sessionid + ds_user_id into the in-dashboard form and verify whoami. Cannot be automated; needs an explicit live verification window.",
+      "Competitors UI work beyond the three closed bugs — pipeline tab, accessibility fallbacks, reel list/detail polish, KPI/reach/taxonomy views. Most of these were sequenced behind the auth fixes that just landed.",
+      "Carousel pipeline polish — premium-editorial-carousel-designer and carousel-copy now travel together; an end-to-end render of one full carousel would validate the image-gen prompts in practice and surface any palette or typography drift."
     ],
-    "recent_context": "The main momentum is in the Competitors Intelligence Dashboard. The self-hosted OpenCLI/Faster-Whisper direction is established, the API and Instagram cookie-paste authentication flow are implemented, and the last verified suite reported 101 Python plus 8 frontend tests passing. Work stopped at the clean integration boundary: IA-009 and the broader React dashboard remain before deployment and live acceptance."
+    "recent_context": "Yesterday was the most productive day in this window. The Competitors dashboard moved from 'tests green but app broken' to 'live and accessible' — auth context rewritten, all pages auth-gated, sessionid cookie URL-decoding fixed, then verified end-to-end through the public URL competitors.terrybot.top. SYNTRA stayed quiet and stable. The Free Claude Code carousel has now been finalised, audited, and regenerated under the new Premium Editorial system but is still a markdown file rather than seven finished images. It is Sunday 6 AM SGT and Chris is not in-session; the morning is the natural moment to break the carousel's deadlock."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Finish one deployable dashboard vertical slice",
-      "reason": "The backend and authentication component are already tested, but they do not create user value until the banner, session bootstrap, dashboard shell, and core data states work together. Completing this slice removes the largest gap between 109 green tests and a usable application.",
-      "action": "Complete IA-009 and FE-004 through FE-009 in checklist order: wire InstagramAuthBanner into the authenticated layout, implement login/session bootstrap, then render loading, empty, error, populated KPI, and reel-list/detail states. Run the focused Vitest tests after each step and the full Python plus frontend suites before moving on."
+      "title": "Render the seven Free Claude Code slides this morning",
+      "reason": "The carousel plan has survived a planning pass, a regeneration under the new design system, and a full audit — every text, palette, and structural rule is already green. The only thing that has not shipped is the rendered output. Each additional day of pure planning reduces the freshness of the underlying @nick_saraev source reel and postpones the first measurable reach/feedback signal of the Premium Editorial system.",
+      "action": "Open /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md, run the seven image-gen prompts in order through the configured image model, save renders to a sibling assets/ folder, and assemble the final 1080x1350 carousel. Time-box to 90 minutes — first deliverable is hook + screenshot line + CTA, the rest can follow if the morning block extends."
     },
     {
       "priority": 2,
-      "title": "Close the production-build gate before touching deployment",
-      "reason": "Deployment work will otherwise compound frontend integration errors with Docker, Caddy, DNS, and VPS variables. A clean typecheck and production bundle provide an objective handoff point and keep the procedure surgical.",
-      "action": "After the core dashboard screens pass, implement the pipeline tab and accessibility fallbacks, then run the frontend typecheck, complete Vitest suite, and npm production build. Record the exact outputs in IMPLEMENTATION_CHECKLIST.md before starting Docker or VPS changes."
+      "title": "Plan the live Instagram verification window for Competitors IA-008",
+      "reason": "DP-016..023 (build, up, migrate, Caddy, Cloudflare, smoke) can run without IA-008, but the dashboard cannot be considered operationally complete until a real approved sessionid + ds_user_id round-trips through whoami. The earlier this window is scheduled, the less it will collide with later deploy work and the sooner the competitor data pipeline can produce a real first reel.",
+      "action": "When Chris is back in-session today or tomorrow, ask for the secondary-account sessionid and ds_user_id via the in-dashboard InstagramAuthBanner form (not via chat), verify the resulting whoami and account identity, and never log or repeat the cookie values. Mark IA-008 complete only after the dev-VPS round-trip returns the expected account."
     },
     {
       "priority": 3,
-      "title": "Prepare the live Instagram verification as a bounded operator step",
-      "reason": "IA-008 requires Chris's real approved secondary-account cookies and cannot be honestly automated or guessed. Preparing a short, secure verification window now prevents this credential-dependent gate from surprising the deployment sequence later.",
-      "action": "When the dashboard is locally buildable, ask Chris to supply sessionid and ds_user_id through the in-dashboard form during a live test window. Verify only the resulting whoami state and account identity, never log or repeat cookie values, and mark IA-008 complete only after the dev-VPS round-trip succeeds."
+      "title": "Capture the carousel pipeline as a reusable skill",
+      "reason": "carousel-copy and premium-editorial-carousel-designer now travel together as a design+copy pair, but the rendering → assembly → publish → IG handoff path is still ad-hoc. Codifying it as a small skill now (while the workflow is fresh and a real first carousel is about to ship) turns the next carousel from a 90-minute manual procedure into a single command, and prevents the audit rules from drifting between carousels.",
+      "action": "After the seven slides are rendered and the carousel ships, write a short carousel-pipeline skill in /root/.hermes/skills/content-creation-skills/ that chains: plan (carousel-copy) → design system (premium-editorial-carousel-designer) → image-gen prompts → render → caption + hashtag pack → publish checklist. Pin it to the Premium Editorial palette and the 7-slide hook/value/CTA structure so every future carousel inherits the audit guarantees for free."
     }
   ],
   "non_negotiable": {
-    "title": "Complete IA-009 and prove the integrated dashboard shell today",
-    "reason": "This is the smallest remaining task that converts the finished Instagram authentication component into part of the actual product and unlocks every subsequent frontend, deployment, and live-validation step.",
-    "action": "Add InstagramAuthBanner to the authenticated dashboard layout with a regression test that proves it renders in the correct shell, then rerun the full 101-test Python suite and frontend suite. Do not begin VPS deployment until this integration and its tests are green."
+    "title": "Render and publish the Free Claude Code carousel today",
+    "reason": "This is the third Dreaming Sequence in a row to name this carousel as the single thing with the highest leverage. The plan is finished, the source reel is transcribed, the design system is locked, and the rule checks are all green. No further preparation will increase its value — only a finished image pack and a live post will. Skipping it again means the Premium Editorial system has no shipped proof, the @nick_saraev source keeps going stale, and the IG channel goes another week without a measurable piece of content from this stack.",
+    "action": "Block 90 minutes this morning on the Free Claude Code carousel. Sequence: (1) paste slide 1, slide 5, and slide 7 prompts into the configured image model first (hook + screenshot line + CTA = minimum viable carousel), (2) render slides 2, 3, 4, 6 immediately after, (3) assemble the 7-slide pack at 1080x1350, (4) write the caption from the plan's caption block, (5) publish to IG @made.at.2am. Save the rendered assets into /root/.hermes/projects/carousel-omniroute-free-claude-code/assets/ so the deck survives the next backup cycle."
   },
-  "mood_check": "Momentum is strong and technically grounded: the project has a durable checklist and a large green test base. The risk is breadth rather than uncertainty, so today should stay focused on finishing the frontend integration boundary instead of opening deployment, routine, or infrastructure work in parallel."
+  "mood_check": "Quiet, productive energy. The system is healthy: live Competitors dashboard, stable SYNTRA, locked carousel plan, all cron services running. Sunday morning is the right window to break the carousel planning deadlock without competing with weekday deploy work."
 }
