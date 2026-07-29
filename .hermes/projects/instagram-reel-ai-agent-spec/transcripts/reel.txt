@@ -1,0 +1,20 @@
+# Transcription of reel.wav
+
+## Segments
+
+[  0.00 -   5.72] The sale you're chasing from that webinar was already lost the moment you sent the same email to everyone.
+[  6.48 -   9.08] Here's how you can send automated personalized emails.
+[  9.54 -  13.08] Build an agent that hits the Zoom API or any meetings application API.
+[ 13.38 -  16.82] So it can pull the transcripts, chat logs, and Q&A interactions.
+[ 17.28 -  23.60] Here, the agent should focus on who asked questions, what points did they bring up, and what product features they cared about.
+[ 24.06 -  28.04] Let's say if people were interested in WhatsApp's scheduling feature in your product,
+[ 28.04 -  32.80] the agent should categorize that as high intent. Now for the people who never spoke,
+[ 33.18 -  38.08] the agent should measure on call duration or at what point did they drop off. To understand which
+[ 38.08 -  42.76] slides, which objections came right before they left, then the agent will decide whether the
+[ 42.76 -  48.40] prospect needs a pricing clarification or an email focused on ROI. Here's where it becomes even better.
+[ 48.86 -  54.34] Once the data is analyzed, the agent will draft the emails and save them directly into your CRM.
+[ 54.34 -  60.36] so a human can step in to review and refine before sending the emails that actually convert.
+
+## Full text
+
+The sale you're chasing from that webinar was already lost the moment you sent the same email to everyone. Here's how you can send automated personalized emails. Build an agent that hits the Zoom API or any meetings application API. So it can pull the transcripts, chat logs, and Q&A interactions. Here, the agent should focus on who asked questions, what points did they bring up, and what product features they cared about. Let's say if people were interested in WhatsApp's scheduling feature in your product, the agent should categorize that as high intent. Now for the people who never spoke, the agent should measure on call duration or at what point did they drop off. To understand which slides, which objections came right before they left, then the agent will decide whether the prospect needs a pricing clarification or an email focused on ROI. Here's where it becomes even better. Once the data is analyzed, the agent will draft the emails and save them directly into your CRM. so a human can step in to review and refine before sending the emails that actually convert.
