@@ -141,7 +141,7 @@ To change the alert channel: patch `TELEGRAM_TARGET` in the script. Format is `t
 
 ## Scope
 
-This skill covers **resource saturation** (CPU, RAM, disk). Services can go down silently while all resource metrics stay green — a dead backend behind a running proxy is invisible to resource monitoring alone. See `references/service-watchdog-pattern.md` for the companion watchdog pattern.
+This skill covers **resource saturation** (CPU, RAM, disk). Services can go down silently while all resource metrics stay green — a dead backend behind a running proxy is invisible to resource monitoring alone. See `references/service-watchdog-pattern.md` for the companion watchdog pattern, and `references/cross-host-health-probe.md` for the daily read-only probe of remote production URLs (owned by the `dreaming-sequence` skill at 06:00 SGT — catches overnight drift that session history misses).
 
 ## Verified
 
