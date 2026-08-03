@@ -1,52 +1,52 @@
 {
-  "date": "2026-08-02",
+  "date": "2026-08-03",
   "analysis": {
     "active_projects": [
-      "Payntra (payntra.terrybot.top) — live expense ledger, React/Vite/TS/Tailwind + Fastify/Postgres, deploy via GitHub webhook to VPS 147.79.18.32",
-      "Syntra (syntra.terrybot.top) — live workforce scheduling app, source under /root/.hermes/projects/syntra/source, deploy-mirror kept in sync",
-      "OpenReply (openreply.terrybot.top) — fresh Next.js build (repo seeded 30 Jul), live and stable, Next.js with breaking-changes note in AGENTS.md",
-      "baymax-pipeline-probe (baymax-pipeline-probe.terrybot.top) — auto-deploy round-trip probe, healthy",
-      "Instagram Reel AI Agent Spec — Greg Isenberg webinar-closer spec (F1–F14), 134 lines, /root/.hermes/projects/instagram-reel-ai-agent-spec/SPEC.md, not yet implemented",
-      "Remotion video pipeline — /root/claude-code-reel/, Studio http://147.79.18.59:3000",
-      "Agent Reach — 14/15 social channels live (xueqiu skipped), xiaohongshu MCP 18060, LinkedIn MCP 3001, Exa via mcporter",
-      "Cron services: baymax-backup, bi-daily-hermes-update, daily-email-briefing, dreaming-sequence, morning-brief, LLM Wiki sync, dashboard watchdog — all green through 1 Aug",
-      "MadeAt2Am content channels: IG @made.at.2am, YT @MadeAt2AM, X @MadeAt_2AM, web madeat2am.in/"
+      "OpenReply — live Instagram comment-to-DM automation at openreply.terrybot.top; local repo has uncommitted follow-gate and campaign-builder changes in /root/.hermes/projects/openreply/repo",
+      "Payntra — live expense ledger at payntra.terrybot.top; recent VPS/Caddy recovery completed and deployment path is GitHub webhook to VPS 147.79.18.32",
+      "Syntra — live workforce scheduling app at syntra.terrybot.top; recent Caddy host-port recovery completed",
+      "baymax-pipeline-probe — live deployment round-trip probe; recent Caddy host-port recovery completed",
+      "Instagram Reel AI Agent Spec — Greg Isenberg webinar-sales-closer specification, F1–F14, still unimplemented at /root/.hermes/projects/instagram-reel-ai-agent-spec/SPEC.md",
+      "OmniRoute carousel — 7-slide Premium Editorial plan exists at /root/.hermes/projects/carousel-omniroute-free-claude-code/SLIDE-PLAN.md; image-generation handoff remains open",
+      "Hermes operations — daily email brief, Morning Brief, backup, wiki sync, dashboard watchdog, and Dreaming Sequence routines"
     ],
     "upcoming_deadlines": [
-      "No confirmed deadlines found — calendar returned empty (Sunday, normal)."
+      "No confirmed deadlines found — Google Calendar returned [] for 2026-08-03 SGT."
     ],
     "outstanding_items": [
-      "/memory approval PENDING for the Caddy architecture lesson from the 31 Jul fire drill (root cause + host-port mapping rule)",
-      "Caddy architecture consolidation: move Caddy from host systemd back to a container on the shared `web` network so Docker DNS does the work — flagged in the 31 Jul session as a follow-up",
-      "Instagram Reel AI Agent spec (F1–F14) has zero implementation — content vs. build decision still open",
-      "Voice pipeline: gateway text_to_speech routing rules + voice_mode='off' default — last verified 2 Jul, no new drift detected"
+      "OpenReply has uncommitted changes in components/campaign-builder.tsx and lib/queue/dm-worker.ts; the diff includes the follow-gate branch fix, but verification and live end-to-end confirmation are still required.",
+      "OpenReply's main branch is ahead of origin/main by 3 commits and currently has a dirty worktree; decide whether to test, commit, and push the current changes.",
+      "The OpenReply polling interval investigation remains unresolved in the available context; COMMENT_POLL_INTERVAL_MS=60000 was recommended previously but was not verified here.",
+      "Caddy architecture consolidation from host systemd to shared Docker web network remains a future change; current host-port/Caddy configuration is working but fragile.",
+      "Instagram Reel AI Agent spec still needs a content-versus-build decision.",
+      "Calendar returned normally with an empty array; no calendar blocker recorded."
     ],
-    "recent_context": "Friday 31 July SGT produced a 105-message fire drill: Payntra, Syntra and Baymax-pipeline-probe all returned 502 from Caddy because host systemd Caddy was trying to DNS-resolve container hostnames. Fix was host-port mappings (127.0.0.1:32769, 8081, 8082) plus four Caddyfile rewrites; all four domains returned 200 within 12 minutes. Since then the system has been quiet across the weekend — daily email brief, morning brief, baymax backup, and bi-daily Hermes update all completed on schedule through 02 Aug 06:00 SGT. No new user contact since the incident."
+    "recent_context": "Monday 03 August 2026 at 06:00 SGT is quiet: the calendar returned an empty array and the latest scheduled sessions are routine email/Morning Brief jobs. The strongest current engineering signal is OpenReply: its local repository was modified recently in the follow-gate worker and campaign builder, but the worktree is uncommitted and needs tests plus a safe live verification before any deployment claim. The broader production stack had a Caddy/Docker networking recovery on 31 July; services were restored, while the cleaner Caddy container consolidation remains optional rather than urgent."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Approve the pending Caddy architecture memory entry",
-      "reason": "The 31 Jul fire drill produced a clear, reusable rule: host Caddy + 127.0.0.1:HOSTPORT per project, never bare container hostnames. The entry is staged for /memory approval but not yet committed. Without it, the lesson lives only in session history and the next Baymax session starts blind to the pattern.",
-      "action": "Run /memory pending, review the entry, and approve it. Takes 30 seconds; prevents the next 502 regression. Do this first thing — before Monday traffic ramps."
+      "title": "Finish verification of the OpenReply follow-gate changes",
+      "reason": "The local repo has a substantial uncommitted change in dm-worker.ts, including explicit handling for a following user, but code presence is not proof of production correctness. The follow-gate affects lead delivery and must be tested before it is committed or deployed.",
+      "action": "Read the repository guidance, run the focused Vitest suite and typecheck, inspect the diff for the current follow-gate call arguments, then record the exact pass/fail result. Do not send a live test comment if an active campaign could be affected; reserve that step for an authorised quiet window."
     },
     {
       "priority": 2,
-      "title": "Schedule the Caddy-to-container consolidation for a low-traffic window",
-      "reason": "The current state works but is fragile: a dead docker-proxy on any project reproduces the same 502 (proven Friday). The cleaner architecture is Caddy as a container on the shared `web` network, which is what the original /srv/caddy/docker-compose.yml was set up to do. Three projects, four Caddy sites, one compose file. ~1–2 hours of work.",
-      "action": "Pick a quiet window (Sunday afternoon or Monday evening) and convert: bring Caddy up as a container attached to `web`, drop the 127.0.0.1:PORT mappings from payntra/syntra/baymax-pipeline-probe docker-compose files, restore the original reverse_proxy host:port lines in Caddyfile sites, reload. Verify each domain returns 200."
+      "title": "Resolve the OpenReply worktree and branch state",
+      "reason": "The branch is three commits ahead of origin/main and the worktree contains changes in two tracked files. Leaving this ambiguous makes the next deployment or rollback harder to reason about.",
+      "action": "After verification, choose one explicit state: commit and push the tested patch, or preserve it locally with a written handoff and clean separation from unrelated work. Confirm the final git status and remote comparison."
     },
     {
       "priority": 3,
-      "title": "Decide on the Instagram Reel AI Agent spec (content vs. build)",
-      "reason": "The Greg Isenberg webinar-closer spec was captured 29 Jul and is fully detailed (F1–F14) but has sat untouched. Two natural paths: (a) feed the spec into the ig-reel-script-writer or viral-blog-writer skills to ship a MadeAt2Am piece explaining the agent, or (b) prototype a working version tied to a real MadeAt2Am webinar (next live event?). Letting it sit longer risks the spec going stale.",
-      "action": "Pick one path by end of week. If content: draft a 7-slide carousel this week and queue it. If build: define the smallest end-to-end slice (one webinar platform, one template routing) and put it on the Kanban."
+      "title": "Choose a delivery path for the Instagram Reel AI Agent spec",
+      "reason": "The specification is complete enough to support a small prototype or a MadeAt2Am content asset, yet it has remained unimplemented since late July. A decision prevents another week of passive backlog growth.",
+      "action": "By the end of this week, choose content or build. For build, define the smallest safe slice: Zoom webhook, transcript ingestion, one routing template, CRM draft output, and mandatory human approval. For content, turn the existing material into a carousel or reel script without starting implementation."
     }
   ],
   "non_negotiable": {
-    "title": "Approve the pending /memory entry on the Caddy architecture lesson — today.",
-    "reason": "Without it, the pattern that took 105 messages and 12 minutes to discover on 31 Jul is invisible to future sessions. If the docker-proxy dies again on any of the three affected projects, the next Baymax agent will burn the same hour rediscovering it. Approving a pending memory entry is a one-click action with permanent payoff; skipping it costs nothing today and everything the next time.",
-    "action": "Open /memory pending in the terminal, read the staged Caddy lesson, approve it, then move on. Should be done before 08:00 SGT so it lands in today's morning brief and stays clean for the week."
+    "title": "Obtain a verified OpenReply test result before touching production",
+    "reason": "The follow-gate code is currently uncommitted and the repository has active changes. The highest-impact action is to replace uncertainty with a reproducible test result; deploying unverified automation could interrupt lead delivery or send the wrong DM.",
+    "action": "Run the focused OpenReply tests and typecheck in /root/.hermes/projects/openreply/repo, capture the real output, and leave the repository in an explicitly documented state. No production restart, deployment, or live campaign interaction is part of this preparation action."
   },
-  "mood_check": "Recovery / quiet Sunday. Last user contact was a 105-message Friday fire drill; weekend cron services (email brief, morning brief, baymax backup, bi-daily update) all green through 06:00 SGT today. No new fires, no new Telegram traffic, no calendar events. Energy reads as 'wrap loose ends before the week starts' rather than reactive. Good day for low-stakes architecture cleanup and decisions on shelved specs."
+  "mood_check": "Quiet Monday preparation with one concrete engineering loop ready to close. The infrastructure is not presenting a fresh outage, but OpenReply has unfinished, user-facing automation changes sitting in a dirty worktree. Best energy today is disciplined verification and clean handoff, not another broad architecture excursion."
 }
