@@ -160,12 +160,12 @@
     "created_at": "2026-06-27T14:44:50.615048+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-15T08:54:41.201723+00:00",
-    "last_used_at": "2026-08-05T08:01:01.805248+00:00",
+    "last_used_at": "2026-08-06T08:00:04.897198+00:00",
     "last_viewed_at": "2026-08-05T08:01:01.799432+00:00",
     "patch_count": 6,
     "pinned": false,
     "state": "active",
-    "use_count": 52,
+    "use_count": 53,
     "view_count": 12
   },
   "baymax-voice": {
@@ -446,13 +446,13 @@
     "created_at": "2026-06-27T13:08:35.089250+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-01T20:22:27.948636+00:00",
-    "last_used_at": "2026-08-04T22:00:22.693438+00:00",
-    "last_viewed_at": "2026-07-21T08:06:35.688153+00:00",
+    "last_used_at": "2026-08-05T22:01:07.163103+00:00",
+    "last_viewed_at": "2026-08-05T22:01:07.143958+00:00",
     "patch_count": 2,
     "pinned": false,
     "state": "active",
-    "use_count": 47,
-    "view_count": 5
+    "use_count": 49,
+    "view_count": 6
   },
   "dspy": {
     "archived_at": null,
@@ -628,13 +628,13 @@
     "created_at": "2026-06-21T05:43:27.128151+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-31T22:00:41.334345+00:00",
-    "last_viewed_at": "2026-07-31T22:00:41.318864+00:00",
+    "last_used_at": "2026-08-05T22:01:07.157829+00:00",
+    "last_viewed_at": "2026-08-05T22:01:07.133088+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 14,
-    "view_count": 14
+    "use_count": 15,
+    "view_count": 15
   },
   "google-workspace-auth": {
     "archived_at": null,
@@ -680,13 +680,13 @@
     "created_at": "2026-06-21T05:43:27.133476+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-07-24T04:03:20.765940+00:00",
-    "last_viewed_at": "2026-07-24T04:03:20.758930+00:00",
+    "last_used_at": "2026-08-05T22:06:47.500490+00:00",
+    "last_viewed_at": "2026-08-05T22:06:47.494187+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 17,
-    "view_count": 17
+    "use_count": 19,
+    "view_count": 19
   },
   "hermes-agent-skill-authoring": {
     "archived_at": null,
@@ -888,12 +888,12 @@
     "created_at": "2026-07-02T14:00:02.855879+00:00",
     "created_by": null,
     "last_patched_at": "2026-07-02T14:05:42.501884+00:00",
-    "last_used_at": "2026-08-04T19:00:13.887155+00:00",
+    "last_used_at": "2026-08-05T19:00:17.119912+00:00",
     "last_viewed_at": "2026-07-02T14:05:34.828195+00:00",
     "patch_count": 5,
     "pinned": false,
     "state": "active",
-    "use_count": 38,
+    "use_count": 39,
     "view_count": 3
   },
   "inspecting-hermes-desktop-dom": {
@@ -1031,13 +1031,13 @@
     "created_at": "2026-06-24T21:14:54.008554+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-27T18:27:17.509846+00:00",
-    "last_used_at": "2026-08-02T22:00:16.538554+00:00",
-    "last_viewed_at": "2026-08-02T22:00:16.523189+00:00",
+    "last_used_at": "2026-08-05T22:01:07.148644+00:00",
+    "last_viewed_at": "2026-08-05T22:01:07.126904+00:00",
     "patch_count": 8,
     "pinned": false,
     "state": "active",
-    "use_count": 14,
-    "view_count": 14
+    "use_count": 15,
+    "view_count": 15
   },
   "manim-video": {
     "archived_at": null,
@@ -1083,12 +1083,12 @@
     "created_at": "2026-06-27T13:12:54.077124+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": "2026-08-04T16:00:08.434329+00:00",
+    "last_used_at": "2026-08-05T16:00:04.756101+00:00",
     "last_viewed_at": "2026-08-02T16:00:38.709605+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 45,
+    "use_count": 46,
     "view_count": 4
   },
   "nano-pdf": {
@@ -1212,14 +1212,14 @@
     "archived_at": null,
     "created_at": "2026-07-30T04:05:29.657859+00:00",
     "created_by": "agent",
-    "last_patched_at": "2026-07-30T06:38:58.518516+00:00",
-    "last_used_at": "2026-07-30T06:37:09.859139+00:00",
-    "last_viewed_at": "2026-07-30T06:37:09.831087+00:00",
-    "patch_count": 26,
+    "last_patched_at": "2026-08-05T22:11:20.508604+00:00",
+    "last_used_at": "2026-08-05T22:10:34.413423+00:00",
+    "last_viewed_at": "2026-08-05T22:10:34.403884+00:00",
+    "patch_count": 29,
     "pinned": false,
     "state": "active",
-    "use_count": 17,
-    "view_count": 17
+    "use_count": 18,
+    "view_count": 18
   },
   "openreply-specific-lessons": {
     "archived_at": null,

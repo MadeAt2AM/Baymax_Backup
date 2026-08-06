@@ -134,6 +134,50 @@ ssh dev-vps "docker logs --since 10m openreply-worker-1 2>&1 | tail -50"
 The worker logs only `[DM Worker] Started` — sweep errors go to DB only. **Don't trust silent success.**
 ```
 
+## Pre-Deployment Verification Gate
+
+Before committing, pushing, rebuilding, or live-testing any follow-gate worker
+diff, verify the **state machine**, not just the happy path.
+
+```bash
+cd /root/.hermes/projects/openreply/repo
+npm test -- --run __tests__/dm-worker.test.ts
+npm run typecheck
+git diff --check
+```
+
+Capture the literal commands, stdout/stderr, exit codes, and current HEAD in a
+dated `VERIFICATION-YYYY-MM-DD.md`. A site returning HTTP 200 only proves the
+currently deployed revision is alive; it does not validate an uncommitted local
+diff.
+
+### Mandatory `processPostback` invariants
+
+Review the code and add tests proving all of these before deployment:
+
+1. Every identifier referenced by the postback path exists in
+   `ProcessPostbackJob` and is destructured from `job.data`. A postback does
+   **not** carry the original comment ID unless the queue contract explicitly
+   adds it; do not reuse a comment-time API argument by accident.
+2. The follow-status result is handled as a three-state value:
+   - `false` → re-prompt on a real button tap, silent return on read fallback.
+   - `true` → continue to the single canonical reward-delivery path.
+   - `null`/unverifiable → follow the documented fail-open policy through that
+     same canonical path; do not create a second ad-hoc send branch.
+3. A successful branch sends the reward **once**. If a branch sends directly,
+   it must return; preferably it should not send directly at all and should
+   fall through once to the shared quota, fallback, logging, and error path.
+4. `reserveWorkspaceDMSend`, `releaseWorkspaceDMReservation`, `DmLog.upsert`,
+   tracked-link fallback, and dedupe behaviour execute exactly once per reveal.
+5. Tests cover a `followcheck:` button tap for follower, non-follower, and
+   unverifiable status, plus the existing read-fallback cases. Comment-time
+   prompt tests alone do not exercise `processPostback`.
+
+**Static red flags:** an undefined `commentId` inside `processPostback`, a
+follower branch that calls `sendDirectMessageWithLinkButton` before the shared
+send block, or an `else` that groups `true` and `null` into a direct-send branch.
+Treat any of these as not deployable until the focused tests and typecheck pass.
+
 ## Fix
 
 ### Fix A — Token regeneration (most common)
@@ -242,3 +286,4 @@ ssh dev-vps 'docker exec openreply-postgres-1 psql -U openreply -d openreply \
 - `references/session-2026-07-30-id-mismatch.md` — Part 2 investigation trace covering the ID-type mismatch root cause (NOT a token issue). Includes the test-webhook-injection recipe, the jobId-dedup trap, and the worker-log signature that confirms the fix worked.
 - `references/session-2026-07-30-webhook-delivery.md` — Part 3: confirms Layer 2 (Meta not delivering webhooks) as a distinct failure mode. Empirical signature: real comments exist publicly, WebhookEvent table contains only test-injected rows. Also covers the VNC confusion trap (memory recalled a `cyberslide.terrybot.top` VNC that's on a different VPS, not the dev-vps where OpenReply runs).
 - `references/session-2026-07-30-end-to-end-success.md` — Part 4: documents the successful resolution (3 SENT DMs within one polling cycle after OAuth reconnect + ID-mismatch fix). Key new lessons: **Meta permission propagation is async (wait 5-10 min after OAuth reconnect before re-probing)**, the **polling safety net is a real recovery mechanism** (don't escalate to operator immediately when Layer 2 fails), and the final symptom-to-fix mapping table.
+- `references/postback-verification-2026-08-06.md` — focused pre-deployment state-machine matrix and evidence-record format for `processPostback`; covers undefined queue fields, duplicate-send fall-through, three-state follow status, quota/log accounting, and the required button-tap tests.
