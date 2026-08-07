@@ -161,7 +161,7 @@ def build_pretty(parsed: list) -> str:
 
     lines = []
     lines.append(f"📬 <b>Daily Email Briefing</b>")
-    lines.append(f"🗓 {date_str}")
+    lines.append(f"� {date_str}")
     lines.append(f"📧 {len(parsed)} emails in last 24h")
     lines.append("")
     lines.append("─────────────────────")
@@ -215,7 +215,7 @@ def build_pretty(parsed: list) -> str:
                 lines.append(f"    {preview}")
 
     lines.append("\n─────────────────────")
-    lines.append(f"🕐 Compiled at {date_str}")
+    lines.append(f"� Compiled at {date_str}")
 
     return "\n".join(lines)
 
