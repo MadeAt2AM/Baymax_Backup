@@ -26,6 +26,8 @@ Skip only when the session was a one-off lookup (date lookup, currency conversio
 
 ## What to Embed vs What to Memory
 
+## What to Embed vs What to Memory
+
 | Goes in skill body | Goes in memory |
 |---|---|
 | "Always do X before Y" | "User lives in SGT" |
