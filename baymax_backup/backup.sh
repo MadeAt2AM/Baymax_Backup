@@ -22,26 +22,24 @@ logerr(){ echo "$LOG_PREFIX ERROR: $1" >&2; }
 log "Starting daily backup..."
 
 if ! gh auth status &>/dev/null; then
-    log "gh not authenticated — reading token from .env via Python..."
-    GH_TOKEN=***
-    # Extract token cleanly via Python
+    log "gh CLI has no stored authentication — reading GITHUB_TOKEN from .env..."
     GH_TOKEN=$(python3 -c "
-import re
 with open('/root/.hermes/.env') as f:
     for line in f:
-        if 'GITHUB_TOKEN=*** in line and not line.strip().startswith('#'):
-            print(line.split('=',1)[1].strip())
+        if line.startswith('GITHUB_TOKEN=') and not line.lstrip().startswith('#'):
+            print(line.split('=', 1)[1].strip())
             break
 " 2>/dev/null)
     if [[ -z "$GH_TOKEN" ]]; then
         logerr "No GITHUB_TOKEN found in /root/.hermes/.env — aborting."
         exit 1
     fi
-    echo "$GH_TOKEN" | gh auth login --with-token 2>/dev/null || {
-        logerr "gh auth login failed."
+    export GH_TOKEN
+    if ! gh auth status &>/dev/null; then
+        logerr "GitHub token validation failed."
         exit 1
-    }
-    log "gh authenticated successfully."
+    fi
+    log "GitHub token validated successfully."
 fi
 
 # ── 2. Git add ─────────────────────────────────────────────
@@ -92,10 +90,18 @@ ANALYSIS_FILE="/tmp/analysis.tmp"
     dpkg -l 2>/dev/null | grep "^ii" | awk '{print $2, $3}' | sort
     echo ""
     echo "### Hermes Python Packages"
-    /root/.hermes/.venv/bin/pip list 2>/dev/null | awk 'NR>2{print}'
+    if [[ -x /root/.hermes/.venv/bin/pip ]]; then
+        /root/.hermes/.venv/bin/pip list 2>/dev/null | awk 'NR>2{print}' || true
+    else
+        echo "N/A (pip not installed in /root/.hermes/.venv)"
+    fi
     echo ""
     echo "### NPM Global Packages"
-    npm list -g --depth=0 2>/dev/null | awk 'NR>1{print}'
+    if command -v npm >/dev/null 2>&1; then
+        npm list -g --depth=0 2>/dev/null | awk 'NR>1{print}' || true
+    else
+        echo "N/A (npm not installed)"
+    fi
     echo ""
     echo "### Node / NPM Versions"
     echo "node:  $(node --version 2>/dev/null || echo N/A)"
