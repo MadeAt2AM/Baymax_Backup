@@ -3,7 +3,7 @@
     {
       "id": "6e32c4bc5ea6",
       "name": "bi-daily-hermes-update",
-      "prompt": "Run `hermes update` to update Hermes Agent to the latest version. After the update completes, restart the dashboard and verify all services are working. Then send a Telegram message summarizing the update status.\n\nIMPORTANT \u2014 follow this exact sequence:\n1. `systemctl stop hermes-dashboard` \u2014 stop dashboard cleanly BEFORE the update so no stale process holds port 9119\n2. `hermes update` \u2014 run the full update\n3. `systemctl start hermes-dashboard` \u2014 restart the dashboard after update\n4. Verify: `curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:9119/` must return 200\n5. Verify: `systemctl status hermes-gateway --no-pager` \u2014 gateway must be active (running)\n6. Verify: nginx is routing correctly \u2014 `curl -s -o /dev/null -w \"%{http_code}\" https://dashboard.terrybot.top/` must return 401 (Basic Auth challenge = nginx proxy working)\n\nSend the final status report to Telegram including:\n- Whether update succeeded or failed\n- Dashboard HTTP status (200 = good)\n- Gateway status (active/running or not)\n- Nginx proxy status (401 = good, anything else = problem)",
+      "prompt": "Run `hermes update` to update Hermes Agent to the latest version. After the update completes, restart the dashboard and verify all services are working. Then send a Telegram message summarizing the update status.\n\nIMPORTANT — follow this exact sequence:\n1. `systemctl stop hermes-dashboard` — stop dashboard cleanly BEFORE the update so no stale process holds port 9119\n2. `hermes update` — run the full update\n3. `systemctl start hermes-dashboard` — restart the dashboard after update\n4. Verify: `curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:9119/` must return 200\n5. Verify: `systemctl status hermes-gateway --no-pager` — gateway must be active (running)\n6. Verify: nginx is routing correctly — `curl -s -o /dev/null -w \"%{http_code}\" https://dashboard.terrybot.top/` must return 401 (Basic Auth challenge = nginx proxy working)\n\nSend the final status report to Telegram including:\n- Whether update succeeded or failed\n- Dashboard HTTP status (200 = good)\n- Gateway status (active/running or not)\n- Nginx proxy status (401 = good, anything else = problem)",
       "skills": [],
       "skill": null,
       "model": null,
@@ -20,7 +20,7 @@
       "schedule_display": "0 16 */2 * *",
       "repeat": {
         "times": null,
-        "completed": 24
+        "completed": 25
       },
       "enabled": true,
       "state": "scheduled",
@@ -28,7 +28,7 @@
       "paused_reason": null,
       "created_at": "2026-06-01T19:28:37.310031+08:00",
       "next_run_at": "2026-08-11T16:00:00+08:00",
-      "last_run_at": "2026-08-07T16:07:04.225762+08:00",
+      "last_run_at": "2026-08-09T16:08:37.784373+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -44,7 +44,7 @@
     {
       "id": "5d79aefd3746",
       "name": "daily-email-briefing",
-      "prompt": "You are running the **Daily Email Briefing** for Chris. Your job: pull the last ~24h of Gmail and produce an inbox-triage table with a 3-sentence draft reply for every ACTION item. The final response goes to Telegram home channel -1003825565541 (auto-delivered).\n\n## Procedure\n\n1. **Run the briefing script in JSON mode** to fetch raw emails:\n   ```bash\n   /root/.hermes/.venv/bin/python3 /root/.hermes/scripts/email_briefing.py --json\n   ```\n   The script outputs `{fetched_at, count, emails: [...]}` to stdout. Each email has: id, from, from_raw, subject, date, snippet, labels, is_unread, legacy_flags.\n\n   Use the venv python (bare `python3` returns empty Gmail results \u2014 googleapiclient is only in the venv).\n\n   If the script errors or returns `count: 0`, post a short \"no emails in the last 24h\" message to Telegram via the send_telegram helper at the bottom of the script and exit cleanly. Do not invent emails.\n\n2. **Load the inbox-triage skill** with `skill_view(name='inbox-triage')` and follow it exactly. The skill defines the ACTION / WAIT / ARCHIVE buckets, the \"default to ACTION for human senders\" guardrail, and the exact table format.\n\n3. **Classify every email** using the skill's bucket rules. Pay attention to:\n   - Rule 1-2: Direct asks and time-bound asks \u2192 ACTION\n   - Rule 3: Real 1:1 from a person Chris knows \u2192 ACTION by default. Do NOT auto-archive personal threads.\n   - Rule 5-6: Calendar invites / newsletters / system mail \u2192 WAIT or ARCHIVE\n   - Rule 7 (security carve-out): unsolicited password resets, financial bills \u2192 ACTION\n   - Rule 8: When in doubt \u2192 ACTION and flag in the \"needs your call\" list below the table\n\n   For senders you can't recognize, lean toward ACTION and flag. Don't archive on instinct.\n\n4. **Draft a 3-sentence reply for every ACTION row** using the skill's reply rules:\n   - Sentence 1: Acknowledge (\"Got it.\", \"Thanks for the heads-up.\", \"Will do.\")\n   - Sentence 2: The substance \u2014 the actual reply, not a meta-statement about needing to think\n   - Sentence 3: Concrete next step or close with a time\n   - Match Chris's voice: direct, no fluff. Use Honcho + session context to inform register and history with each sender.\n   - For WAIT / ARCHIVE rows, put `\u2014` in the Draft reply column\n   - Don't invent facts \u2014 if the email asks something you can't answer from context, draft a question back with a follow-up time\n\n5. **Output exactly one Markdown table** in this format (header row required):\n   ```\n   | From | Subject | Bucket | Draft reply (if ACTION) |\n   |---|---|---|---|\n   | <from> | <subject> | ACTION | <3-sentence draft> |\n   | <from> | <subject> | WAIT | \u2014 |\n   | <from> | <subject> | ARCHIVE | \u2014 |\n   ```\n\n   Sort: ACTION first (urgent / security first within ACTION), then WAIT, then ARCHIVE. Within each group, sort by date desc.\n\n   Below the table (only if needed), include:\n   - `**N** ACTION \u00b7 **M** WAIT \u00b7 **K** ARCHIVE` summary line\n   - `\u26a0\ufe0f Needs your call:` list of ambiguous items the skill couldn't classify with confidence\n   - Do NOT add \"Here's your briefing for today!\" or any other prose preamble. Table only.\n\n6. **Honor channel targeting.** Your final response is auto-delivered to the origin chat (Telegram home -1003825565541). Don't override with `send_telegram` from the script \u2014 the platform layer handles it. The script's --json mode is read-only; the post is your final assistant message.\n\n7. **Hard rules**:\n   - No invented facts. Drafts must be derivable from the email + Chris's known context.\n   - No drafts for WAIT / ARCHIVE rows. Em-dash only.\n   - Do NOT mark personal / 1:1 threads ARCHIVE on instinct \u2014 default ACTION for human senders.\n   - If `count: 0`, post a single \"no emails in last 24h\" line and stop. Don't fabricate.\n   - Do NOT recursively schedule cron jobs.\n   - This run has no current-chat context \u2014 load `honcho_profile` and `session_search` if you need to identify a sender or recall past correspondence. Cite what you used if it's non-obvious.\n\nDeliver the final response as the table. That's the briefing.",
+      "prompt": "You are running the **Daily Email Briefing** for Chris. Your job: pull the last ~24h of Gmail and produce an inbox-triage table with a 3-sentence draft reply for every ACTION item. The final response goes to Telegram home channel -1003825565541 (auto-delivered).\n\n## Procedure\n\n1. **Run the briefing script in JSON mode** to fetch raw emails:\n   ```bash\n   /root/.hermes/.venv/bin/python3 /root/.hermes/scripts/email_briefing.py --json\n   ```\n   The script outputs `{fetched_at, count, emails: [...]}` to stdout. Each email has: id, from, from_raw, subject, date, snippet, labels, is_unread, legacy_flags.\n\n   Use the venv python (bare `python3` returns empty Gmail results — googleapiclient is only in the venv).\n\n   If the script errors or returns `count: 0`, post a short \"no emails in the last 24h\" message to Telegram via the send_telegram helper at the bottom of the script and exit cleanly. Do not invent emails.\n\n2. **Load the inbox-triage skill** with `skill_view(name='inbox-triage')` and follow it exactly. The skill defines the ACTION / WAIT / ARCHIVE buckets, the \"default to ACTION for human senders\" guardrail, and the exact table format.\n\n3. **Classify every email** using the skill's bucket rules. Pay attention to:\n   - Rule 1-2: Direct asks and time-bound asks → ACTION\n   - Rule 3: Real 1:1 from a person Chris knows → ACTION by default. Do NOT auto-archive personal threads.\n   - Rule 5-6: Calendar invites / newsletters / system mail → WAIT or ARCHIVE\n   - Rule 7 (security carve-out): unsolicited password resets, financial bills → ACTION\n   - Rule 8: When in doubt → ACTION and flag in the \"needs your call\" list below the table\n\n   For senders you can't recognize, lean toward ACTION and flag. Don't archive on instinct.\n\n4. **Draft a 3-sentence reply for every ACTION row** using the skill's reply rules:\n   - Sentence 1: Acknowledge (\"Got it.\", \"Thanks for the heads-up.\", \"Will do.\")\n   - Sentence 2: The substance — the actual reply, not a meta-statement about needing to think\n   - Sentence 3: Concrete next step or close with a time\n   - Match Chris's voice: direct, no fluff. Use Honcho + session context to inform register and history with each sender.\n   - For WAIT / ARCHIVE rows, put `—` in the Draft reply column\n   - Don't invent facts — if the email asks something you can't answer from context, draft a question back with a follow-up time\n\n5. **Output exactly one Markdown table** in this format (header row required):\n   ```\n   | From | Subject | Bucket | Draft reply (if ACTION) |\n   |---|---|---|---|\n   | <from> | <subject> | ACTION | <3-sentence draft> |\n   | <from> | <subject> | WAIT | — |\n   | <from> | <subject> | ARCHIVE | — |\n   ```\n\n   Sort: ACTION first (urgent / security first within ACTION), then WAIT, then ARCHIVE. Within each group, sort by date desc.\n\n   Below the table (only if needed), include:\n   - `**N** ACTION · **M** WAIT · **K** ARCHIVE` summary line\n   - `⚠️ Needs your call:` list of ambiguous items the skill couldn't classify with confidence\n   - Do NOT add \"Here's your briefing for today!\" or any other prose preamble. Table only.\n\n6. **Honor channel targeting.** Your final response is auto-delivered to the origin chat (Telegram home -1003825565541). Don't override with `send_telegram` from the script — the platform layer handles it. The script's --json mode is read-only; the post is your final assistant message.\n\n7. **Hard rules**:\n   - No invented facts. Drafts must be derivable from the email + Chris's known context.\n   - No drafts for WAIT / ARCHIVE rows. Em-dash only.\n   - Do NOT mark personal / 1:1 threads ARCHIVE on instinct — default ACTION for human senders.\n   - If `count: 0`, post a single \"no emails in last 24h\" line and stop. Don't fabricate.\n   - Do NOT recursively schedule cron jobs.\n   - This run has no current-chat context — load `honcho_profile` and `session_search` if you need to identify a sender or recall past correspondence. Cite what you used if it's non-obvious.\n\nDeliver the final response as the table. That's the briefing.",
       "skills": [
         "inbox-triage"
       ],
@@ -65,15 +65,15 @@
       "schedule_display": "0 3 * * *",
       "repeat": {
         "times": null,
-        "completed": 46
+        "completed": 47
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T11:29:12.154210+08:00",
-      "next_run_at": "2026-08-10T03:00:00+08:00",
-      "last_run_at": "2026-08-09T03:01:10.372183+08:00",
+      "next_run_at": "2026-08-11T03:00:00+08:00",
+      "last_run_at": "2026-08-10T03:00:56.367830+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -88,7 +88,7 @@
     {
       "id": "fab47f7704ba",
       "name": "Dreaming Sequence",
-      "prompt": "You are running the Dreaming Sequence for Chris. Follow the loaded `dreaming-sequence` skill exactly: analyse recent context, calendar, projects, and priorities; generate three recommendations plus one non-negotiable action; and save valid JSON to `/root/.hermes/cron/output/dreaming_sequence.json` for the 08:00 SGT Morning Brief. This is a local preparation run \u2014 do not send a Telegram message. Validate the JSON before finishing.",
+      "prompt": "You are running the Dreaming Sequence for Chris. Follow the loaded `dreaming-sequence` skill exactly: analyse recent context, calendar, projects, and priorities; generate three recommendations plus one non-negotiable action; and save valid JSON to `/root/.hermes/cron/output/dreaming_sequence.json` for the 08:00 SGT Morning Brief. This is a local preparation run — do not send a Telegram message. Validate the JSON before finishing.",
       "skills": [
         "dreaming-sequence"
       ],
@@ -109,15 +109,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 45
+        "completed": 46
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:48:32.455935+08:00",
-      "next_run_at": "2026-08-10T06:00:00+08:00",
-      "last_run_at": "2026-08-09T06:01:46.206081+08:00",
+      "next_run_at": "2026-08-11T06:00:00+08:00",
+      "last_run_at": "2026-08-10T06:02:14.170410+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -136,7 +136,7 @@
     {
       "id": "afb02a1433cf",
       "name": "Morning Brief",
-      "prompt": "You are delivering the Daily Morning Brief to Chris via Telegram channel -1004490060634.\n\n## Your Task\n\nRead the dreaming sequence output, fetch weather and calendar, then compile and send the brief to Telegram.\n\n### Step 1 \u2014 Read Dreaming Sequence Output\nRun: `cat ~/.hermes/cron/output/dreaming_sequence.json 2>/dev/null || echo '{}'`\nParse the JSON. If the file doesn't exist or is empty, use fallbacks.\n\n### Step 2 \u2014 Fetch Singapore Weather\nRun: `curl -s \"wttr.in/Singapore?format=%c%t+%C&lang=en\" 2>/dev/null`\nParse: emoji, temperature, condition. Fallback: \"\ud83c\udf24\ufe0f 31\u00b0C \u2014 Singapore\"\n\n### Step 3 \u2014 Motivational Quote\nUse day-of-week index (0=Sunday):\n```\n0: \"The best time to plant a tree was 20 years ago. The second best time is now. \u2014 Lao Tzu\"\n1: \"Innovation distinguishes between a leader and a follower. \u2014 Steve Jobs\"\n2: \"Stay hungry, stay foolish. \u2014 Steve Jobs\"\n3: \"The only way to do great work is to love what you do. \u2014 Steve Jobs\"\n4: \"I think it's very important to have a feedback loop, where you're constantly thinking about what you've done and how you could be doing it better. \u2014 Elon Musk\"\n5: \"When something is important enough, you do it even if the odds are not in your favor. \u2014 Elon Musk\"\n6: \"The biggest risk is not taking any risk. In a world that is changing quickly, the only strategy that is guaranteed to fail is not taking risks. \u2014 Mark Zuckerberg\"\n```\n\n### Step 4 \u2014 Fetch Today's Calendar\nRun:\n```\nGAPI=\"python ${HERMES_HOME:-$HOME/.hermes}/skills/productivity/google-workspace/scripts/google_api.py\"\n$GAPI calendar list --start \"$(date -u +%Y-%m-%dT00:00:00Z)\" --end \"$(date -u +%Y-%m-%dT23:59:59Z)\"\n```\nConvert times to SGT (UTC+8). Format: \"\ud83d\udccc [HH:MM SGT] \u2014 [Event Title]\" + location if present.\nIf no events: \"\ud83d\udced No events scheduled for today \u2014 make it count!\"\n\n### Step 5 \u2014 Compile the Brief\n\nUse this EXACT Telegram Markdown format:\n\n```\n\ud83c\udf05 *Good Morning, Chris* \u2014 [DAY, DD MONTH YYYY]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u2601\ufe0f *TODAY'S WEATHER \u2014 SINGAPORE*\n[weather result]\n\n\ud83d\udcac *MOTIVATIONAL QUOTE*\n_\"[selected quote]\"_\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcc5 *TODAY'S SCHEDULE*\n[events list]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83c\udfaf *TOP 3 RECOMMENDATIONS*\n1\ufe0f\u20e3 [rec 1 \u2014 one line explanation]\n2\ufe0f\u20e3 [rec 2 \u2014 one line explanation]\n3\ufe0f\u20e3 [rec 3 \u2014 one line explanation]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u26a1 *NON-NEGOTIABLE TODAY*\n*[title]*\n[reason]\n\ud83d\udc49 [specific action]\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n_\ud83e\udde0 Dreaming Sequence ran at 6 AM \u00b7 Compiled at 8 AM_\n```\n\n### Step 6 \u2014 Send to Telegram\n\nThe cron deliver is set to `telegram:-1004490060634`. Your final response will be automatically delivered there.\n\nJust output the formatted brief as your final response. Do not say anything else before or after \u2014 the brief itself is the message.",
+      "prompt": "You are delivering the Daily Morning Brief to Chris via Telegram channel -1004490060634.\n\n## Your Task\n\nRead the dreaming sequence output, fetch weather and calendar, then compile and send the brief to Telegram.\n\n### Step 1 — Read Dreaming Sequence Output\nRun: `cat ~/.hermes/cron/output/dreaming_sequence.json 2>/dev/null || echo '{}'`\nParse the JSON. If the file doesn't exist or is empty, use fallbacks.\n\n### Step 2 — Fetch Singapore Weather\nRun: `curl -s \"wttr.in/Singapore?format=%c%t+%C&lang=en\" 2>/dev/null`\nParse: emoji, temperature, condition. Fallback: \"🌤️ 31°C — Singapore\"\n\n### Step 3 — Motivational Quote\nUse day-of-week index (0=Sunday):\n```\n0: \"The best time to plant a tree was 20 years ago. The second best time is now. — Lao Tzu\"\n1: \"Innovation distinguishes between a leader and a follower. — Steve Jobs\"\n2: \"Stay hungry, stay foolish. — Steve Jobs\"\n3: \"The only way to do great work is to love what you do. — Steve Jobs\"\n4: \"I think it's very important to have a feedback loop, where you're constantly thinking about what you've done and how you could be doing it better. — Elon Musk\"\n5: \"When something is important enough, you do it even if the odds are not in your favor. — Elon Musk\"\n6: \"The biggest risk is not taking any risk. In a world that is changing quickly, the only strategy that is guaranteed to fail is not taking risks. — Mark Zuckerberg\"\n```\n\n### Step 4 — Fetch Today's Calendar\nRun:\n```\nGAPI=\"python ${HERMES_HOME:-$HOME/.hermes}/skills/productivity/google-workspace/scripts/google_api.py\"\n$GAPI calendar list --start \"$(date -u +%Y-%m-%dT00:00:00Z)\" --end \"$(date -u +%Y-%m-%dT23:59:59Z)\"\n```\nConvert times to SGT (UTC+8). Format: \"📌 [HH:MM SGT] — [Event Title]\" + location if present.\nIf no events: \"📭 No events scheduled for today — make it count!\"\n\n### Step 5 — Compile the Brief\n\nUse this EXACT Telegram Markdown format:\n\n```\n🌅 *Good Morning, Chris* — [DAY, DD MONTH YYYY]\n\n━━━━━━━━━━━━━━━━━━━━\n☁️ *TODAY'S WEATHER — SINGAPORE*\n[weather result]\n\n💬 *MOTIVATIONAL QUOTE*\n_\"[selected quote]\"_\n\n━━━━━━━━━━━━━━━━━━━━\n📅 *TODAY'S SCHEDULE*\n[events list]\n\n━━━━━━━━━━━━━━━━━━━━\n🎯 *TOP 3 RECOMMENDATIONS*\n1️⃣ [rec 1 — one line explanation]\n2️⃣ [rec 2 — one line explanation]\n3️⃣ [rec 3 — one line explanation]\n\n━━━━━━━━━━━━━━━━━━━━\n⚡ *NON-NEGOTIABLE TODAY*\n*[title]*\n[reason]\n👉 [specific action]\n\n━━━━━━━━━━━━━━━━━━━━\n_🧠 Dreaming Sequence ran at 6 AM · Compiled at 8 AM_\n```\n\n### Step 6 — Send to Telegram\n\nThe cron deliver is set to `telegram:-1004490060634`. Your final response will be automatically delivered there.\n\nJust output the formatted brief as your final response. Do not say anything else before or after — the brief itself is the message.",
       "skills": [
         "morning-brief"
       ],
@@ -157,15 +157,15 @@
       "schedule_display": "0 0 * * *",
       "repeat": {
         "times": null,
-        "completed": 45
+        "completed": 46
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T20:49:04.626974+08:00",
-      "next_run_at": "2026-08-10T00:00:00+08:00",
-      "last_run_at": "2026-08-09T00:00:45.162235+08:00",
+      "next_run_at": "2026-08-11T00:00:00+08:00",
+      "last_run_at": "2026-08-10T00:00:54.362932+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -184,7 +184,7 @@
     {
       "id": "cb68230d9072",
       "name": "Baymax Daily Backup",
-      "prompt": "Run the Baymax backup procedure: execute /root/baymax_backup/backup.sh and deliver the output to telegram:-1003825565541. The backup script is self-contained and handles its own authentication. If there are no changes to push, it exits cleanly with no output \u2014 deliver nothing in that case. On successful push, send a brief confirmation message. On failure, send the error details.",
+      "prompt": "Run the Baymax backup procedure: execute /root/baymax_backup/backup.sh and deliver the output to telegram:-1003825565541. The backup script is self-contained and handles its own authentication. If there are no changes to push, it exits cleanly with no output — deliver nothing in that case. On successful push, send a brief confirmation message. On failure, send the error details.",
       "skills": [
         "baymax-backup"
       ],
@@ -205,15 +205,15 @@
       "schedule_display": "0 16 * * *",
       "repeat": {
         "times": null,
-        "completed": 43
+        "completed": 44
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T22:40:56.052744+08:00",
-      "next_run_at": "2026-08-10T16:00:00+08:00",
-      "last_run_at": "2026-08-08T16:00:56.622210+08:00",
+      "next_run_at": "2026-08-11T16:00:00+08:00",
+      "last_run_at": "2026-08-09T16:05:04.592104+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -232,7 +232,7 @@
     {
       "id": "f52e7fc82801",
       "name": "System Resource Monitor",
-      "prompt": "Run the system monitor script at /root/.hermes/scripts/system_monitor.sh and deliver the raw stdout only if an alert was triggered (check the last line of /root/.hermes/cron/output/system_monitor.csv for alert!=no). The script handles its own Telegram notification internally \u2014 just confirm it ran cleanly.",
+      "prompt": "Run the system monitor script at /root/.hermes/scripts/system_monitor.sh and deliver the raw stdout only if an alert was triggered (check the last line of /root/.hermes/cron/output/system_monitor.csv for alert!=no). The script handles its own Telegram notification internally — just confirm it ran cleanly.",
       "skills": [],
       "skill": null,
       "model": null,
@@ -251,15 +251,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 4097
+        "completed": 4193
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-27T23:29:24.781609+08:00",
-      "next_run_at": "2026-08-09T16:15:00+08:00",
-      "last_run_at": "2026-08-09T16:00:55.127495+08:00",
+      "next_run_at": "2026-08-10T16:15:00+08:00",
+      "last_run_at": "2026-08-10T16:00:23.280903+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -297,15 +297,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 4088
+        "completed": 4184
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:01:41.079016+08:00",
-      "next_run_at": "2026-08-09T16:15:00+08:00",
-      "last_run_at": "2026-08-09T16:00:55.214076+08:00",
+      "next_run_at": "2026-08-10T16:15:00+08:00",
+      "last_run_at": "2026-08-10T16:00:23.296326+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -337,15 +337,15 @@
       "schedule_display": "0 14 * * *",
       "repeat": {
         "times": null,
-        "completed": 43
+        "completed": 44
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:13.667449+08:00",
-      "next_run_at": "2026-08-10T14:00:00+08:00",
-      "last_run_at": "2026-08-09T14:00:37.099402+08:00",
+      "next_run_at": "2026-08-11T14:00:00+08:00",
+      "last_run_at": "2026-08-10T14:00:07.326034+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -358,7 +358,7 @@
     {
       "id": "44cd86c70264",
       "name": "morning-vault-sync-check",
-      "prompt": "Run /root/.hermes/scripts/check-wiki-sync.sh to verify the wiki sync daemon is healthy. Deliver only if there's a problem \u2014 otherwise stay quiet.",
+      "prompt": "Run /root/.hermes/scripts/check-wiki-sync.sh to verify the wiki sync daemon is healthy. Deliver only if there's a problem — otherwise stay quiet.",
       "skills": [],
       "skill": null,
       "model": null,
@@ -377,15 +377,15 @@
       "schedule_display": "55 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 42
+        "completed": 43
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:08:21.732043+08:00",
-      "next_run_at": "2026-08-09T23:55:00+08:00",
-      "last_run_at": "2026-08-08T23:55:20.874559+08:00",
+      "next_run_at": "2026-08-10T23:55:00+08:00",
+      "last_run_at": "2026-08-09T23:55:30.133773+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -417,15 +417,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 12146
+        "completed": 12434
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-28T02:32:39.657262+08:00",
-      "next_run_at": "2026-08-09T16:05:00+08:00",
-      "last_run_at": "2026-08-09T16:00:55.242793+08:00",
+      "next_run_at": "2026-08-10T16:05:00+08:00",
+      "last_run_at": "2026-08-10T16:00:23.375433+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -436,5 +436,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-09T16:00:55.245403+08:00"
+  "updated_at": "2026-08-10T16:00:23.376184+08:00"
 }

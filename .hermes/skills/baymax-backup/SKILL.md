@@ -134,9 +134,9 @@ After fixing, tomorrow's cron backup will document the full pip environment.
 
 **Push fails with "cat: get: No such file":** The backup script uses Python to embed the token directly — this is the known workaround for the credential helper issue. If it fails, check `gh auth status`.
 
-**gh not authenticated:** The backup script auto-authenticates using the token from `.env`. If needed: `gh auth login --with-token <PAT>` with a token scoped to `MadeAt2AM` org.
+**gh not authenticated in a scheduled/transient unit:** Do not hard-code the token value and do not persist it with `gh auth login`. Read the value by matching the `GITHUB_TOKEN=` prefix in `/root/.hermes/.env`, export it as `GH_TOKEN`, and validate with `gh auth status`. This keeps credentials scoped to the process and survives token rotation.
 
-**Empty push (nothing to commit):** Normal — no new changes since last backup. Exit code 0, script exits cleanly.
+**Environment analysis exits 127:** The script runs with `set -euo pipefail`; an absent `/root/.hermes/.venv/bin/pip` or optional utility can abort the whole backup. Guard optional commands with `[[ -x ... ]]` or `command -v ...`, and terminate optional pipelines with `|| true`.
 
 **RESTORATION_GUIDE.md warning:** If you see "Could not find analysis section marker" — this is cosmetic. The guide still gets updated; the Python update logic uses append/prepend instead of marker replacement.
 
