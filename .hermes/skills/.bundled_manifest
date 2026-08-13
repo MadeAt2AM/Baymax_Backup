@@ -43,6 +43,7 @@ llm-wiki:ca957fbfecd9e573a1f99db3937a1969
 manim-video:ba59ac7b68745ea1898ef28dcc84d08c
 maps:75eb39eca308ae4defa6ee2f14499428
 meeting-action-items:4f0a15c7ae32595b16358d1e10f60403
+merge-reconciler:61776bef02763a92a467fab6e6204c3e
 nano-pdf:7cd6578384fca76ab3452f4438b8cf39
 node-inspect-debugger:75143985fb8d291df54a49505df1c0ff
 notion:a1235dab0b6904cc21756126b2612a8a
@@ -60,6 +61,7 @@ product-price-monitor:7dd11fd1609f3bec2486d925ad924714
 python-debugpy:76a10139bbd9860b863c16bb987c60d8
 requesting-code-review:f7e902570802e21f340955384385abda
 research-paper-writing:535835ccb0c2f803de2f8708ff6d5238
+sdlc-review:4a4be11e979ac444fdc9c277b8500a81
 serving-llms-vllm:a610c728d704ea074a8c56b180fcd5f4
 simplify-code:de754e6efb064ff88405d6c40229ef3b
 sketch:fb54013e36f2ce099e2c2ce197a06a26

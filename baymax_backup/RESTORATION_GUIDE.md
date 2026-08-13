@@ -77853,4 +77853,305 @@ LISTEN 0      511             [::]:443           [::]:*    users:(("nginx",pid=2
 
 ---
 
+## Environment Analysis — (auto-updated daily by backup cron)
+
+## Environment Analysis — 2026-08-13T16:01:40+0800
+
+### System Packages (user-installed)
+accountsservice 23.13.9-2ubuntu6.1
+accountsservice-ubuntu-schemas 0.0.7+21.10.20210712-0ubuntu3
+acl 2.3.2-1build1.1
+activity-log-manager 0.9.7-0ubuntu31
+adduser 3.137ubuntu1
+adwaita-icon-theme 46.0-1
+alsa-topology-conf 1.2.5.1-2
+alsa-ucm-conf 1.2.10-1ubuntu5.10
+apache2-utils 2.4.58-1ubuntu8.15
+apg 2.2.3.dfsg.1-5build3
+apparmor 4.0.1really4.0.1-0ubuntu0.24.04.6
+apport 2.28.1-0ubuntu3.8
+apport-core-dump-handler 2.28.1-0ubuntu3.8
+apport-symptoms 0.25
+appstream 1.0.2-1build6
+apt 2.8.3
+apt-transport-https 2.8.3
+apt-utils 2.8.3
+aspell 0.60.8.1-1build1
+aspell-en 2020.12.07-0-1
+at-spi2-common 2.52.0-1build1
+at-spi2-core 2.52.0-1build1
+avahi-daemon 0.8-13ubuntu6.2
+avahi-utils 0.8-13ubuntu6.2
+bamfdaemon 0.5.6+22.04.20220217-0ubuntu5
+base-files 13ubuntu10.4
+base-passwd 3.6.3build1
+bash 5.2.21-2ubuntu4
+bash-completion 1:2.11-8
+bc 1.07.1-3ubuntu4
+bcache-tools 1.0.8-5build1
+bind9-dnsutils 1:9.18.39-0ubuntu0.24.04.5
+bind9-host 1:9.18.39-0ubuntu0.24.04.5
+bind9-libs:amd64 1:9.18.39-0ubuntu0.24.04.5
+binutils 2.42-4ubuntu2.10
+binutils-common:amd64 2.42-4ubuntu2.10
+binutils-x86-64-linux-gnu 2.42-4ubuntu2.10
+bluez 5.72-0ubuntu5.5
+bluez-obexd 5.72-0ubuntu5.5
+bolt 0.9.7-1
+bpfcc-tools 0.29.1+ds-1ubuntu7
+bpftrace 0.20.2-1ubuntu4.3
+bsdextrautils 2.39.3-9ubuntu6.5
+bsdutils 1:2.39.3-9ubuntu6.5
+btrfs-progs 6.6.3-1.1build2
+bubblewrap 0.9.0-1ubuntu0.1
+build-essential 12.10ubuntu1
+busybox-initramfs 1:1.36.1-6ubuntu3.1
+busybox-static 1:1.36.1-6ubuntu3.1
+byobu 6.11-0ubuntu1
+bzip2 1.0.8-5.1build0.1
+ca-certificates 20260601~24.04.1
+certbot 2.9.0-1
+cheese-common 44.1-1build4
+chromium-browser 2:1snap1-0ubuntu2
+cloud-guest-utils 0.33-1
+cloud-init 25.3-0ubuntu1~24.04.1
+cloud-initramfs-copymods 0.49~24.04.1
+cloud-initramfs-dyn-netconf 0.49~24.04.1
+colord 1.4.7-1build2
+colord-data 1.4.7-1build2
+command-not-found 23.04.0
+console-setup 1.226ubuntu1
+console-setup-linux 1.226ubuntu1
+containerd.io 2.2.3-1~ubuntu.24.04~noble
+coreutils 9.4-3ubuntu6.2
+cpio 2.15+dfsg-1ubuntu2
+cpp 4:13.2.0-7ubuntu1
+cpp-13 13.3.0-6ubuntu2~24.04.1
+cpp-13-x86-64-linux-gnu 13.3.0-6ubuntu2~24.04.1
+cpp-x86-64-linux-gnu 4:13.2.0-7ubuntu1
+cracklib-runtime 2.9.6-5.1build2
+cron 3.0pl1-184ubuntu2
+cron-daemon-common 3.0pl1-184ubuntu2
+cryptsetup 2:2.7.0-1ubuntu4.2
+cryptsetup-bin 2:2.7.0-1ubuntu4.2
+cryptsetup-initramfs 2:2.7.0-1ubuntu4.2
+cups 2.4.7-1.2ubuntu7.14
+cups-browsed 2.0.0-0ubuntu10.3
+cups-client 2.4.7-1.2ubuntu7.14
+cups-common 2.4.7-1.2ubuntu7.14
+cups-core-drivers 2.4.7-1.2ubuntu7.14
+cups-daemon 2.4.7-1.2ubuntu7.14
+cups-filters 2.0.0-0ubuntu4.1
+cups-filters-core-drivers 2.0.0-0ubuntu4.1
+cups-ipp-utils 2.4.7-1.2ubuntu7.14
+cups-pk-helper 0.2.6-1ubuntu8
+cups-ppdc 2.4.7-1.2ubuntu7.14
+cups-server-common 2.4.7-1.2ubuntu7.14
+curl 8.5.0-2ubuntu10.11
+dash 0.5.12-6ubuntu5
+dbus 1.14.10-4ubuntu4.1
+dbus-bin 1.14.10-4ubuntu4.1
+dbus-daemon 1.14.10-4ubuntu4.1
+dbus-session-bus-common 1.14.10-4ubuntu4.1
+dbus-system-bus-common 1.14.10-4ubuntu4.1
+dbus-user-session 1.14.10-4ubuntu4.1
+dconf-cli 0.40.0-4ubuntu0.1
+dconf-gsettings-backend:amd64 0.40.0-4ubuntu0.1
+dconf-service 0.40.0-4ubuntu0.1
+debconf 1.5.86ubuntu1
+debconf-i18n 1.5.86ubuntu1
+debianutils 5.17build1
+desktop-base 12.0.6+nmu1ubuntu1
+desktop-file-utils 0.27-2build1
+dhcpcd-base 1:10.0.6-1ubuntu3.2
+dictionaries-common 1.29.7
+diffutils 1:3.10-1build1
+dirmngr 2.4.4-2ubuntu17.4
+distro-info 1.7build1
+distro-info-data 0.72-0ubuntu0.24.04.1
+dmeventd 2:1.02.185-3ubuntu3.2
+dmidecode 3.5-3ubuntu0.1
+dmsetup 2:1.02.185-3ubuntu3.2
+dns-root-data 2024071801~ubuntu0.24.04.1
+dnsmasq-base 2.90-2ubuntu0.4
+docbook-xml 4.5-12
+docker-buildx-plugin 0.34.0-1~ubuntu.24.04~noble
+docker-ce 5:29.5.2-1~ubuntu.24.04~noble
+docker-ce-cli 5:29.5.2-1~ubuntu.24.04~noble
+docker-ce-rootless-extras 5:29.5.2-1~ubuntu.24.04~noble
+docker-compose-plugin 5.1.4-1~ubuntu.24.04~noble
+docutils-common 0.20.1+dfsg-3
+dosfstools 4.2-1.1build1
+dpkg 1.22.6ubuntu6.6
+dpkg-dev 1.22.6ubuntu6.6
+dracut-install 060+5-1ubuntu3.3
+e2fsprogs 1.47.0-2.4~exp1ubuntu4.1
+e2fsprogs-l10n 1.47.0-2.4~exp1ubuntu4.1
+eatmydata 131-1ubuntu1
+ed 1.20.1-1
+efibootmgr 18-1build2
+eject 2.39.3-9ubuntu6.5
+elementary-xfce-icon-theme 0.19-1
+emacsen-common 3.0.5
+enchant-2 2.3.3-2build2
+espeak-ng 1.51+dfsg-12build1
+espeak-ng-data:amd64 1.51+dfsg-12build1
+ethtool 1:6.7-1build1
+evolution-data-server 3.52.3-0ubuntu1.2
+evolution-data-server-common 3.52.3-0ubuntu1.2
+exo-utils 4.18.0-1build4
+fakeroot 1.33-1
+fdisk 2.39.3-9ubuntu6.5
+ffmpeg 7:6.1.1-3ubuntu5
+file 1:5.45-3build1
+finalrd 9build1
+findutils 4.9.0-5build1
+fontconfig 2.15.0-1.1ubuntu2
+fontconfig-config 2.15.0-1.1ubuntu2
+fonts-dejavu-core 2.37-8
+fonts-dejavu-mono 2.37-8
+fonts-droid-fallback 1:6.0.1r16-1.1build1
+fonts-freefont-ttf 20211204+svn4273-2
+fonts-ipafont-gothic 00303-21ubuntu1
+fonts-liberation 1:2.1.5-3
+fonts-noto-color-emoji 2.047-0ubuntu0.24.04.1
+fonts-noto-mono 20201225-2
+fonts-quicksand 0.2016-2.1
+fonts-tlwg-loma-otf 1:0.7.3-1
+fonts-ubuntu 0.869+git20240321-0ubuntu1
+fonts-ubuntu-console 0.869+git20240321-0ubuntu1
+fonts-unifont 1:15.1.01-1build1
+fonts-urw-base35 20200910-8
+fonts-wqy-zenhei 0.9.45-8
+friendly-recovery 0.2.42
+ftp 20230507-2build3
+fuse3 3.14.0-5build1
+fwupd 1.9.34-0ubuntu1~24.04.1
+fwupd-signed 1.52+1.4-1
+g++ 4:13.2.0-7ubuntu1
+g++-13 13.3.0-6ubuntu2~24.04.1
+g++-13-x86-64-linux-gnu 13.3.0-6ubuntu2~24.04.1
+g++-x86-64-linux-gnu 4:13.2.0-7ubuntu1
+gawk 1:5.2.1-2ubuntu0.1
+gcc 4:13.2.0-7ubuntu1
+gcc-13 13.3.0-6ubuntu2~24.04.1
+gcc-13-base:amd64 13.3.0-6ubuntu2~24.04.1
+gcc-13-x86-64-linux-gnu 13.3.0-6ubuntu2~24.04.1
+gcc-14-base:amd64 14.2.0-4ubuntu2~24.04.1
+gcc-x86-64-linux-gnu 4:13.2.0-7ubuntu1
+gcr 3.41.2-1build3
+gcr4 4.2.0-5
+gdisk 1.0.10-1build1
+geocode-glib-common 3.26.3-6build3
+gettext-base 0.21-14ubuntu2
+gh 2.45.0-1ubuntu0.3
+ghostscript 10.02.1~dfsg1-0ubuntu7.8
+gir1.2-atk-1.0:amd64 2.52.0-1build1
+gir1.2-dbusmenu-glib-0.4:amd64 18.10.20180917~bzr492+repack1-3.1ubuntu5
+gir1.2-freedesktop:amd64 1.80.1-1
+gir1.2-gdkpixbuf-2.0:amd64 2.42.10+dfsg-3ubuntu3.3
+gir1.2-girepository-2.0:amd64 1.80.1-1
+gir1.2-glib-2.0:amd64 2.80.0-6ubuntu3.8
+gir1.2-gtk-3.0:amd64 3.24.41-4ubuntu1.3
+gir1.2-handy-1:amd64 1.8.3-1build2
+gir1.2-harfbuzz-0.0:amd64 8.3.0-2build2
+gir1.2-ibus-1.0:amd64 1.5.29-2
+gir1.2-notify-0.7:amd64 0.8.3-1build2
+gir1.2-packagekitglib-1.0 1.2.8-2ubuntu1.5
+
+### Hermes Python Packages
+certifi                  2026.6.17
+cffi                     2.0.0
+charset-normalizer       3.4.7
+cryptography             49.0.0
+google-api-core          2.31.0
+google-api-python-client 2.198.0
+google-auth              2.55.1
+google-auth-httplib2     0.4.0
+google-auth-oauthlib     1.4.0
+googleapis-common-protos 1.75.0
+httplib2                 0.32.0
+idna                     3.18
+oauthlib                 3.3.1
+pip                      24.0
+proto-plus               1.28.0
+protobuf                 7.35.1
+pyasn1                   0.6.3
+pyasn1_modules           0.4.2
+pycparser                3.0
+pyparsing                3.3.2
+python-dotenv            1.2.2
+PyYAML                   6.0.3
+requests                 2.34.2
+requests-oauthlib        2.0.0
+uritemplate              4.2.0
+urllib3                  2.7.0
+
+### NPM Global Packages
+├── @jackwener/opencli@1.8.5
+├── mcporter@0.9.0
+├── pnpm@10.34.5
+└── undici@8.5.0
+
+
+### Node / NPM Versions
+node:  v22.22.3
+npm:   10.9.8
+npx:   10.9.8
+uv:    uv 0.11.15 (x86_64-unknown-linux-gnu)
+
+### Docker Containers
+NAMES         IMAGE                    STATUS
+payntra-app   payntra-app              Up 2 weeks (healthy)
+payntra-db    postgres:16-alpine       Up 2 weeks (healthy)
+searxng       searxng/searxng:latest   Up 2 weeks
+
+### Listening Ports
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096       127.0.0.1:631        0.0.0.0:*          
+LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:8080       0.0.0.0:*          
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*          
+LISTEN 0      2048       127.0.0.1:3001       0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:32769      0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:80         0.0.0.0:*          
+LISTEN 0      511          0.0.0.0:443        0.0.0.0:*          
+LISTEN 0      4096           [::1]:631           [::]:*          
+LISTEN 0      4096            [::]:8080          [::]:*          
+LISTEN 0      4096            [::]:22            [::]:*          
+LISTEN 0      4096            [::]:32769         [::]:*          
+LISTEN 0      511             [::]:80            [::]:*          
+LISTEN 0      511             [::]:443           [::]:*          
+
+### Hermes Config Summary
+  Default model: MiniMax-M3
+  Provider: N/A
+  Base URL: N/A
+  Fallback providers: 0
+  Toolsets count: 0
+  Skills external_dirs: []
+
+### Cron Jobs
+# VNC idle-killer: tear down VNC stack if no client for 10m
+*/5 * * * * IDLE_MIN=10 /root/.hermes/scripts/vnc-stack/vnc-idle-killer >> /var/log/hermes-vnc/cron.log 2>&1
+*/5 * * * * root /srv/scripts/custom-domain-sync.sh
+
+### Largest Hermes Directories
+65M	/root/.hermes/skills
+20K	/root/.hermes/memories
+6.0G	/root/.hermes/projects
+1.1M	/root/.hermes/plugins
+19M	/root/browser-search
+
+### Disk Usage (/)
+/dev/sda1        96G   54G   43G  56% /
+
+### Systemd Services (Hermes)
+  hermes-gateway.service         loaded active running Hermes Agent Gateway - Messaging Platform Integration
+  hermes-wiki-sync.service       loaded active running Hermes LLM Wiki — bidirectional git sync daemon
+
+
+---
+
 *This document is auto-generated daily by /root/baymax_backup/backup.sh*
