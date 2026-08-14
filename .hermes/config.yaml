@@ -2,32 +2,32 @@ model:
   default: MiniMax-M3
   provider: minimax
 fallback_providers:
-- provider: openrouter
-  model: openrouter/free
-  base_url: https://openrouter.ai/api/v1
-  api_mode: chat_completions
-- provider: openrouter
-  model: openrouter/owl-alpha
-  base_url: https://openrouter.ai/api/v1
-  api_mode: chat_completions
-- provider: openrouter
-  model: nvidia/nemotron-3-super-120b-a12b:free
-  base_url: https://openrouter.ai/api/v1
-  api_mode: chat_completions
-- provider: nvidia
-  model: bytedance/seed-oss-36b-instruct
-  base_url: https://integrate.api.nvidia.com/v1
-- provider: nvidia
-  model: qwen/qwen3-coder-480b-a35b-instruct
-  base_url: https://integrate.api.nvidia.com/v1
-- provider: nvidia
-  model: stepfun-ai/step-3.5-flash
-  base_url: https://integrate.api.nvidia.com/v1
-- provider: minimax
-  model: MiniMax-M3
-  base_url: https://api.minimax.io/anthropic
+  - provider: openrouter
+    model: openrouter/free
+    base_url: https://openrouter.ai/api/v1
+    api_mode: chat_completions
+  - provider: openrouter
+    model: openrouter/owl-alpha
+    base_url: https://openrouter.ai/api/v1
+    api_mode: chat_completions
+  - provider: openrouter
+    model: nvidia/nemotron-3-super-120b-a12b:free
+    base_url: https://openrouter.ai/api/v1
+    api_mode: chat_completions
+  - provider: nvidia
+    model: bytedance/seed-oss-36b-instruct
+    base_url: https://integrate.api.nvidia.com/v1
+  - provider: nvidia
+    model: qwen/qwen3-coder-480b-a35b-instruct
+    base_url: https://integrate.api.nvidia.com/v1
+  - provider: nvidia
+    model: stepfun-ai/step-3.5-flash
+    base_url: https://integrate.api.nvidia.com/v1
+  - provider: minimax
+    model: MiniMax-M3
+    base_url: https://api.minimax.io/anthropic
 toolsets:
-- hermes-cli
+  - hermes-cli
 max_live_sessions: 16
 agent:
   max_turns: 90
@@ -295,7 +295,7 @@ auxiliary:
     timeout: 600
 display:
   compact: false
-  personality: kawaii
+  personality: ''
   resume_display: full
   resume_exchanges: 10
   resume_max_user_chars: 300
@@ -342,9 +342,9 @@ display:
   runtime_footer:
     enabled: false
     fields:
-    - model
-    - context_pct
-    - cwd
+      - model
+      - context_pct
+      - cwd
   copy_shortcut: auto
   pet:
     enabled: false
@@ -471,10 +471,10 @@ moa:
   presets:
     default:
       reference_models:
-      - provider: openai-codex
-        model: gpt-5.5
-      - provider: openrouter
-        model: deepseek/deepseek-v4-pro
+        - provider: openai-codex
+          model: gpt-5.5
+        - provider: openrouter
+          model: deepseek/deepseek-v4-pro
       aggregator:
         provider: openrouter
         model: anthropic/claude-opus-4.8
@@ -528,11 +528,11 @@ discord:
     speech_gain: 1
     ack_enabled: true
     ack_phrases:
-    - Let me look into that.
-    - One moment.
-    - Checking on that now.
-    - Give me a sec.
-    - On it.
+      - Let me look into that.
+      - One moment.
+      - Checking on that now.
+      - Give me a sec.
+      - On it.
 telegram:
   reactions: false
   allowed_chats: ''
@@ -554,35 +554,35 @@ approvals:
   mcp_reload_confirm: true
   destructive_slash_confirm: false
 command_allowlist:
-- script execution via heredoc
-- overwrite project env/config file
-- overwrite system file via redirection
-- docker restart/stop/kill (container lifecycle)
-- delete in root path
-- overwrite project env/config via redirection
-- shell command via -c/-lc flag
-- git force push (rewrites remote history)
-- overwrite system file via tee
-- stop/restart system service
-- recursive delete
-- in-place edit of system config
-- git force push short flag (rewrites remote history)
-- hermes update (restarts gateway, kills running agents)
-- sudo with combined-flag privilege escalation
-- sudo with privilege flag (stdin/askpass/shell/list)
-- copy/move file into system config path
-- kill process via pgrep/pidof expansion (self-termination)
-- overwrite system config
-- git clean with force (deletes untracked files)
-- script execution via -e/-c flag
-- shell execution via heredoc
-- docker compose restart/stop/kill/down (container lifecycle)
-- kill hermes/gateway process (self-termination)
-- SQL TRUNCATE
-- git reset --hard (destroys uncommitted changes)
-- execute_code
-- in-place edit of Hermes config/env
-- force kill processes
+  - script execution via heredoc
+  - overwrite project env/config file
+  - overwrite system file via redirection
+  - docker restart/stop/kill (container lifecycle)
+  - delete in root path
+  - overwrite project env/config via redirection
+  - shell command via -c/-lc flag
+  - git force push (rewrites remote history)
+  - overwrite system file via tee
+  - stop/restart system service
+  - recursive delete
+  - in-place edit of system config
+  - git force push short flag (rewrites remote history)
+  - hermes update (restarts gateway, kills running agents)
+  - sudo with combined-flag privilege escalation
+  - sudo with privilege flag (stdin/askpass/shell/list)
+  - copy/move file into system config path
+  - kill process via pgrep/pidof expansion (self-termination)
+  - overwrite system config
+  - git clean with force (deletes untracked files)
+  - script execution via -e/-c flag
+  - shell execution via heredoc
+  - docker compose restart/stop/kill/down (container lifecycle)
+  - kill hermes/gateway process (self-termination)
+  - SQL TRUNCATE
+  - git reset --hard (destroys uncommitted changes)
+  - execute_code
+  - in-place edit of Hermes config/env
+  - force kill processes
 hooks_auto_accept: false
 security:
   allow_private_urls: false
@@ -687,7 +687,7 @@ paste_collapse_threshold_fallback: 5
 paste_collapse_char_threshold: 2000
 computer_use:
   cua_telemetry: false
-_config_version: 33
+_config_version: 34
 session_reset:
   mode: both
   idle_minutes: 1440
@@ -695,49 +695,71 @@ session_reset:
 group_sessions_per_user: true
 platform_toolsets:
   cli:
-  - browser
-  - clarify
-  - code_execution
-  - computer_use
-  - cronjob
-  - delegation
-  - file
-  - image_gen
-  - memory
-  - session_search
-  - skills
-  - terminal
-  - todo
-  - tts
-  - vision
-  - web
+    - browser
+    - clarify
+    - code_execution
+    - computer_use
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - memory
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - tts
+    - vision
+    - web
   telegram:
-  - hermes-telegram
+    - hermes-telegram
   discord:
-  - hermes-discord
+    - hermes-discord
   whatsapp:
-  - hermes-whatsapp
+    - hermes-whatsapp
   slack:
-  - hermes-slack
+    - hermes-slack
   signal:
-  - hermes-signal
+    - hermes-signal
   homeassistant:
-  - hermes-homeassistant
+    - hermes-homeassistant
   qqbot:
-  - hermes-qqbot
+    - hermes-qqbot
   yuanbao:
-  - hermes-yuanbao
+    - hermes-yuanbao
   teams:
-  - hermes-teams
+    - hermes-teams
   google_chat:
-  - hermes-google_chat
+    - hermes-google_chat
 known_plugin_toolsets:
   cli:
-  - spotify
+    - spotify
 platforms:
   telegram:
     extra:
       command_menu:
         max_commands: 100
         priority:
-        - carousel_copy
+          - carousel_copy
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4
