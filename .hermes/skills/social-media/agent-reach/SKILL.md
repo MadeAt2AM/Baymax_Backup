@@ -504,6 +504,70 @@ agent-reach configure groq-key gsk_xxxxx
 
 ---
 
+## OSINT Investigation Patterns (phone numbers + personal names)
+
+Use this playbook when an operator asks to investigate a phone number, identify who is behind a contact, or find all public profiles matching a real name. Most of the workhorse tools are already in this skill — this section sequences them.
+
+### Search-engine fallback chain
+
+SearXNG routinely rate-limits individual engines (Brave "too many requests", DuckDuckGo "CAPTCHA", Google/Startpage "timeout"). **Don't waste cycles retrying SearXNG** when all engines are unresponsive — escalate immediately:
+
+1. **Exa via mcporter** — most reliable broad-recall fallback. Quoted phrases and OR-chains work well for personal-name breadth searches:
+   ```bash
+   /usr/local/bin/mcporter call 'exa.web_search_exa(query: "\"Full Name\" India", numResults: 10)'
+   /usr/local/bin/mcporter call 'exa.web_search_exa(query: "\"Full Name\" linkedin OR github OR facebook", numResults: 10)'
+   /usr/local/bin/mcporter call 'exa.web_search_exa(query: "\"Phone Number\" OR \"+91 73xxx xxxxx\"", numResults: 10)'
+   ```
+   **Path pitfall:** the `mcporter` binary lives at `/usr/local/bin/mcporter` (globally installed via npm), NOT in `~/.agent-reach-venv/bin/`. Calling the venv path silently hangs and times out. Always use the absolute path.
+
+2. **Jina Reader** — `curl -sL "https://r.jina.ai/TARGET_URL"`. Working targets vs. blocked:
+   - ✅ LinkedIn profile URLs (`linkedin.com/in/username`, regional subdomains `ae.linkedin.com/...`, `in.linkedin.com/...`)
+   - ✅ GitHub user pages and REST API endpoints (`api.github.com/users/X`, `api.github.com/search/users?q=...`)
+   - ✅ WhatsApp `wa.me/NUMBER` endpoints — confirms number is registered
+   - ✅ Truecaller public profile/locator pages (returns login-wall HTML — useless for data without Indian-SIM auth)
+   - ❌ Google / Bing / DuckDuckGo SERP URLs — `403 Forbidden`
+   - ❌ Facebook / Instagram profile URLs — login-wall HTML, no bio/posts without auth
+
+3. **Direct platform APIs (no auth needed)**:
+   - GitHub: `https://api.github.com/search/users?q=NAME+KEYWORD` — up to 30 candidates with login + profile URL
+   - GitHub: `https://api.github.com/users/USERNAME/repos?per_page=100` — repo list with languages and timestamps (excellent for dedup-by-coding-style)
+   - GitHub Code Search (`/search/code?q=...`) — **requires auth (401)** unauthenticated
+   - GitHub commit-email search — also auth-gated unauthenticated
+
+### Phone-number probes
+
+| Endpoint | What it returns |
+|----------|-----------------|
+| `https://wa.me/91XXXXXXXXXX` | "Chat on WhatsApp with +91 XXX" page if registered — confirms reachability, **zero PII** beyond the fact |
+| `https://www.truecaller.com/search/in/91NUMBER` | Login-walled HTML — useless without Indian-SIM authenticated session |
+| Format analysis (`+91 7XXXX XXXXX`) | Indian mobile; leading `7` after country code = Jio / Airtel / Vi post-2010 allocation; carrier + circle need paid lookup or Truecaller app |
+
+**Hard limit:** No public OSINT source ties a phone number to a named individual without either (a) Truecaller app authenticated with Indian SIM, (b) the target publishing their own contact card, or (c) public registries — MCA for company directors, NITI Aayog NGO Darpan for NGOs, IndiaMART/JustDial for business listings (only if the person is a registered director / NGO / business owner).
+
+### Personal-name breadth search
+
+1. **LinkedIn via mcporter** — vanity handles (`subinkbabu`) and slug handles (`subin-k-babu-642b721a3`) both work. Workflow:
+   ```bash
+   # Step 1: Exa search to harvest candidate slugs
+   /usr/local/bin/mcporter call 'exa.web_search_exa(query: "\"Full Name\"", numResults: 10)'
+   # Step 2: drill into each candidate
+   /usr/local/bin/mcporter call 'linkedin.get_person_profile(linkedin_username: "HANDLE-FROM-EXA")'
+   ```
+   Common Indian-name searches typically return 5–15 distinct profiles — **same name ≠ same person**. Note location, employer, and education to disambiguate. Profile-URN (`ACoAA...`) is unique per person and is the authoritative dedup key.
+
+2. **GitHub username candidates** — try patterns: `firstname+lastname`, `firstnamelastname89`, `firstnamelastname-dev`, `firstnamelastname-ai`, `SUBINCBABU` (all-caps). The public profile `email` field is usually `null` — don't expect a direct contact email from the API.
+
+3. **Instagram / Facebook / X** — handle guesses (`firstname_lastname`, `firstnamelastname89`, `firstname_lastname_official`) usually resolve to login-wall HTML, not public bios. **Don't burn more than 2–3 attempts per platform** without authentication — the return rate is near zero.
+
+### Reporting back to the operator
+
+When OSINT fails to link a phone number to a name (the common case):
+- Report the **working-state facts**: number is reachable on WhatsApp / name has N LinkedIn matches / GitHub candidate is X with Y repos.
+- Explicitly state what you couldn't determine: carrier, circle, registered name.
+- Name the specific next step that WOULD resolve it (Truecaller-with-Indian-SIM, target's own contact card, MCA registry check).
+- Don't fabricate or speculate beyond the evidence.
+- Distinguish: "9 LinkedIn profiles match the name" vs. "this phone number belongs to a specific person." The first is a research result; the second is a claim that needs authentication.
+
 ## Key Paths
 
 | What | Path |
@@ -515,6 +579,7 @@ agent-reach configure groq-key gsk_xxxxx
 | mcporter project config | `~/.agent-reach/tools/xiaohongshu/config/mcporter.json` |
 | xiaohongshu binary | `~/.agent-reach/tools/xiaohongshu/xiaohongshu-mcp-linux-amd64` |
 | Xiaoyuzhou transcribe script | `~/.agent-reach/tools/xiaoyuzhou/transcribe.sh` |
+| mcporter binary (use this absolute path) | `/usr/local/bin/mcporter` |
 
 ---
 
