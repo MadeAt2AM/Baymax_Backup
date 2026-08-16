@@ -354,7 +354,7 @@ display:
     unicode_cols: 0
   tool_progress: all
   cleanup_progress: false
-  background_process_notifications: all
+  background_process_notifications: concise
 dashboard:
   theme: default
   show_token_analytics: false
@@ -455,10 +455,10 @@ delegation:
   api_key: ''
   api_mode: ''
   inherit_mcp_toolsets: true
-  max_iterations: 50
+  max_iterations: 250
   child_timeout_seconds: 600
   reasoning_effort: ''
-  max_concurrent_children: 3
+  max_concurrent_children: 10
   max_spawn_depth: 1
   orchestrator_enabled: true
   subagent_auto_approve: false
@@ -687,7 +687,7 @@ paste_collapse_threshold_fallback: 5
 paste_collapse_char_threshold: 2000
 computer_use:
   cua_telemetry: false
-_config_version: 34
+_config_version: 37
 session_reset:
   mode: both
   idle_minutes: 1440

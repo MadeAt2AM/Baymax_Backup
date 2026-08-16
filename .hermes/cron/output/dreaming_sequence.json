@@ -1,49 +1,51 @@
 {
-  "date": "2026-08-15",
+  "date": "2026-08-16",
   "analysis": {
     "active_projects": [
-      "Payntra (payntra.terrybot.top) — Fastify/Postgres/Caddy on Hetzner VPS; last explicit user action was 'Stop' on 4 Jul, deploy state unverified since",
-      "Instagram Reel AI Agent (webinar sales closer) — SPEC.md drafted from Greg Isenberg reel, F1–F9 features specced, no implementation yet",
-      "Syntra (source/deploy-mirror/deploy-source) — deployment pipeline work in flight, no recent activity in daily log",
-      "Resume writing for Chris — last CLI session 13 Aug, bullets drafted, role target not chosen (backend/AI engineer/platform/founder)",
-      "CYBERSLIDE / MadeAt2Am content engine — IG/YT/X/Web presence, voice-pipeline hardening complete, scorecard/ideation skills live"
+      "Payntra (payntra.terrybot.top) — confirmed live today (HTTP 200, 124ms); container/Caddy stable since the 31 Jul docker-proxy fix",
+      "Syntra (syntra.terrybot.top/api/healthz) — 200, alive; deploy-mirror pipeline sitting idle",
+      "OpenReply (openreply.terrybot.top) — 200, alive; worker follow-gate fix from 31 Jul still in place; SMTP + Postgres backup routine healthy",
+      "CYBERSLIDE / MadeAt2Am content engine — IG/YT/X/Web presence, voice pipeline hardened; scorecard + ideation skills live",
+      "Resume writing for Chris — bullets drafted 13 Aug, awaiting role-target decision (backend / AI engineer / platform / founder)",
+      "Instagram Reel AI Agent (webinar closer) — SPEC.md fully specced (F1–F9) since July, unbuilt",
+      "Resume scorecard / pre-application work — paused pending role-target pick"
     ],
     "upcoming_deadlines": [
       "No confirmed deadlines found — calendar returned empty.",
-      "Resume pointers still need a role target before Chris can finalise the wording (open since 13 Aug)"
+      "Resume pointers still need a role target before Chris can finalise wording (open 3 days, since 13 Aug)"
     ],
     "outstanding_items": [
-      "Payntra live-state verification — payntra.terrybot.top uptime, container health, recent deploy log (no check since 4 Jul 'Stop')",
-      "Instagram Reel AI Agent spec → implementation kick-off (transcripts and SPEC.md ready; needs a build path)",
-      "Resume role target (backend / AI engineer / platform / founder) — single decision blocks the rest",
-      "Dreaming/Morning Brief daily logs for 13/14 Aug show 'No session data captured' — confirm cron output dir write is healthy"
+      "Resume role target (backend / AI engineer / platform / founder) — single decision unblocks final wording",
+      "Instagram Reel AI Agent spec → MVP build decision (build / archive / portfolio)",
+      "Dreaming/Morning Brief output dir write is healthy again today (file saved, previous run stale ~22h)",
+      "Syntra source/deploy-mirror work in flight but no recent activity in daily log"
     ],
-    "recent_context": "It's a quiet weekend in Singapore. The last human-initiated work was Wednesday 13 Aug when Chris asked for resume pointers based on Hermes work — a clean draft of resume bullets was produced and the next step (role target) was asked but never answered. Since then only cron jobs have run. Payntra deploy was paused on 4 Jul after Chris said 'Stop' mid-verify; that pause has held for six weeks. The Instagram Reel AI Agent spec is fully specced and waiting for build."
+    "recent_context": "Sunday morning in Singapore. Yesterday afternoon Chris dropped a one-off OSINT task — identify +917306986855 and 'Subin K Babu' candidates — which surfaced 9 distinct LinkedIn matches (mostly Keralites, several in the Gulf) plus a confirmed working WhatsApp number. That was the only meaningful Chris-initiated work since Wednesday's resume draft. Before that, only cron jobs ran for ~48h. Live fleet (Payntra, Syntra, OpenReply) all 200 OK this morning — RAM 43.7%, load 0.8, no alerts. Quiet weekend energy — good window for a clean decision rather than heavy build work."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Pick a resume target and lock the wording",
-      "reason": "Wednesday's session produced strong bullet drafts but stalled on the role-direction question. This is a Saturday — low-friction window to make the call. Concrete, finite, and tied directly to a Chris-initiated ask that's only 2 days old.",
-      "action": "Send Chris a short Telegram nudge: 'Wednesday's resume bullets — backend, AI engineer, platform, or founder-type role? Once you pick, I'll tighten the wording and drop a one-paragraph headline.' If he replies, render the final version. If not, draft all four headlines and leave them ready in /root/.hermes/projects/madeat2am-brand/ for him to grab."
+      "title": "Lock the resume role-target — don't let Wednesday's draft go cold",
+      "reason": "The 13 Aug bullets were strong but the assistant asked for one decision (backend / AI engineer / platform / founder) and Chris hasn't answered. Sunday morning is the lowest-friction window to pick — no meetings, no deployments. This is the highest-ROI action because the resume wording depends entirely on which audience it's for, and the draft is already 3 days old.",
+      "action": "Send a single Telegram voice note in topic 57217 (chat_id 1283992553): one sentence naming the four targets, asking Chris to pick one. If he replies, tighten the bullets immediately. If not by noon, draft all four headline variants and park them at /root/.hermes/projects/madeat2am-brand/resume/ so they're one tap away."
     },
     {
       "priority": 2,
-      "title": "Verify Payntra is still alive at payntra.terrybot.top",
-      "reason": "Payntra was paused 6 weeks ago after Chris said 'Stop' mid-verification. VPS, container, and Caddy state have been untouched since. Saturday is the safest day to prod a production endpoint — minimal user impact if something's wrong. Either we discover a quiet outage (fix it) or confirm it's humming (peace of mind + resume bullet).",
-      "action": "curl https://payntra.terrybot.top/health, SSH to 147.79.18.32 and run `docker ps -a` + tail webhook.log. Report state in the Morning Brief. If containers are down, do NOT auto-restart — present options to Chris first."
+      "title": "Decide the Instagram Reel AI Agent's fate before drift kills the spec",
+      "reason": "SPEC.md has been fully fleshed out (F1–F9 features, Greg Isenberg source reel, transcripts in /transcripts/) since July 29 but unbuilt. Letting it sit another week means the spec's references go stale and the build becomes a re-spec instead of a build. Sunday afternoon is a natural decision moment — pick a path before the week starts.",
+      "action": "Open /root/.hermes/projects/instagram-reel-ai-agent-spec/SPEC.md and present Chris with three options: (a) build MVP — smallest viable loop is F1 (script generation) + F4 (idea scoring) + F9 (export), (b) keep as portfolio spec and write a one-pager for the resume, (c) archive. Wait for his call — do not start coding without a green light."
     },
     {
       "priority": 3,
-      "title": "Decide what to do with the Instagram Reel AI Agent spec",
-      "reason": "SPEC.md is fully fleshed out (F1–F9 features, Greg Isenberg source reel, transcripts ready) but has been sitting unbuilt since July. Saturday afternoon is good for a decision: build MVP, archive as portfolio spec, or hand off. Letting it drift longer means stale references and lost context.",
-      "action": "Open /root/.hermes/projects/instagram-reel-ai-agent-spec/SPEC.md and present Chris with three options: (a) kick off MVP build with one feature slice (suggest F1+F4+F9 as the smallest viable loop), (b) keep as a portfolio spec and write a one-pager summary for the resume, (c) archive. Wait for his call before writing code."
+      "title": "Capture the OSINT pipeline as a reusable playbook",
+      "reason": "Friday's Subin K Babu investigation ran through 7 tools (SearXNG, DDG, Exa, Jina, LinkedIn MCP, WhatsApp wa.me, Truecaller) in parallel and surfaced 9 LinkedIn candidates plus a confirmed WhatsApp number. The methodology is generalisable — phone + name → candidate set with sources. Chris does OSINT-adjacent research for content (lead gen, sourcing founders, due diligence). Codifying the flow as a skill means next time it's a one-call workflow instead of a 74-message session.",
+      "action": "Draft a skill `osint-person-lookup` that wraps: phone→wa.me presence check, name→LinkedIn MCP + Exa, region inference from prefix, Truecaller app-only caveat, source citation pattern. Save to ~/.hermes/skills/research/. Don't auto-codify without Chris's nod — present the draft first."
     }
   ],
   "non_negotiable": {
-    "title": "Pick the resume target — don't let Wednesday's work go stale",
-    "reason": "The resume bullets are 2 days old, the role question was asked but not answered, and resume writing is a once-in-a-few-months activity. Every day this sits, the wording risks drifting from current state, and Chris loses the most direct ROI from all the Hermes work. This is the single high-leverage action today.",
-    "action": "Drop a Telegram message in the topic thread (chat_id 1283992553, topic 57217) summarising the four role targets and asking which to tighten for. If he doesn't reply by midday, prep all four versions in /root/.hermes/projects/madeat2am-brand/resume/ so they're one tap away."
+    "title": "Pick the resume target — let Wednesday's draft ship",
+    "reason": "Resume writing happens a few times a year. The bullets are 3 days old and well-grounded in real Hermes work (MTU-aware Docker, voice pipeline, cron orchestration, 14/15 social MCP channels). Every day this stalls, the wording risks drifting from current state and Chris loses the direct ROI from months of platform building. This is the one decision today with disproportionate long-term impact — it's a one-question ask, not a build.",
+    "action": "Drop a Telegram message in the topic thread (chat_id 1283992553, topic 57217): 'Pick a target for Wednesday's resume — backend, AI engineer, platform, or founder-type. Once you say the word, I'll tighten and ship.' If he replies, render the final version. If not by midday, prep all four variants in /root/.hermes/projects/madeat2am-brand/resume/."
   },
-  "mood_check": "Calm weekend energy. No urgent tickets, calendar empty, last meaningful interaction was a forward-looking resume request. Chris is in 'think about next move' mode — light, direct, low-friction asks will land better than heavy process. Tone for the brief: brief, warm, no fluff."
+  "mood_check": "Quiet weekend — calendar empty, only one Chris-initiated session since Wednesday, live fleet green. He's in 'think before the week starts' mode. Tone for the brief: brief, direct, low-friction. Light asks land; heavy process won't. Sunday morning is for one clean decision, not ten open threads."
 }
