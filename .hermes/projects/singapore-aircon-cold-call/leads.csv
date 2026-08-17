@@ -1,0 +1,17 @@
+priority,company_name,uen,phone,email,address,website,source,tier,call_status,call_result,callback_date,notes
+1,YES AIRCON SERVICES,,8610 3030,,170 Upper Bukit Timah Road #02-13 Singapore 588177,None,recordowl.com/company/yes-aircon-services,T1 - Verified No-Website,,
+2,LS AIRCON SERVICING SINGAPORE PTE LTD,202035995E,6797 8821,support@lsairconservicing.sg,22 Sin Ming Lane #06-76 Midview City Singapore 573969,None,recordowl.com/company/ls-aircon-servicing-singapore-pte-ltd,T1 - Verified No-Website,,
+3,NATURE COOL AIRCON AND REFRIGERATOR ENGINEERING,53424195J,+65 8389 4134,ncae8389@gmail.com,641B Tampines Street 62 #13-228 Singapore 522641,None,recordowl.com/company/nature-cool-aircon-engineering,T1 - Verified No-Website,,
+4,S Z AIRCON PTE LTD,202226291E,9851 5152,szaircon2@gmail.com,21 Toh Guan Road East #08-34 Toh Guan Centre Singapore 608609,None,recordowl.com/company/s-z-aircon-pte-ltd,T1 - Verified No-Website,,
+5,LY AIRCON PTE LTD,202006246M,8788 3440,,22 Sin Ming Lane #06-76 Midview City Singapore 573969,None,recordowl.com/company/ly-aircon-pte-ltd,T1 - Verified No-Website,,
+6,LAYD AIRCON SERVICES,53326111D,8768 0233,laydaircon@gmail.com,128 Yishun Street 11 #06-64 Singapore 120128,None,recordowl.com/company/layd-aircon-services,T1 - Verified No-Website,,,Conflict pair - see COLD_CALL_LEADS.md
+7,DELTA AIRCONDITIONING & ELECTRICAL SERVICES,,6909 4749,,159 Kampong Bahru Road Singapore 161159,None,recordowl.com/company/delta-airconditioning-electrical-services,T1 - Verified No-Website,,,Conflict pair - see COLD_CALL_LEADS.md
+8,COLDSTAR AIRCON PTE LTD,202002676D,9616 9912,,51 Ubi Avenue 1 #05-01 Paya Ubi Industrial Park Singapore 408933,None,recordowl.com/company/coldstar-aircon-pte-ltd,T1 - Verified No-Website,,
+9,JAS AIRCON SERVICES 2,,9090 9882,,Blk 203 Woodlands Street 13 #01-05 Singapore 730203,None,sg.ltddir.com/companies/jas-aircon-services-2/,T1 - Verified No-Website,,
+10,FUTUREAIR AIRCON ENGINEERING PTE LTD,,Not listed,,7030 Ang Mo Kio Avenue 5 #08-03 Northstar @ AMK Singapore 569880,None listed,RecordOwl,T1 - Verified No-Website,,,Phone needs verification - no number on file
+11,GH AIRCON & ELECTRICAL ENGINEERING,52868473J,9247 2663,info@aircond.com.sg,8 Pari Dedap Walk #03-10 Tanamera Crest Singapore 486061,aircond.com.sg - VERIFY,recordowl.com/company/gh-aircon-electrical-engineering,T2 - Verify Website,,
+12,YAP AIRCON SERVICING & REPAIR,,9855 3721,,221 Ang Mo Kio Avenue 1 #08-759 Singapore 560221,aircon-service.com.sg - VERIFY,RecordOwl,T2 - Verify Website,,
+13,CYBERIC AIRCONDITIONING SERVICES,,6797 0755,,15 Yishun Industrial Street 1 #06-09 WIN 5 Singapore 768091,airconservicesingapore.co - VERIFY,RecordOwl,T2 - Verify Website,,
+14,LAYD AIRCON SERVICES (Record B - Anson Road),,,,10 Anson Road #28-18 International Plaza Singapore 079912,None,RecordOwl,T1 - Conflict Pair,,
+15,YES AIRCON SERVICES (Record B - Jalan Pemimpin),,,9118 9836,,41 Jalan Pemimpin Kong Beng Industrial Bldg Singapore 577203,None,RecordOwl,T1 - Conflict Pair,,
+16,DELTA AIRCONDITIONING (Record B - Punggol),,,+65 8138 8245,delta.aircondnelectrical@gmail.com,102D Punggol Field Singapore 822102,airconboys.sg - VERIFY,RecordOwl,T1 - Conflict Pair,,,Has website - likely actual Delta operating today
