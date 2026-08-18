@@ -15,7 +15,7 @@ codebase-inspection:29f67c87df868dd08e76c57b86c7a5c6
 codex:8822d280c3de7ad5827937b83afa0a88
 comfyui:700ead7d0161a9793a746a3a98c28671
 competitor-news-monitor:1fe587a5a000cd68ca8b9742b2c2df9b
-computer-use:1ac68d6d295c08f582a0b2986b592cc9
+computer-use:aca681aed20bf2b9c4625011fb037db0
 design-md:91a8976ef5d37db2451721db9c2b93da
 document-to-action-items:f907465e394bca1e4429654d6601d050
 docx:468e95706c97eff3304c23428bc04ece
@@ -33,7 +33,7 @@ github-pr-workflow:3bb8d7a68a7a3c8c4f609cd7def72442
 github-repo-management:7d78b8bf0888a3bf9cfef81a3340f98a
 google-workspace:95a0ff7299f92be6107d9051ab723e6b
 grounded-citations:8b34553af88444ca0aa96a57a45954ae
-hermes-agent:a4c96d6fa1fd6a524148b738057f05b9
+hermes-agent:e2dfd7216e3f7c211e12aed3e7f74870
 hermes-agent-skill-authoring:6440929f71296991a7ee29bd4908c2d3
 himalaya:d215ffaa3c1aecbc68a326e45d6927c8
 huggingface-hub:1e5932fb1742a0424d04a29a4c4e09d0

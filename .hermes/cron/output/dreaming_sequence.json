@@ -1,52 +1,47 @@
 {
-  "date": "2026-08-17",
+  "date": "2026-08-18",
   "analysis": {
     "active_projects": [
-      "Payntra (payntra.terrybot.top) — confirmed live Monday morning (root + /health both 200); Payntra is the highest-trust fleet member since the 31 Jul docker-proxy fix",
-      "Syntra (syntra.terrybot.top) — root + /api/healthz both 200; deploy-mirror idle but reachable",
-      "OpenReply (openreply.terrybot.top) — root 200; worker follow-gate fix from 31 Jul still in place; SMTP + Postgres backup routine healthy",
-      "CYBERSLIDE / MadeAt2Am content engine — IG/YT/X/Web presence, voice pipeline hardened, scorecard + ideation skills live",
-      "Resume writing for Chris — bullets drafted Wed 13 Aug, awaiting role-target decision (backend / AI engineer / platform / founder) — now 4 days old",
-      "Instagram Reel AI Agent (webinar closer) — SPEC.md fully specced (F1–F14) since 29 Jul, unbuilt",
-      "Friday OSINT pipeline (Subin K Babu / +917306986855) — methodology proven across 7 tools, not codified as a reusable skill yet"
+      "singapore-aircon-cold-call — revenue-generation cold-call campaign, 16 Tier-1 verified leads in CSV, 27 in Google Doc (3 emailed). Pivoted from ACRA/RecordOwl to Google Maps, hit saturation (only 35/189 had no website). Chrome browser kept dying mid-batch — lost ~15-20 query batches. Last user instruction at 02:02 SGT Aug 18: 'Ship what you have to Google Docs and continue option b to find more.' Option B = RecordOwl/ACRA pivot. NOT YET EXECUTED.",
+      "payntra — live at payntra.terrybot.top on Hetzner VPS, deployed & stable, no recent session activity",
+      "openreply — last touched Jul 30, plan file in projects/openreply/.hermes/plans/, dormant"
     ],
     "upcoming_deadlines": [
-      "No confirmed deadlines found — calendar returned empty.",
-      "Resume wording has been open since 13 Aug (4 days); every day without a role pick risks drift from current state"
+      "No confirmed deadlines found — calendar returned empty."
     ],
     "outstanding_items": [
-      "Resume role-target (backend / AI engineer / platform / founder) — single decision unblocks final wording, now 4 days stale",
-      "Instagram Reel AI Agent spec — build / archive / portfolio decision still pending (SPEC.md untouched since 29 Jul)",
-      "Friday's OSINT methodology not yet codified as `osint-person-lookup` skill — next phone+name lookup will re-discover the same workflow",
-      "Syntra source/deploy-mirror has no recent activity in the daily log",
-      "Cyberslide VNC cert remains self-signed (expected, but a real certificate would let Cookie extraction scripts run unattended)"
+      "Option B (RecordOwl/ACRA deep scrape) is the unfinished thread from last night — Chris explicitly asked to continue it after the Google Doc ship. Browser-side pagination is the blocker; needs a long-lived Chrome session or a curl-able Inertia.js workaround.",
+      "Chrome browser stability is now a recurring problem for any browser-based scrape work — diagnose root cause and either fix or build a curl/headless fallback path.",
+      "Email drafts prepared for the 3 emailed leads (Nature Cool, S Z Aircon, Layd) — no replies logged yet. Phone-call script for the 23 Maps-only leads (no email) was promised but not drafted.",
+      "Only 3 of 27 Google Doc leads have actually been contacted by email. The other 24 are sitting in the doc waiting.",
+      "openreply is dormant — last activity Jul 30. Decide: resume, archive, or shelve until Q4."
     ],
-    "recent_context": "Monday morning in Singapore. Weekend was quiet on Chris's side — only meaningful human-initiated work since Wed 13 Aug was Friday's OSINT task on +917306986855 / Subin K Babu, which surfaced 9 LinkedIn candidates plus a confirmed WhatsApp number. Saturday and Sunday had no Chris-initiated sessions, just cron traffic (Dreaming, Morning Brief, Backup, daily-email-briefing). Live fleet is healthy this morning: Payntra / and /health 200, Syntra 200, OpenReply 200. Host RAM 3.7G / 7.8G (≈48%), load 0.18 — comfortable. Cyberslide root hit a self-signed cert (expected on the VNC subdomain). Calendar empty. The three open threads from last night's brief are still open going into the work week — Monday is when they either get closed or they start costing real time."
+    "recent_context": "Last 24 hours: a long Telegram session (440 messages) on the Singapore aircon cold-call campaign. Chris came back at 02:02 SGT Aug 18 asking to ship the current state to Google Docs and pivot to option B (RecordOwl deep scrape). Baymax shipped 27 leads to the Doc and ran out of iteration budget before pivoting. Calendar is empty for today. Backup cron ran clean at 16:00 Aug 17, morning brief delivered at 00:01 Aug 18. No new sessions today yet."
   },
   "recommendations": [
     {
       "priority": 1,
-      "title": "Lock the resume role-target today — 4 days stale, no meetings to hide behind anymore",
-      "reason": "The Wed 13 Aug bullets are excellent and grounded in real Hermes work (MTU-aware Docker on Payntra, voice pipeline hardening, cron orchestration, 14/15 social MCP channels, OSINT tooling). All that value goes nowhere until Chris picks one of backend / AI engineer / platform / founder. Weekend silence was acceptable; Monday silence starts costing — the wording could drift from current state (live fleet status, OSINT count, MTU lesson, the new Competitor dashboard plan from 24 Jul). One decision, not a build.",
-      "action": "Post a Telegram message in topic 57217 (chat_id 1283992553) before noon: 'Pick a target for Wednesday's resume — backend, AI engineer, platform, or founder. Once you say the word, I'll tighten and ship.' If he replies, render the final version into /root/.hermes/projects/madeat2am-brand/resume/. If still silent by midday, draft all four headline variants so each is one tap away."
+      "title": "Execute option B — RecordOwl/ACRA deep scrape to push the verified-lead count past 50",
+      "reason": "Chris explicitly asked for this at 02:02 SGT and it was the unfinished thread. Google Maps saturated at 35 no-website hits; ACRA has ~141,244 companies in SSIC and RecordOwl exposed ~12 per industry page — that's the real pool. Without this, the cold-call campaign stays stuck at 27 dialable leads, which is too thin for a meaningful outreach.",
+      "action": "Run a focused browser session: navigate to RecordOwl SSIC pages (43220 specialised construction, 43221 electrical, 95220 repair of personal goods, 33140 repair of electrical equipment) and paginate through. Extract aircon/HVAC companies with verified UENs, then cross-check no-website status against Maps. Save to /root/.hermes/projects/singapore-aircon-cold-call/ro_companies.json (already scaffolded). If Chrome keeps dying, switch to a single long-lived browser_exec call with manual pagination waits."
     },
     {
       "priority": 2,
-      "title": "Decide the Instagram Reel AI Agent's fate before the spec's freshness window closes",
-      "reason": "SPEC.md has been fully fleshed out (F1–F14 features, Greg Isenberg source reel, transcripts, Cloudflare-safe Groq transcription helper) since 29 Jul — 19 days ago. Letting it drift another week means the spec's references age out and the build cost resets to re-spec. But equally, building it now without a clear go-to-market (who pays, what CRM, what meeting platform first) is the wrong move — SPEC §7 already lists 7 open questions that need Chris's call. This is a 'decide, don't drift' moment.",
-      "action": "Open /root/.hermes/projects/instagram-reel-ai-agent-spec/SPEC.md and surface the three option paths: (a) build a 1-reel MVP loop (F1 ingest + F10 personalise + F12 human-review), (b) keep SPEC as a portfolio piece — write a 1-page resume bullet from it and archive, (c) drop entirely. Do NOT start coding without a green light — too many 7-question decisions to guess on."
+      "title": "Phone-call script for the 23 Maps-only leads (no email address)",
+      "reason": "These are the highest-intent, fastest-velocity leads — they have phone numbers, no website, and are verified businesses. But you can't email them, so a cold-call script is the only path. Last night we promised to draft one and didn't.",
+      "action": "Write a Singapore aircon-specific 30-second opener + 3 objection-handlers + a voicemail script. Save as /root/.hermes/projects/singapore-aircon-cold-call/CALL_SCRIPT.md. Reference the COLD_CALL_LEADS.md openers but adapt them to phone (shorter, more 'Hi I'm calling because…' tone, not 'I was searching Google…'). Best call window in SGT: Tue–Thu, 10am–12pm and 2pm–4pm."
     },
     {
       "priority": 3,
-      "title": "Codify the Friday OSINT pipeline as `osint-person-lookup` so next lookup is one call",
-      "reason": "Friday's Subin K Babu + +917306986855 investigation ran through 7 tools (SearXNG, DDG, Exa, Jina, LinkedIn MCP, WhatsApp wa.me, Truecaller), produced 9 LinkedIn candidates plus a verified WhatsApp number, and took ~2 hours across a 74-message session. The methodology is genuinely reusable: phone+name → candidate set with sources. Chris does OSINT-adjacent research for content (lead gen, sourcing founders, due-diligence on partners). Codifying it means the next lookup is one call instead of a 2-hour detour.",
-      "action": "Draft skill `osint-person-lookup` at ~/.hermes/skills/research/. Wrap: phone→wa.me presence check + region inference, name→LinkedIn MCP + Exa with confidence scoring, Truecaller app-only caveat flagged up front, citation pattern per finding (claim + source URL + confidence). Do not auto-create without Chris's nod — present the draft first."
+      "title": "Diagnose Chrome browser stability and lock in a reliable scraping harness",
+      "reason": "Chrome dying mid-batch is now a recurring theme across multiple scrape jobs — last night cost ~15-20 batches. This is the same pattern as the Payntra SMTP issue we hit in July: works on host, fails under load. Until we fix it, every browser-based scrape has the same ceiling.",
+      "action": "Reproduce the crash deliberately — run 5 consecutive Google Maps searches via browser_exec and capture when/why Chrome exits. Check /tmp/chrome-* logs, ulimit -n, memory pressure. If it's an OOM/handle exhaustion, fix that. If it's the headless flag, swap to --headless=old. Document the working config in a new skill: google-maps-scraper."
     }
   ],
   "non_negotiable": {
-    "title": "Pick the resume target today — let Wednesday's draft ship before drift eats it",
-    "reason": "Resume writing happens a few times a year. The 13 Aug bullets are 4 days old and grounded in real, current Hermes work (MTU 1400 fix on Payntra/Hetzner, voice routing lessons, cron orchestration of the Morning Brief pipeline, 14/15 social MCP channels, the OSINT playbook). Every day this stalls, the wording risks drifting from live fleet state and Chris loses direct ROI from months of platform building. It is genuinely one decision — not a build, not a meeting, not a code change. If this stays open through Monday, the bullets will be re-derived from a longer and messier codebase next week.",
-    "action": "Telegram topic 57217 (chat_id 1283992553), one sentence: 'Pick a target for Wednesday's resume — backend, AI engineer, platform, or founder. Once you say the word, I'll tighten and ship.' If Chris replies, render the final version into /root/.hermes/projects/madeat2am-brand/resume/. If still silent by 12:00 SGT, draft all four headline variants and park them at /root/.hermes/projects/madeat2am-brand/resume/ so they're literally one tap away when he opens the folder."
+    "title": "Push past 50 verified no-website aircon leads today — execute option B (RecordOwl) and stop at nothing until you hit it",
+    "reason": "27 leads isn't a campaign — it's a pilot. Real cold-call volume needs 50+ to have meaningful conversion math. Chris explicitly directed this last night and the pivot was unfinished. If you skip this and the campaign dies on the vine, every other recommendation above is theatre. The non-negotiable is the one that actually moves revenue.",
+    "action": "Open the browser, go to RecordOwl, paginate through 4 SSIC industry pages (43220, 43221, 95220, 33140), extract every aircon/HVAC-related company, cross-check no-website status. If Chrome fails again, swap to a curl + Inertia.js session-cookie approach (the original June 25 session proved RecordOwl is curl-reachable on company pages). Stop when verified_leads_no_website >= 50. Update leads.csv and the Google Doc with each batch."
   },
-  "mood_check": "Quiet weekend is over — Monday morning in Singapore, no meetings on the calendar, live fleet green (Payntra/Syntra/OpenReply all 200). Chris hasn't initiated a real session since Friday afternoon, so he's likely stepping back into a fresh work-week mindset. Three open threads (resume target, IG Reel AI Agent fate, OSINT codification) have all been on the daily brief for the last two days with zero engagement — pattern says he wants to decide them, not hear more about them. Tone for today's brief: very short, one crisp ask, minimal scaffolding. Heavy process won't land on Monday morning. Light-touch will."
+  "mood_check": "Direct, action-oriented, slightly impatient. Chris wants to see shipped progress, not analysis paralysis. The 02:02 SGT message 'Ship what you have to google docs snd continue with option b to find more' is the clearest signal — he wants forward motion and concrete deliverables. Keep recommendations concrete, numbered, and tied to revenue-generating outcomes."
 }

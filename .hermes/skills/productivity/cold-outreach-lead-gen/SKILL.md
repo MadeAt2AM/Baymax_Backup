@@ -31,7 +31,7 @@ End-to-end playbook for sourcing, enriching, drafting, sending, and tracking col
 
 ### Phase 2 — Multi-source enrichment
 - **Google Maps** for businesses WITH Google Business Profiles (often have websites)
-- **Business registries** (e.g. ACRA/RecordOwl in Singapore) for sole proprietors and unlisted businesses — these are usually the **no-website** targets
+- **Business registries** (e.g. ACRA/RecordOwl in Singapore) for sole proprietors and unlisted businesses — these are usually the **no-website** targets. See `references/recordowl-scraping.md` for the proven free-tier extraction pattern (SSIC industry pages → company slugs → per-company SSIC/address/UEN extraction).
 - Cross-reference: if Maps shows a website, mark `has_website=true`. If only registry has them, assume no-website.
 - See `references/google-maps-scraping.md` for browser_exec pattern
 
@@ -48,9 +48,10 @@ End-to-end playbook for sourcing, enriching, drafting, sending, and tracking col
 - `Email Sent` / `Called` columns start as `No`, fill in after
 
 ### Phase 5 — Tracker maintenance
-- Google Doc or Sheet with columns: Company, Email, Phone, Maps URL, Website, Email Sent, Called
-- Append new leads as they're scraped (don't wait until end of batch — connections drop)
+- **Google Sheet (NOT Doc)** for tabular lead data — Chris's 2026-08-17 preference. Columns: #, Company Name, Phone, Email, Address, Industry (SSIC), Website, Google Maps Link, Source, Email Sent, Called, Notes
+- Doc only for prose-heavy outreach briefs/copy
 - Save raw scraped JSON to `~/.hermes/projects/<slug>/scrape_<batch>.json`
+- See `references/google-sheets-tracker.md` for the full setup (Sheets vs Docs decision, schema, push commands, phone-number formula gotcha)
 
 ## Pitfalls (from 2026-08-17 session)
 
@@ -75,6 +76,30 @@ End-to-end playbook for sourcing, enriching, drafting, sending, and tracking col
 
 8. **Filter emails where domain looks like a registered business domain.** If a lead's email is `info@acmeaircon.sg` rather than `acmeaircon@gmail.com`, they likely have a website at acmeaircon.sg — disqualify from "no-website" pool.
 
+9. **Headless Chrome dies repeatedly during long scrape batches.** Symptom: `RuntimeError: no close frame received or sent` mid-batch, then harness fails every subsequent call with `fatal: chrome-not-running`. Reliable recovery sequence:
+   ```bash
+   pkill -9 chrome && sleep 2
+   rm -rf /tmp/chrome-harness && mkdir -p /tmp/chrome-harness
+   google-chrome --headless=new --disable-gpu --no-sandbox \
+     --disable-dev-shm-usage --remote-debugging-port=9222 \
+     --user-data-dir=/tmp/chrome-harness about:blank &
+   sleep 5
+   curl -s http://127.0.0.1:9222/json/version  # verify
+   cat > ~/.config/google-chrome/DevToolsActivePort << 'EOF'
+   9222
+   /devtools/browser
+   EOF
+   ```
+   The `DevToolsActivePort` file is what browser-harness auto-discovers; without it the harness refuses to attach even though Chrome is healthy. BU_CDP_URL env does NOT persist across `browser_exec` calls — the file is the persistent fix.
+
+10. **Use Google Sheets, not Google Docs, for tabular lead data.** Chris's 2026-08-17 explicit redirect: "convert the google docs to google sheets, use that sheet for all the leads". Sheets handles tabular data natively (filter, sort, conditional formatting, formulas) and prevents the doc-from-getting-corrupted-as-you-append risk. See `references/google-sheets-tracker.md` for the working format.
+
+11. **Sheets interprets phone numbers starting with `+` as formulas → `#ERROR!`.** Prefix with a leading apostrophe (`'+65 1234 5678`) before pushing via the API. The API will store it as a literal string.
+
+12. **RecordOwl free-tier SSIC industry pages are a viable secondary source.** Each `/ssic/<category-slug>` page returns 12 company slugs (e.g. `/ssic/specialised-construction-activities` shows 12 of 114,410). Company slugs DON'T always contain "aircon" — visit each company page to extract SSIC code/industry. Filter by SSIC codes 43220 (plumbing/HVAC install), 43210 (electrical works), 43301 (renovation contractors), 95220 (household goods repair), 81211 (general cleaning incl aircon). See `references/recordowl-scraping.md` for the working extraction JS.
+
+13. **Chain-exclusion list for Maps no-website results.** Big operators show up as "no-website" on Maps (their Google listing exists but they push customers to phone/WhatsApp). When filtering, exclude slug-name matches for: gain city, midea, york, sharp (singapore electronics/service center), sommerville, claymore, new york air-conditioning, general electric international, tomika. Verify each exclusion against the Maps listing — sometimes legitimate small operators share names.
+
 ## Verification checklist (end-to-end)
 
 Before declaring a lead-gen run complete:
@@ -87,7 +112,9 @@ Before declaring a lead-gen run complete:
 ## References
 
 - `references/google-maps-scraping.md` — Maps extraction patterns, query lists, viewport config
+- `references/recordowl-scraping.md` — RecordOwl free-tier SSIC industry pages, per-company extraction JS, SSIC-code filter pattern
 - `references/email-drafts-tone.md` — non-salesy cold email templates and tone guide
+- `references/google-sheets-tracker.md` — Sheets vs Docs decision, schema, push commands, phone-number formula gotcha
 - `templates/leads.csv` — starter CSV with header row matching this skill's tracker format
 
 ## Related skills
